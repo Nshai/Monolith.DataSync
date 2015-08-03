@@ -1,0 +1,234 @@
+﻿<Activity mc:Ignorable="sap sap2010 sads" x:Class="IntelliFlo.Platform.Services.Workflow.v1.Activities.DelayStep"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:local="clr-namespace:IntelliFlo.Platform.Services.Workflow.v1.Activities"
+ xmlns:local1="clr-namespace:IntelliFlo.Platform.Services.Workflow"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mca="clr-namespace:Microsoft.CSharp.Activities;assembly=System.Activities"
+ xmlns:s="clr-namespace:System;assembly=mscorlib"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:domain="clr-namespace:IntelliFlo.Platform.Services.Workflow.Domain">
+  <x:Members>
+    <x:Property Name="StepId" Type="InArgument(s:Guid)" />
+    <x:Property Name="StepIndex" Type="InArgument(x:Int32)" />
+    <x:Property Name="Period" Type="InArgument(x:TimeSpan)" />
+    <x:Property Name="BusinessDaysOnly" Type="InArgument(x:Boolean)" />
+  </x:Members>
+  <sap2010:ExpressionActivityEditor.ExpressionActivityEditor>C#</sap2010:ExpressionActivityEditor.ExpressionActivityEditor>
+  <sap2010:WorkflowViewState.IdRef>IntelliFlo.Platform.Services.Workflow.v1.Activities.DelayStep_1</sap2010:WorkflowViewState.IdRef>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>System.Data</x:String>
+      <x:String>System.Linq</x:String>
+      <x:String>System.Text</x:String>
+    </sco:Collection>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>Autofac</AssemblyReference>
+      <AssemblyReference>AutofacContrib.DynamicProxy2</AssemblyReference>
+      <AssemblyReference>AutoMapper</AssemblyReference>
+      <AssemblyReference>Castle.Core</AssemblyReference>
+      <AssemblyReference>log4net</AssemblyReference>
+      <AssemblyReference>Newtonsoft.Json</AssemblyReference>
+      <AssemblyReference>NHibernate</AssemblyReference>
+      <AssemblyReference>PresentationCore</AssemblyReference>
+      <AssemblyReference>PresentationFramework</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>System.Activities.Presentation</AssemblyReference>
+      <AssemblyReference>System.ComponentModel.DataAnnotations</AssemblyReference>
+      <AssemblyReference>System.Configuration</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>System.Drawing</AssemblyReference>
+      <AssemblyReference>System.Net.Http</AssemblyReference>
+      <AssemblyReference>System.Net.Http.Formatting</AssemblyReference>
+      <AssemblyReference>System.Runtime.Serialization</AssemblyReference>
+      <AssemblyReference>System.ServiceModel</AssemblyReference>
+      <AssemblyReference>System.ServiceModel.Activities</AssemblyReference>
+      <AssemblyReference>System.Web</AssemblyReference>
+      <AssemblyReference>System.Web.Http</AssemblyReference>
+      <AssemblyReference>System.Web.Http.OData</AssemblyReference>
+      <AssemblyReference>System.Xaml</AssemblyReference>
+      <AssemblyReference>System.Xml.Linq</AssemblyReference>
+      <AssemblyReference>System.Data.DataSetExtensions</AssemblyReference>
+      <AssemblyReference>Microsoft.CSharp</AssemblyReference>
+      <AssemblyReference>System.Data</AssemblyReference>
+      <AssemblyReference>System.Xml</AssemblyReference>
+      <AssemblyReference>WindowsBase</AssemblyReference>
+      <AssemblyReference>IntelliFlo.Commons</AssemblyReference>
+      <AssemblyReference>IntelliFlo.Commons.NHibernate</AssemblyReference>
+      <AssemblyReference>IntelliFlo.Platform.Services.Client</AssemblyReference>
+      <AssemblyReference>IntelliFlo.Platform.Services.Commons</AssemblyReference>
+      <AssemblyReference>IntelliFlo.Platform.Services.Http.Documentation</AssemblyReference>
+      <AssemblyReference>IntelliFlo.Platform.Services.Http</AssemblyReference>
+      <AssemblyReference>IntelliFlo.Platform.Services.Tbf</AssemblyReference>
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>IntelliFlo.Platform.Services.Workflow</AssemblyReference>
+    </sco:Collection>
+  </TextExpression.ReferencesForImplementation>
+  <local:WorkflowStep Context="{x:Null}" StepDetail="{x:Null}" EnableLogging="False" sap2010:WorkflowViewState.IdRef="WorkflowStep_1">
+    <local:WorkflowStep.Step>
+      <InArgument x:TypeArguments="x:String">
+        <mca:CSharpValue x:TypeArguments="x:String">"Delay"</mca:CSharpValue>
+      </InArgument>
+    </local:WorkflowStep.Step>
+    <local:WorkflowStep.StepId>
+      <InArgument x:TypeArguments="s:Guid">
+        <mca:CSharpValue x:TypeArguments="s:Guid">StepId</mca:CSharpValue>
+      </InArgument>
+    </local:WorkflowStep.StepId>
+    <local:WorkflowStep.StepIndex>
+      <InArgument x:TypeArguments="s:Nullable(x:Int32)">
+        <mca:CSharpValue x:TypeArguments="s:Nullable(x:Int32)">StepIndex</mca:CSharpValue>
+      </InArgument>
+    </local:WorkflowStep.StepIndex>
+    <local:WorkflowStep.Variables>
+      <Variable x:TypeArguments="x:TimeSpan" Name="timeSpan" />
+      <Variable x:TypeArguments="local:SkipState" Name="skipState" />
+      <Variable x:TypeArguments="s:Nullable(s:DateTime)" Name="skipToDelayTime" />
+      <Variable x:TypeArguments="s:DateTime" Name="expiryDateUtc" />
+    </local:WorkflowStep.Variables>
+    <local:SkipStep TaskId="{x:Null}" sap2010:WorkflowViewState.IdRef="SkipStep_1">
+      <local:SkipStep.DelayTime>
+        <OutArgument x:TypeArguments="s:Nullable(s:DateTime)">
+          <mca:CSharpReference x:TypeArguments="s:Nullable(s:DateTime)">skipToDelayTime</mca:CSharpReference>
+        </OutArgument>
+      </local:SkipStep.DelayTime>
+      <local:SkipStep.Skip>
+        <OutArgument x:TypeArguments="local:SkipState">
+          <mca:CSharpReference x:TypeArguments="local:SkipState">skipState</mca:CSharpReference>
+        </OutArgument>
+      </local:SkipStep.Skip>
+    </local:SkipStep>
+    <Switch x:TypeArguments="local:SkipState" sap2010:WorkflowViewState.IdRef="Switch`1_1">
+      <Switch.Expression>
+        <InArgument x:TypeArguments="local:SkipState">
+          <mca:CSharpValue x:TypeArguments="local:SkipState">skipState</mca:CSharpValue>
+        </InArgument>
+      </Switch.Expression>
+      <Sequence x:Key="Continue">
+        <local:ResolveDelay>
+          <local:ResolveDelay.BusinessDaysOnly>
+            <InArgument x:TypeArguments="x:Boolean">
+              <mca:CSharpValue x:TypeArguments="x:Boolean">BusinessDaysOnly</mca:CSharpValue>
+            </InArgument>
+          </local:ResolveDelay.BusinessDaysOnly>
+          <local:ResolveDelay.ExpiryDate>
+            <OutArgument x:TypeArguments="s:DateTime">
+              <mca:CSharpReference x:TypeArguments="s:DateTime">expiryDateUtc</mca:CSharpReference>
+            </OutArgument>
+          </local:ResolveDelay.ExpiryDate>
+          <local:ResolveDelay.Period>
+            <InArgument x:TypeArguments="x:TimeSpan">
+              <mca:CSharpValue x:TypeArguments="x:TimeSpan">Period</mca:CSharpValue>
+            </InArgument>
+          </local:ResolveDelay.Period>
+          <sap2010:WorkflowViewState.IdRef>ResolveDelay_2</sap2010:WorkflowViewState.IdRef>
+        </local:ResolveDelay>
+        <local:DelayUntilStep sap2010:ExpressionActivityEditor.ExpressionActivityEditor="C#" sap2010:WorkflowViewState.IdRef="IntelliFlo.IO.Workflow.Activities.DelayStep_1">
+          <local:DelayUntilStep.ExpiryDateUtc>
+            <InArgument x:TypeArguments="s:DateTime">
+              <mca:CSharpValue x:TypeArguments="s:DateTime">expiryDateUtc</mca:CSharpValue>
+            </InArgument>
+          </local:DelayUntilStep.ExpiryDateUtc>
+          <local:DelayUntilStep.StepId>
+            <InArgument x:TypeArguments="s:Guid">
+              <mca:CSharpValue x:TypeArguments="s:Guid">StepId</mca:CSharpValue>
+            </InArgument>
+          </local:DelayUntilStep.StepId>
+          <local:DelayUntilStep.StepIndex>
+            <InArgument x:TypeArguments="x:Int32">
+              <mca:CSharpValue x:TypeArguments="x:Int32">StepIndex</mca:CSharpValue>
+            </InArgument>
+          </local:DelayUntilStep.StepIndex>
+          <sap2010:WorkflowViewState.ViewStateManager>
+            <sap2010:ViewStateManager>
+              <sap2010:ViewStateData Id="Assign_1" sap2010:WorkflowViewState.IdRef="ViewStateData_1" />
+              <sap2010:ViewStateData Id="Delay_1" sap2010:WorkflowViewState.IdRef="ViewStateData_2" />
+              <sap2010:ViewStateData Id="If_1" sap2010:WorkflowViewState.IdRef="ViewStateData_3" />
+              <sap2010:ViewStateData Id="WorkflowStep_1" sap2010:WorkflowViewState.IdRef="ViewStateData_4" />
+              <sap2010:ViewStateData Id="IntelliFlo.IO.Workflow.Activities.DelayStep_1" sap2010:WorkflowViewState.IdRef="ViewStateData_5" />
+            </sap2010:ViewStateManager>
+          </sap2010:WorkflowViewState.ViewStateManager>
+        </local:DelayUntilStep>
+        <sap2010:WorkflowViewState.IdRef>Sequence_3</sap2010:WorkflowViewState.IdRef>
+      </Sequence>
+      <Sequence x:Key="TargetStep" sap2010:WorkflowViewState.IdRef="Sequence_2">
+        <Assign sap2010:WorkflowViewState.IdRef="Assign_2">
+          <Assign.To>
+            <OutArgument x:TypeArguments="x:TimeSpan">
+              <mca:CSharpReference x:TypeArguments="x:TimeSpan">timeSpan</mca:CSharpReference>
+            </OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="x:TimeSpan">
+              <mca:CSharpValue x:TypeArguments="x:TimeSpan">skipToDelayTime.Value - DateTime.UtcNow</mca:CSharpValue>
+            </InArgument>
+          </Assign.Value>
+        </Assign>
+        <If sap2010:WorkflowViewState.IdRef="If_2">
+          <If.Condition>
+            <InArgument x:TypeArguments="x:Boolean">
+              <mca:CSharpValue x:TypeArguments="x:Boolean">timeSpan &gt; TimeSpan.Zero</mca:CSharpValue>
+            </InArgument>
+          </If.Condition>
+          <If.Then>
+            <Delay sap2010:WorkflowViewState.IdRef="Delay_2">
+              <InArgument x:TypeArguments="x:TimeSpan">
+                <mca:CSharpValue x:TypeArguments="x:TimeSpan">timeSpan</mca:CSharpValue>
+              </InArgument>
+            </Delay>
+          </If.Then>
+        </If>
+        <local:LogMessage sap2010:WorkflowViewState.IdRef="LogMessage_1" IsComplete="True">
+          <local:LogMessage.StepDetail>
+            <InArgument x:TypeArguments="domain:ILogDetail">
+              <mca:CSharpValue x:TypeArguments="domain:ILogDetail">new IntelliFlo.Platform.Services.Workflow.Domain.DelayLog() { DelayUntil = skipToDelayTime.Value }</mca:CSharpValue>
+            </InArgument>
+          </local:LogMessage.StepDetail>
+        </local:LogMessage>
+      </Sequence>
+    </Switch>
+    <sads:DebugSymbol.Symbol>d2BDOlxXb3JrXEludGVsbGlGbG8uSU8uZGV2XHNyY1xJbnRlbGxpRmxvLlBsYXRmb3JtLlNlcnZpY2VzLldvcmtmbG93XHYxXEFjdGl2aXRpZXNcRGVsYXlTdGVwLnhhbWweSwPHARgCAQFLTktVAgERTglOTgIBDFgJWFsCAQdTCVNLAgECYQVsFgMBiAFtBcUBDgIBEmQLZG4DAZIBaQtpYQMBiQFwC3BZAgETcwehARICAU+iAQfEARICARx0CYUBHgIBbIYBCZ8BIAIBUKMBCa4BEgIBPK8BCbwBDgIBKL0BCcMBHAIBHXwPfGQCAX93D3deAgF2gQEPgQFVAgFtkwEPkwFVAgFjiQEPiQFcAgFajgEPjgFRAgFRqwEPqwF2AgFGpgEPpgFfAgE9sgEPsgFpAgEptgENugEVAgEyvQFVvQFbAgEnwAEPwAGLAQIBHrgBEbgBWQIBMw==</sads:DebugSymbol.Symbol>
+  </local:WorkflowStep>
+  <sap2010:WorkflowViewState.ViewStateManager>
+    <sap2010:ViewStateManager>
+      <sap2010:ViewStateData Id="SkipStep_1" sap:VirtualizedContainerService.HintSize="506,22" />
+      <sap2010:ViewStateData Id="ResolveDelay_2" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="ViewStateData_1" sap:VirtualizedContainerService.HintSize="464,62" />
+      <sap2010:ViewStateData Id="ViewStateData_2" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="ViewStateData_3" sap:VirtualizedContainerService.HintSize="464,210" />
+      <sap2010:ViewStateData Id="ViewStateData_4" sap:VirtualizedContainerService.HintSize="478,395" />
+      <sap2010:ViewStateData Id="ViewStateData_5" sap:VirtualizedContainerService.HintSize="518,475" />
+      <sap2010:ViewStateData Id="IntelliFlo.IO.Workflow.Activities.DelayStep_1" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Sequence_3" sap:VirtualizedContainerService.HintSize="222,208">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Assign_2" sap:VirtualizedContainerService.HintSize="464,62" />
+      <sap2010:ViewStateData Id="Delay_2" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="If_2" sap:VirtualizedContainerService.HintSize="464,210" />
+      <sap2010:ViewStateData Id="LogMessage_1" sap:VirtualizedContainerService.HintSize="464,22" />
+      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="486,498">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Switch`1_1" sap:VirtualizedContainerService.HintSize="506,706" />
+      <sap2010:ViewStateData Id="WorkflowStep_1" sap:VirtualizedContainerService.HintSize="520,851" />
+      <sap2010:ViewStateData Id="IntelliFlo.Platform.Services.Workflow.v1.Activities.DelayStep_1" sap:VirtualizedContainerService.HintSize="560,931" />
+    </sap2010:ViewStateManager>
+  </sap2010:WorkflowViewState.ViewStateManager>
+</Activity>

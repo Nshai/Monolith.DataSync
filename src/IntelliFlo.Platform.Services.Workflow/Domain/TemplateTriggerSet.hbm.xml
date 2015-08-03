@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="MicroService.Workflow"
+                   namespace="IntelliFlo.Platform.Services.Workflow.Domain"
+                   default-lazy="true"
+                   default-access="property"
+                   default-cascade="save-update"
+                   schema="Workflow.dbo">
+
+  <class name="TemplateTriggerSet" table="TTemplateTriggerSet">
+    <id name="Id" column="TemplateTriggerSetId">
+      <generator class="identity"/>
+    </id>
+
+    <property name="TriggerType" type="IntelliFlo.Platform.Services.Workflow.GenericEnumMapper`1[[IntelliFlo.Platform.Services.Workflow.Domain.TriggerType, MicroService.Workflow]], MicroService.Workflow" />
+
+    <many-to-one name="TemplateVersion"
+                class="TemplateVersion"
+                column="TemplateVersionId"
+                fetch="select" cascade="none"/>
+
+    <property name="EventSubscriptionId"/>
+
+    <property name="TenantId"/>
+
+    <property name="PropertyList"
+              column="TriggerList"
+             type="IntelliFlo.Platform.Services.Workflow.XmlType`1[[IntelliFlo.Platform.Services.Workflow.Domain.TriggerPropertyList, MicroService.Workflow]], MicroService.Workflow"
+             not-null="false" />
+
+    <property name="ConcurrencyId"/>
+  </class>
+
+</hibernate-mapping>
+

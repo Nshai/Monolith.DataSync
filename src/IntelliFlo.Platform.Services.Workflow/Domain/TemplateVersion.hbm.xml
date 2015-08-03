@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="MicroService.Workflow"
+                   namespace="IntelliFlo.Platform.Services.Workflow.Domain"
+                   default-lazy="true"
+									 default-access="property"
+                   schema="workflow.dbo">
+
+  <class name="TemplateVersion" table="TTemplateVersion" >
+    <id name="Id" column="TemplateVersionId">
+      <generator class="identity"/>
+    </id>
+    
+    <property name="Guid" />
+    <property name="IncludeSubGroups" />
+    <property name="Notes" />
+    <property name="CreatedDate" type="UtcDateTime" />
+    <property name="Status" type="IntelliFlo.Platform.Services.Workflow.GenericEnumMapper`1[[IntelliFlo.Platform.Services.Workflow.Domain.WorkflowStatus, MicroService.Workflow]], MicroService.Workflow"/>
+    <property name="OwnerUserId"/>
+    <property name="TenantId"/>
+    <property name="ApplicableToGroupId"/>
+    <property name="ConcurrencyId"/>
+    <property name="InUse" formula="(select top(1) 1 from workflow.dbo.WF_TInstance i where i.TemplateId = Guid)" />
+
+    <property name="Definition"
+              type="IntelliFlo.Platform.NHibernate.Types.DocumentUserType`1[[IntelliFlo.Platform.Services.Workflow.Domain.WorkflowDefinition, MicroService.Workflow]], IntelliFlo.Platform.NHibernate"
+              not-null="true" />
+
+    <many-to-one name="Template"
+                     class="Template"
+                     column="TemplateId"
+                     fetch="select"/>
+
+    <bag name="Roles" cascade="all-delete-orphan" lazy="true" inverse="true" access="field.camelcase" >
+      <key column="TemplateVersionId"/>
+      <one-to-many class="TemplateRole" />
+    </bag>
+
+    <bag name="Triggers" cascade="all-delete-orphan" lazy="true" inverse="true" access="field.camelcase" >
+      <key column="TemplateVersionId"/>
+      <one-to-many class="TemplateTriggerSet" />
+    </bag>
+
+  </class>
+
+</hibernate-mapping>
+

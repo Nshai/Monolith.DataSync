@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="MicroService.Workflow"
+                   namespace="IntelliFlo.Platform.Services.Workflow.Domain"
+                   default-lazy="true"
+									 default-access="property"
+                   schema="workflow.dbo">
+
+  <class name="InstanceHistory" table="WF_TInstanceHistory">
+
+    <id name="Id">
+      <generator class="identity"/>
+    </id>
+
+    <property name="InstanceId" />
+    <property name="StepId" />
+    <property name="Step" />
+    <property name="Data" type="IntelliFlo.Platform.NHibernate.Types.DocumentUserType`1[[IntelliFlo.Platform.Services.Workflow.Domain.LogData, MicroService.Workflow]], IntelliFlo.Platform.NHibernate" not-null="false" />
+    <property name="IsComplete" />
+    <property name="TimestampUtc" type="UtcDateTime"/>
+
+  </class>
+</hibernate-mapping>

@@ -1,0 +1,8 @@
+/.svn
+bin
+obj
+*.dbmdl
+*.user
+/dist/*
+/packages/*
+/*.suo

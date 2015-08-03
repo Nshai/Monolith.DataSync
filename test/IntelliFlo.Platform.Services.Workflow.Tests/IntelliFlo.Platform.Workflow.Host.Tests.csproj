@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{38B18824-B34E-4901-80AE-E4B117D09940}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>IntelliFlo.Platform.Workflow.Host.Tests</RootNamespace>
+    <AssemblyName>IntelliFlo.Platform.Workflow.Host.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\build\test\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\build\test\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Autofac, Version=3.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\externs\arch\lib\arch\autofac\Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="AutoMapper, Version=3.2.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\externs\arch\lib\arch\automapper\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\build\lib\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Moq, Version=3.1.416.3, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\externs\arch\lib\arch\moq\Moq.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\externs\arch\lib\arch\nunit\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Activities" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Activities" />
+    <Reference Include="System.Web.Http, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\build\lib\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\externs\arch\lib\arch\mvc\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DateCalculatorTests.cs" />
+    <Compile Include="WorkflowServiceTests.cs" />
+    <Compile Include="InstanceResourceTests.cs" />
+    <Compile Include="TemplateController.cs" />
+    <Compile Include="TemplateResourceTests.cs" />
+    <Compile Include="WorkflowServiceFactoryTests.cs" />
+    <Compile Include="CreateTaskWrapper.cs" />
+    <Compile Include="MigrationResourceTests.cs" />
+    <Compile Include="MigrationTests.cs" />
+    <Compile Include="TemplateTests.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TemplateTriggerResourceTests.cs" />
+    <Compile Include="TemplateTriggerTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\externs\arch\src\IntelliFlo.Commons\IntelliFlo.Commons.csproj">
+      <Project>{06fbf1d2-b7df-46b6-acf5-aa02329845df}</Project>
+      <Name>IntelliFlo.Commons</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\externs\arch\src\IntelliFlo.Commons\NHibernate\IntelliFlo.Commons.NHibernate.csproj">
+      <Project>{AF9E8148-19AF-453A-A037-F630E7D6FF19}</Project>
+      <Name>IntelliFlo.Commons.NHibernate</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\externs\arch\src\IntelliFlo.Platform.Services.Client\IntelliFlo.Platform.Services.Client.csproj">
+      <Project>{E6028438-CD3F-485F-9748-D4A28B37CA95}</Project>
+      <Name>IntelliFlo.Platform.Services.Client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\externs\arch\src\IntelliFlo.Platform.Services.Commons\IntelliFlo.Platform.Services.Commons.csproj">
+      <Project>{49324AB8-747E-43C9-84F6-49D8C6B68513}</Project>
+      <Name>IntelliFlo.Platform.Services.Commons</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\externs\arch\src\IntelliFlo.Platform.Services.Http\IntelliFlo.Platform.Services.Http.csproj">
+      <Project>{fb560811-7a4b-487e-ad8b-9d70708cf04b}</Project>
+      <Name>IntelliFlo.Platform.Services.Http</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\externs\arch\src\IntelliFlo.Testing\IntelliFlo.Testing.csproj">
+      <Project>{17CE9CC3-0FC4-426C-ABAD-E3C5C091A5DC}</Project>
+      <Name>IntelliFlo.Testing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\IntelliFlo.Platform.Services.Workflow\IntelliFlo.Platform.Services.Workflow.csproj">
+      <Project>{1fd51df0-61ae-4c7e-bcf7-13f36d492179}</Project>
+      <Name>IntelliFlo.Platform.Services.Workflow</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\IntelliFlo.Platform.Workflow.Host\IntelliFlo.Platform.Workflow.Host.csproj">
+      <Project>{0449ef6e-480a-4128-9a51-15dcdccb05ec}</Project>
+      <Name>IntelliFlo.Platform.Workflow.Host</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
