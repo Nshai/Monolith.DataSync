@@ -3,6 +3,7 @@ bin
 obj
 *.dbmdl
 *.user
-/dist/*
-/packages/*
+dist/
+packages/
 /*.suo
+*.lnk
