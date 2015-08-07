@@ -15,6 +15,7 @@ using IntelliFlo.Platform.NHibernate.Repositories;
 using IntelliFlo.Platform.Principal;
 using IntelliFlo.Platform.Services.Workflow.Collaborators.v1;
 using IntelliFlo.Platform.Services.Workflow.Domain;
+using IntelliFlo.Platform.Services.Workflow.Engine;
 using IntelliFlo.Platform.Services.Workflow.v1.Activities;
 using IntelliFlo.Platform.Services.Workflow.v1.Contracts;
 using IntelliFlo.Platform.Transactions;
@@ -25,27 +26,26 @@ namespace IntelliFlo.Platform.Services.Workflow.v1.Resources
 {
     public class MigrationResource : IMigrationResource
     {
-        private const string DynamicWorkflowBinding = "dynamicWorkflowBinding.v1";
-
         private readonly IRepository<Template> templateRepository;
+        private readonly IRepository<TemplateDefinition> templateDefinitionRepository;
         private readonly IServiceHttpClientFactory clientFactory;
-        private readonly IWorkflowConfiguration workflowConfiguration;
         private readonly IReadOnlyRepository<Instance> instanceRepository;
         private readonly IReadOnlyRepository<InstanceStep> instanceStepRepository;
+        private readonly IServiceAddressRegistry serviceAddressRegistry;
         private readonly ITrustedClientAuthenticationTokenBuilder tokenBuilder;
-        private readonly IWorkflowClientFactory workflowClientFactory;
+        private readonly IWorkflowHost workflowHost;
         private readonly IEventDispatcher eventDispatcher;
 
-        public MigrationResource(IRepository<Template> templateRepository, IReadOnlyRepository<Instance> instanceRepository, IReadOnlyRepository<InstanceStep> instanceStepRepository, IWorkflowConfiguration workflowConfiguration, IServiceHttpClientFactory clientFactory, ITrustedClientAuthenticationTokenBuilder tokenBuilder, IWorkflowClientFactory workflowClientFactory, 
-            IEventDispatcher eventDispatcher)
+        public MigrationResource(IRepository<Template> templateRepository, IRepository<TemplateDefinition> templateDefinitionRepository, IReadOnlyRepository<Instance> instanceRepository, IReadOnlyRepository<InstanceStep> instanceStepRepository, IServiceAddressRegistry serviceAddressRegistry, IServiceHttpClientFactory clientFactory, ITrustedClientAuthenticationTokenBuilder tokenBuilder, IWorkflowHost workflowHost, IEventDispatcher eventDispatcher)
         {
             this.templateRepository = templateRepository;
+            this.templateDefinitionRepository = templateDefinitionRepository;
             this.clientFactory = clientFactory;
-            this.workflowConfiguration = workflowConfiguration;
             this.instanceRepository = instanceRepository;
             this.instanceStepRepository = instanceStepRepository;
+            this.serviceAddressRegistry = serviceAddressRegistry;
             this.tokenBuilder = tokenBuilder;
-            this.workflowClientFactory = workflowClientFactory;
+            this.workflowHost = workflowHost;
             this.eventDispatcher = eventDispatcher;
         }
 
@@ -125,8 +125,9 @@ namespace IntelliFlo.Platform.Services.Workflow.v1.Resources
             if (instance == null)
                 throw new InstanceNotFoundException();
 
-            if (!(instance.Status == "In Progress" || instance.Status == InstanceStatus.Processing.ToString() || instance.Template.Version == TemplateDefinition.DefaultVersion))
+            if ((instance.Status != "In Progress" && instance.Status != InstanceStatus.Processing.ToString()) || instance.Template.Version >= TemplateDefinition.DefaultVersion)
                 return new InstanceMigrationResponse() {Id = instanceId, Status = MigrationStatus.Skipped.ToString()};
+
             var userSubject = await GetSubject(instance.UserId);
             var identity = new ClaimsIdentity(new[]
             {
@@ -174,23 +175,21 @@ namespace IntelliFlo.Platform.Services.Workflow.v1.Resources
                     }
                 });
 
-                Guid? newInstanceId = null;
-                using (var client = workflowClientFactory.GetDynamicClient(DynamicWorkflowBinding, new EndpointAddress(uri)))
-                {
-                    newInstanceId = client.Create(new WorkflowContext
-                    {
-                        EntityType = instance.EntityType,
-                        EntityId = instance.EntityId,
-                        ClientId = instance.ParentEntityId,
-                        CorrelationId = instance.Id,
-                        RelatedEntityId = instance.RelatedEntityId,
-                        BearerToken = bearerToken,
-                        Start = DateTime.UtcNow,
-                        AdditionalContext = additionalContext,
-                        PreventDuplicates = false
-                    });
-                }
+                var templateDefinition = templateDefinitionRepository.Get(instance.Template.Id);
 
+                Guid? newInstanceId = workflowHost.Create(templateDefinition, new WorkflowContext
+                {
+                    EntityType = instance.EntityType,
+                    EntityId = instance.EntityId,
+                    ClientId = instance.ParentEntityId,
+                    CorrelationId = instance.Id,
+                    RelatedEntityId = instance.RelatedEntityId,
+                    BearerToken = bearerToken,
+                    Start = DateTime.UtcNow,
+                    AdditionalContext = additionalContext,
+                    PreventDuplicates = false
+                });
+                
                 // TODO Merge instance history from old instance
                 instanceRepository.ExecuteStoredProcedure<object>("workflow.dbo.SpNMigrationMergeInstances", new[] {new Parameter("InstanceId", instanceId), new Parameter("NewInstanceId", newInstanceId.Value)});
 
@@ -220,7 +219,8 @@ namespace IntelliFlo.Platform.Services.Workflow.v1.Resources
 
         private string GetEndpointAddress(Guid templateId, string relativeUri = null)
         {
-            var uri = new UriBuilder(workflowConfiguration.EndpointAddress);
+            var workflowEndpointAddress = serviceAddressRegistry.GetServiceEndpoint("workflow").BaseAddress;
+            var uri = new UriBuilder(workflowEndpointAddress);
             uri.Path += string.Format("{0}.xamlx", templateId);
             if (!string.IsNullOrEmpty(relativeUri))
             {

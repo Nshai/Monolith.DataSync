@@ -266,7 +266,7 @@ namespace IntelliFlo.Platform.Services.Workflow.v1.Resources
             var bearerToken = tokenBuilder.Build(DateTime.UtcNow, Thread.CurrentPrincipal.AsIFloPrincipal());
             var templateDefinition = templateDefinitionRepository.Get(templateGuid);
 
-            workflowHost.Create(templateDefinition, new WorkflowContext
+            workflowHost.CreateAsync(templateDefinition, new WorkflowContext
             {
                 EntityType = request.EntityType,
                 EntityId = request.EntityId,

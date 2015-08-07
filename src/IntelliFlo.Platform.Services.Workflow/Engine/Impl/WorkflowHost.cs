@@ -47,7 +47,18 @@ namespace IntelliFlo.Platform.Services.Workflow.Engine.Impl
             }
         }
 
-        public void Create(TemplateDefinition template, WorkflowContext context)
+        public Guid Create(TemplateDefinition template, WorkflowContext context)
+        {
+            Initialise(template);
+            var hostUri = GetHostUri(template.Id);
+
+            using (var client = workflowClientFactory.GetDynamicClient(binding, new EndpointAddress(hostUri)))
+            {
+                return client.Create(context);
+            }
+        }
+
+        public void CreateAsync(TemplateDefinition template, WorkflowContext context)
         {
             Initialise(template);
             var hostUri = GetHostUri(template.Id);

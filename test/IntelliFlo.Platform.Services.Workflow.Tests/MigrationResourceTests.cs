@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Net;
 using System.Linq;
 using System.Net.Http;
-using System.ServiceModel;
 using System.Threading.Tasks;
 using IntelliFlo.Platform.Http.Client;
 using IntelliFlo.Platform.Identity;
 using IntelliFlo.Platform.NHibernate.Repositories;
 using IntelliFlo.Platform.Services.Workflow.Collaborators.v1;
 using IntelliFlo.Platform.Services.Workflow.Domain;
+using IntelliFlo.Platform.Services.Workflow.Engine;
 using IntelliFlo.Platform.Services.Workflow.v1;
 using IntelliFlo.Platform.Services.Workflow.v1.Activities;
 using IntelliFlo.Platform.Services.Workflow.v1.Resources;
@@ -27,13 +27,15 @@ namespace IntelliFlo.Platform.Services.Workflow.Tests
         private readonly List<InstanceStep> instanceSteps = new List<InstanceStep>();
         private Mock<IRepository<Instance>> instanceRepository;
         private Mock<IRepository<Template>> templateRepository;
+        private Mock<IRepository<TemplateDefinition>> templateDefinitionRepository;
         private Mock<IReadOnlyRepository<InstanceStep>> instanceStepRepository;
         private Mock<IServiceHttpClientFactory> clientFactory;
         private Mock<ITrustedClientAuthenticationTokenBuilder> tokenBuilder;
         private Mock<IServiceHttpClient> client;
-        private readonly Mock<IWorkflowClientFactory> workflowClientFactory = new Mock<IWorkflowClientFactory>();
-        private Mock<IDynamicWorkflow> workflowClient;
+        private Mock<IWorkflowHost> workflowHost;
         private Mock<IEventDispatcher> eventDispatcher;
+        private Mock<IServiceAddressRegistry> addressRegistry;
+        private Mock<IServiceEndpoint> serviceEndpoint;
         private const int UserId = 123;
         private const int TenantId = 111;
 
@@ -42,14 +44,21 @@ namespace IntelliFlo.Platform.Services.Workflow.Tests
         {
             instanceRepository = new Mock<IRepository<Instance>>();
             templateRepository = new Mock<IRepository<Template>>();
+            templateDefinitionRepository = new Mock<IRepository<TemplateDefinition>>();
+
             instanceStepRepository = new Mock<IReadOnlyRepository<InstanceStep>>();
-            var workflowConfiguration = new WorkflowConfiguration() { EndpointAddress = "http://localhost:10084/xaml/" };
+
+            serviceEndpoint = new Mock<IServiceEndpoint>();
+            serviceEndpoint.SetupGet(s => s.BaseAddress).Returns("http://localhost:10111");
+
+            addressRegistry = new Mock<IServiceAddressRegistry>();
+            addressRegistry.Setup(a => a.GetServiceEndpoint("workflow")).Returns(() => serviceEndpoint.Object);
+
             client = new Mock<IServiceHttpClient>();
             clientFactory = new Mock<IServiceHttpClientFactory>();
             clientFactory.Setup(c => c.Create(It.IsAny<string>())).Returns(client.Object);
 
-            workflowClient = new Mock<IDynamicWorkflow>();
-            workflowClientFactory.Setup(c => c.GetDynamicClient(It.IsAny<string>(), It.IsAny<EndpointAddress>())).Returns(workflowClient.Object);
+            workflowHost = new Mock<IWorkflowHost>();
 
             eventDispatcher = new Mock<IEventDispatcher>();
 
@@ -62,13 +71,14 @@ namespace IntelliFlo.Platform.Services.Workflow.Tests
                 Id = Guid.NewGuid(),
                 UserId = UserId,
                 TenantId = TenantId,
-                Template = new TemplateDefinition() {  Version = 0}
+                Template = new TemplateDefinition() { Version = 0 },
+
             };
 
             instanceRepository.Setup(i => i.Get(It.IsAny<Guid>())).Returns(instance);
             instanceStepRepository.Setup(i => i.Query()).Returns(instanceSteps.AsQueryable);
 
-            underTest = new MigrationResource(templateRepository.Object, instanceRepository.Object, instanceStepRepository.Object, workflowConfiguration, clientFactory.Object, tokenBuilder.Object, workflowClientFactory.Object, eventDispatcher.Object);
+            underTest = new MigrationResource(templateRepository.Object, templateDefinitionRepository.Object, instanceRepository.Object, instanceStepRepository.Object, addressRegistry.Object, clientFactory.Object, tokenBuilder.Object, workflowHost.Object, eventDispatcher.Object);
         }
 
         [Test]
@@ -159,7 +169,7 @@ namespace IntelliFlo.Platform.Services.Workflow.Tests
         private WorkflowContext MigrateInstance()
         {
             WorkflowContext context = null;
-            workflowClient.Setup(c => c.Create(It.IsAny<WorkflowContext>())).Callback<WorkflowContext>(c => context = c).Returns(Guid.NewGuid);
+            workflowHost.Setup(c => c.Create(It.IsAny<TemplateDefinition>(), It.IsAny<WorkflowContext>())).Callback<TemplateDefinition, WorkflowContext>((t, c) => context = c).Returns(Guid.NewGuid);
 
             var task = underTest.MigrateInstance(instance.Id);
             task.Wait();
