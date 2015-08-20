@@ -87,6 +87,10 @@ namespace IntelliFlo.Platform.Services.Workflow.v1.Resources
             if (template == null)
                 throw new TemplateNotFoundException();
 
+            // Don't migrate draft templates
+            if (template.Status == WorkflowStatus.Draft)
+                return new TemplateMigrationResponse() {Id = templateId, Status = MigrationStatus.Skipped.ToString()};
+
             var userSubject = await GetSubject(template.OwnerUserId);
 
             var claimsIdentity = new ClaimsIdentity();
