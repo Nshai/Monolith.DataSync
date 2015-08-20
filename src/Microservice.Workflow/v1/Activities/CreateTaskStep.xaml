@@ -37,6 +37,7 @@
       </x:Property.Attributes>
     </x:Property>
     <x:Property Name="StepIndex" Type="InArgument(x:Int32)" />
+    <x:Property Name="AssignedTo" Type="InArgument(x:String)" />
   </x:Members>
   <sap2010:ExpressionActivityEditor.ExpressionActivityEditor>C#</sap2010:ExpressionActivityEditor.ExpressionActivityEditor>
   <sap2010:WorkflowViewState.IdRef>IntelliFlo.IO.Workflow.Activities.Activity1_1</sap2010:WorkflowViewState.IdRef>
@@ -250,6 +251,11 @@
         </activities:WorkflowStep.StepIndex>
         <Sequence sap2010:WorkflowViewState.IdRef="Sequence_3">
           <activities:CreateTask sap2010:WorkflowViewState.IdRef="CreateTask_2">
+            <activities:CreateTask.AssignedTo>
+              <InArgument x:TypeArguments="x:String">
+                <mca:CSharpValue x:TypeArguments="x:String">AssignedTo</mca:CSharpValue>
+              </InArgument>
+            </activities:CreateTask.AssignedTo>
             <activities:CreateTask.DueDelay>
               <InArgument x:TypeArguments="x:Int32">
                 <mca:CSharpValue x:TypeArguments="x:Int32">DueDelay</mca:CSharpValue>
@@ -347,7 +353,7 @@
   </activities:WorkflowStep>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
-      <sap2010:ViewStateData Id="SkipStep_1" sap:VirtualizedContainerService.HintSize="518,22" />
+      <sap2010:ViewStateData Id="SkipStep_1" sap:VirtualizedContainerService.HintSize="532,22" />
       <sap2010:ViewStateData Id="ViewStateData_1" sap:VirtualizedContainerService.HintSize="200,22" />
       <sap2010:ViewStateData Id="ViewStateData_2" sap:VirtualizedContainerService.HintSize="200,22" />
       <sap2010:ViewStateData Id="ViewStateData_3" sap:VirtualizedContainerService.HintSize="255,22" />
@@ -454,14 +460,14 @@
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
       <sap2010:ViewStateData Id="ViewStateData_40" sap:VirtualizedContainerService.HintSize="262,350" />
-      <sap2010:ViewStateData Id="Switch`1_4" sap:VirtualizedContainerService.HintSize="476,268">
+      <sap2010:ViewStateData Id="Switch`1_4" sap:VirtualizedContainerService.HintSize="476,162">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsPinned">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Sequence_3" sap:VirtualizedContainerService.HintSize="498,454">
+      <sap2010:ViewStateData Id="Sequence_3" sap:VirtualizedContainerService.HintSize="498,348">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -469,22 +475,22 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="WorkflowStep_3" sap:VirtualizedContainerService.HintSize="512,548">
+      <sap2010:ViewStateData Id="WorkflowStep_3" sap:VirtualizedContainerService.HintSize="512,442">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsPinned">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Switch`1_3" sap:VirtualizedContainerService.HintSize="518,662">
+      <sap2010:ViewStateData Id="Switch`1_3" sap:VirtualizedContainerService.HintSize="532,650">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsPinned">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="WorkflowStep_1" sap:VirtualizedContainerService.HintSize="532,807" />
-      <sap2010:ViewStateData Id="IntelliFlo.IO.Workflow.Activities.Activity1_1" sap:VirtualizedContainerService.HintSize="572,887">
+      <sap2010:ViewStateData Id="WorkflowStep_1" sap:VirtualizedContainerService.HintSize="546,795" />
+      <sap2010:ViewStateData Id="IntelliFlo.IO.Workflow.Activities.Activity1_1" sap:VirtualizedContainerService.HintSize="586,875">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="ShouldCollapseAll">True</x:Boolean>

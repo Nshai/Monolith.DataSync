@@ -42,7 +42,7 @@ namespace Microservice.Workflow.Tests
         {
             var category = new TemplateCategory("Test", TenantId);
             var template = new Template("Test", TenantId, category, WorkflowRelatedTo.Client, OwnerId);
-            template.AddStep(new CreateTaskStep(Guid.NewGuid(), TaskTransition.OnCompletion, 101, 0, false, OwnerPartyId));
+            template.AddStep(new CreateTaskStep(Guid.NewGuid(), TaskTransition.OnCompletion, 101, TaskAssignee.User, OwnerPartyId));
             template.AddStep(new DelayStep(Guid.NewGuid(), 5, true));
 
             var xaml = underTest.Build(template);

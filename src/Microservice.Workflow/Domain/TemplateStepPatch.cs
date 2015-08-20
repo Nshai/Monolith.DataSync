@@ -9,6 +9,7 @@
 
         public string Transition { get; set; }
 
+        public string AssignedTo { get; set; }
         public int? AssignedToPartyId { get; set; }
         public int? AssignedToRoleId { get; set; }
 

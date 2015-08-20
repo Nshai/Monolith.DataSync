@@ -13,6 +13,9 @@ namespace Microservice.Workflow.v1.Contracts
         [ValidEnumValues(typeof(TaskTransition))]
         public string Transition { get; set; }
 
+        [ValidEnumValues(typeof(TaskAssignee))]
+        public string AssignedTo { get; set; }
+
         public int? AssignedToPartyId { get; set; }
         public int? AssignedToRoleId { get; set; }
 

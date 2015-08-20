@@ -349,6 +349,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Domain\TaskAssignee.cs" />
     <Compile Include="Engine\ExceptionLogger.cs" />
     <Compile Include="Engine\WorkflowHostConstants.cs" />
     <Compile Include="Host\WorkflowStartup.cs" />

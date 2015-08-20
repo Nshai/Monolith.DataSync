@@ -10,15 +10,17 @@ namespace Microservice.Workflow.Domain
         private readonly int taskTypeId;
         private readonly int dueDelay;
         private readonly bool dueDelayBusinessDays;
+        private readonly TaskAssignee? assignedTo;
         private readonly int? assignedToPartyId;
         private readonly int? assignedToRoleId;
         private readonly RoleContextType? assignedToRoleContext;
-
-        public CreateTaskStep(Guid id, TaskTransition transition, int taskTypeId, int dueDelay = 0, bool dueDelayBusinessDays = false, int? assignedToPartyId = null, int? assignedToRoleId = null, RoleContextType? assignedToRoleContext = null)
+        
+        public CreateTaskStep(Guid id, TaskTransition transition, int taskTypeId, TaskAssignee? assignedTo, int dueDelay = 0, bool dueDelayBusinessDays = false, int? assignedToPartyId = null, int? assignedToRoleId = null, RoleContextType? assignedToRoleContext = null)
         {
             this.id = id;
             this.transition = transition;
             this.taskTypeId = taskTypeId;
+            this.assignedTo = assignedTo;
             this.dueDelay = dueDelay;
             this.dueDelayBusinessDays = dueDelayBusinessDays;
             this.assignedToPartyId = assignedToPartyId;
@@ -50,6 +52,21 @@ namespace Microservice.Workflow.Domain
         {
             get { return dueDelayBusinessDays; }
         }
+        
+        public TaskAssignee? AssignedTo
+        {
+            get
+            {
+                if (assignedTo.HasValue) return assignedTo;
+                if (AssignedToRoleContext.HasValue)
+                    return TaskAssignee.ContextRole;
+                if (AssignedToRoleId.HasValue)
+                    return TaskAssignee.Role;
+                if (AssignedToPartyId.HasValue)
+                    return TaskAssignee.User;
+                return assignedTo;
+            }
+        }
 
         public int? AssignedToPartyId
         {
@@ -65,7 +82,7 @@ namespace Microservice.Workflow.Domain
         {
             get { return assignedToRoleContext; }
         }
-
+        
         public Activity GetActivity(IMapActivity mapActivity, Template template, int stepIndex)
         {
             return mapActivity.Map(this, template, stepIndex);
@@ -78,6 +95,7 @@ namespace Microservice.Workflow.Domain
             return new CreateTaskStep(Id,
                 !string.IsNullOrEmpty(request.Transition) ? (TaskTransition) Enum.Parse(typeof (TaskTransition), request.Transition) : this.Transition,
                 request.TaskTypeId.HasValue ? request.TaskTypeId.Value : TaskTypeId,
+                !string.IsNullOrEmpty(request.AssignedTo) ? (TaskAssignee)Enum.Parse(typeof(TaskAssignee), request.AssignedTo) : this.AssignedTo.Value,
                 request.Delay.HasValue ? request.Delay.Value : DueDelay,
                 request.DelayBusinessDays.HasValue ? request.DelayBusinessDays.Value : DueDelayBusinessDays,
                 assigneeUpdated ? request.AssignedToPartyId : AssignedToPartyId,
@@ -89,7 +107,7 @@ namespace Microservice.Workflow.Domain
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Id.Equals(other.Id) && TaskTypeId == other.TaskTypeId && DueDelay == other.DueDelay && DueDelayBusinessDays.Equals(other.DueDelayBusinessDays) && Transition == other.Transition && AssignedToPartyId == other.AssignedToPartyId && AssignedToRoleId == other.AssignedToRoleId && AssignedToRoleContext == other.AssignedToRoleContext;
+            return id.Equals(other.id) && transition == other.transition && taskTypeId == other.taskTypeId && dueDelay == other.dueDelay && dueDelayBusinessDays.Equals(other.dueDelayBusinessDays) && assignedTo == other.assignedTo && assignedToPartyId == other.assignedToPartyId && assignedToRoleId == other.assignedToRoleId && assignedToRoleContext == other.assignedToRoleContext;
         }
 
         public override bool Equals(object obj)
@@ -97,21 +115,22 @@ namespace Microservice.Workflow.Domain
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((CreateTaskStep)obj);
+            return Equals((CreateTaskStep) obj);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                int hashCode = Id.GetHashCode();
-                hashCode = (hashCode * 397) ^ TaskTypeId;
-                hashCode = (hashCode * 397) ^ DueDelay;
-                hashCode = (hashCode * 397) ^ DueDelayBusinessDays.GetHashCode();
-                hashCode = (hashCode * 397) ^ (int)Transition;
-                hashCode = (hashCode * 397) ^ AssignedToPartyId.GetHashCode();
-                hashCode = (hashCode * 397) ^ AssignedToRoleId.GetHashCode();
-                hashCode = (hashCode * 397) ^ AssignedToRoleContext.GetHashCode();
+                int hashCode = id.GetHashCode();
+                hashCode = (hashCode * 397) ^ (int) transition;
+                hashCode = (hashCode * 397) ^ taskTypeId;
+                hashCode = (hashCode * 397) ^ dueDelay;
+                hashCode = (hashCode * 397) ^ dueDelayBusinessDays.GetHashCode();
+                hashCode = (hashCode * 397) ^ assignedTo.GetHashCode();
+                hashCode = (hashCode * 397) ^ assignedToPartyId.GetHashCode();
+                hashCode = (hashCode * 397) ^ assignedToRoleId.GetHashCode();
+                hashCode = (hashCode * 397) ^ assignedToRoleContext.GetHashCode();
                 return hashCode;
             }
         }

@@ -34,6 +34,7 @@ namespace Microservice.Workflow.Tests
         private Template template;
         private const int UserId = 1;
         private const int TemplateId = 999;
+        private const int PartyId = 111;
 
         [TestCase(WorkflowStatus.Draft, false)]
         [TestCase(WorkflowStatus.Active, false, ExpectedException = typeof (TemplateNotUpdatableException))]
@@ -60,7 +61,7 @@ namespace Microservice.Workflow.Tests
             template.SetStatus(status);
             template.CurrentVersion.InUse = inUse;
 
-            template.AddStep(new CreateTaskStep(Guid.NewGuid(), TaskTransition.Immediately, 1));
+            template.AddStep(new CreateTaskStep(Guid.NewGuid(), TaskTransition.Immediately, 1, TaskAssignee.User, assignedToPartyId: PartyId));
 
             Assert.AreEqual(1, template.Steps.Count);
         }
@@ -73,7 +74,7 @@ namespace Microservice.Workflow.Tests
         [TestCase(WorkflowStatus.Archived, true, ExpectedException = typeof(TemplateNotUpdatableException))]
         public void WhenUpdateStepThenVerifyExpectedBehaviour(WorkflowStatus status, bool inUse)
         {
-            var step = new CreateTaskStep(Guid.NewGuid(), TaskTransition.Immediately, 1);
+            var step = new CreateTaskStep(Guid.NewGuid(), TaskTransition.Immediately, 1, TaskAssignee.User, assignedToPartyId: PartyId);
             template.AddStep(step);
 
             template.SetStatus(status);
@@ -150,7 +151,7 @@ namespace Microservice.Workflow.Tests
         {
             var createStepId = Guid.NewGuid();
             var delayStepId = Guid.NewGuid();
-            template.AddStep(new CreateTaskStep(createStepId, TaskTransition.Immediately, 1));
+            template.AddStep(new CreateTaskStep(createStepId, TaskTransition.Immediately, 1, TaskAssignee.User, assignedToPartyId: PartyId));
             template.AddStep(new DelayStep(delayStepId));
 
             template.SetStatus(status);
@@ -202,7 +203,7 @@ namespace Microservice.Workflow.Tests
             template.SetStatus(status);
             template.CurrentVersion.InUse = inUse;
 
-            var step = new CreateTaskStep(Guid.NewGuid(), TaskTransition.Immediately, 1);
+            var step = new CreateTaskStep(Guid.NewGuid(), TaskTransition.Immediately, 1, TaskAssignee.User, assignedToPartyId: PartyId);
             var secondStep = new DelayStep(Guid.NewGuid());
             template.AddStep(step);
             template.AddStep(secondStep);
@@ -222,7 +223,7 @@ namespace Microservice.Workflow.Tests
             template.SetStatus(status);
             template.CurrentVersion.InUse = inUse;
 
-            var step = new CreateTaskStep(Guid.NewGuid(), TaskTransition.Immediately, 1);
+            var step = new CreateTaskStep(Guid.NewGuid(), TaskTransition.Immediately, 1, TaskAssignee.User, assignedToPartyId: PartyId);
             var secondStep = new DelayStep(Guid.NewGuid());
             template.AddStep(step);
             template.AddStep(secondStep);

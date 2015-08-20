@@ -106,6 +106,7 @@ namespace Microservice.Workflow.v1.Activities
                 DueDelay = step.DueDelay,
                 DueDelayBusinessDays = step.DueDelayBusinessDays,
                 TaskTypeId = step.TaskTypeId,
+                AssignedTo = step.AssignedTo.ToString(),
                 TemplateOwnerPartyId = ownerPartyId,
                 OwnerPartyId = step.AssignedToPartyId.HasValue ? step.AssignedToPartyId.Value : (InArgument<int>)null,
                 OwnerRoleId = step.AssignedToRoleId.HasValue ? step.AssignedToRoleId.Value : (InArgument<int>)null,

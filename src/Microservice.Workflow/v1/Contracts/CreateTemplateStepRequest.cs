@@ -21,6 +21,9 @@ namespace Microservice.Workflow.v1.Contracts
         [ValidEnumValues(typeof(TaskTransition))]
         public string Transition { get; set; }
 
+        [ValidEnumValues(typeof(TaskAssignee))]
+        public string AssignedTo { get; set; }
+
         public int? AssignedToPartyId { get; set; }
         public int? AssignedToRoleId { get; set; }
 
@@ -39,8 +42,19 @@ namespace Microservice.Workflow.v1.Contracts
                         results.Add(new ValidationResult("TaskTypeId must be supplied for CreateTask step type"));
                     if (string.IsNullOrEmpty(Transition))
                         results.Add(new ValidationResult("Transition must be supplied for CreateTask step type"));
-                    if(!AssignedToPartyId.HasValue && !AssignedToRoleId.HasValue && string.IsNullOrEmpty(AssignedToRoleContext))
-                        results.Add(new ValidationResult("Either AssignedToPartyId, AssignedToRoleId or AssignedToRoleContext  must be supplied for CreateTask step type"));
+                    if (string.IsNullOrEmpty(AssignedTo))
+                        results.Add(new ValidationResult("AssignedTo must be supplied for CreateTask step type"));
+                    var assignedTo = (TaskAssignee)Enum.Parse(typeof (TaskAssignee), AssignedTo);
+                    
+                    if(assignedTo == TaskAssignee.User && !AssignedToPartyId.HasValue)
+                        results.Add(new ValidationResult("AssignedToPartyId must be supplied"));
+
+                    if (assignedTo == TaskAssignee.Role && !AssignedToRoleId.HasValue)
+                        results.Add(new ValidationResult("AssignedToRoleId must be supplied"));
+
+                    if (assignedTo == TaskAssignee.ContextRole && string.IsNullOrEmpty(AssignedToRoleContext))
+                        results.Add(new ValidationResult("AssignedToRoleContext must be supplied"));
+                    
                     break;
             
                 case StepType.Delay:
