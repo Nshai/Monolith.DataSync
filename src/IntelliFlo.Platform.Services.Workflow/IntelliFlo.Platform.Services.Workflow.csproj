@@ -366,8 +366,6 @@
     <Compile Include="Collaborators\v1\SubscribeRequest.cs" />
     <Compile Include="Collaborators\v1\TaskDocument.cs" />
     <Compile Include="Collaborators\v1\Uris.cs" />
-    <Compile Include="Collaborators\v1\UserDocument.cs" />
-    <Compile Include="Collaborators\v1\UserInfoDocument.cs" />
     <Compile Include="IDomainEvent.cs" />
     <Compile Include="IHandle.cs" />
     <Compile Include="JsonMappedTypeConverter.cs" />
