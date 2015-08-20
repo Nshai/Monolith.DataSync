@@ -38,6 +38,7 @@ namespace IntelliFlo.Platform.Services.Workflow.Tests
         private Mock<IServiceEndpoint> serviceEndpoint;
         private const int UserId = 123;
         private const int TenantId = 111;
+        private const int TemplateId = 1;
 
         [SetUp]
         public void SetUp()
@@ -78,7 +79,19 @@ namespace IntelliFlo.Platform.Services.Workflow.Tests
             instanceRepository.Setup(i => i.Get(It.IsAny<Guid>())).Returns(instance);
             instanceStepRepository.Setup(i => i.Query()).Returns(instanceSteps.AsQueryable);
 
+            var template = new Template("MyTest", TenantId, new TemplateCategory("Test", TenantId), WorkflowRelatedTo.Client, UserId);
+
+            templateRepository.Setup(t => t.Get(TemplateId)).Returns(template);
+
             underTest = new MigrationResource(templateRepository.Object, templateDefinitionRepository.Object, instanceRepository.Object, instanceStepRepository.Object, addressRegistry.Object, clientFactory.Object, tokenBuilder.Object, workflowHost.Object, eventDispatcher.Object);
+        }
+
+        [Test]
+        public void WhenMigrateDraftTemplateThenSkips()
+        {
+            var task = underTest.MigrateTemplate(TemplateId);
+            var response = task.GetAwaiter().GetResult();
+            Assert.AreEqual(MigrationStatus.Skipped.ToString(), response.Status);
         }
 
         [Test]
