@@ -143,7 +143,7 @@ namespace IntelliFlo.Platform.Services.Workflow.v1.Resources
             var principal = new ClaimsPrincipal(identity);
             using (Thread.CurrentPrincipal.AsDelegate(() => principal))
             {
-                var bearerToken = tokenBuilder.Build(DateTime.UtcNow, Thread.CurrentPrincipal.AsIFloPrincipal());
+                var bearerToken = tokenBuilder.Build(DateTime.UtcNow, ClaimsPrincipal.Current);
                 var uri = GetEndpointAddress(instance.Template.Id);
 
                 // Resolve step index of current instance

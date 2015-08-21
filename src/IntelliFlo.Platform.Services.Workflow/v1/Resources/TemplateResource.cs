@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading;
 using System.Web.Http;
 using AutoMapper;
@@ -263,7 +264,7 @@ namespace IntelliFlo.Platform.Services.Workflow.v1.Resources
 
             var templateGuid = template.Guid;
 
-            var bearerToken = tokenBuilder.Build(DateTime.UtcNow, Thread.CurrentPrincipal.AsIFloPrincipal());
+            var bearerToken = tokenBuilder.Build(DateTime.UtcNow, ClaimsPrincipal.Current);
             var templateDefinition = templateDefinitionRepository.Get(templateGuid);
 
             workflowHost.CreateAsync(templateDefinition, new WorkflowContext

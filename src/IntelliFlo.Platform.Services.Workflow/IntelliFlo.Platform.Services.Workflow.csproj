@@ -27,6 +27,7 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <NuGetPackageImportStamp>aca6061e</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -110,51 +111,57 @@
       <HintPath>..\..\packages\Iesi.Collections.3.2.0.4000\lib\Net35\Iesi.Collections.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="IntelliFlo.Platform, Version=0.2.98.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\IntelliFlo.Platform.Security.0.2.98.0\lib\net451\IntelliFlo.Platform.dll</HintPath>
+    <Reference Include="IntelliFlo.Platform">
+      <HintPath>..\..\packages\IntelliFlo.Platform.0.2.189\lib\net451\IntelliFlo.Platform.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.AutoMapper, Version=0.2.98.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\IntelliFlo.Platform.AutoMapper.0.2.98.0\lib\net451\IntelliFlo.Platform.AutoMapper.dll</HintPath>
+    <Reference Include="IntelliFlo.Platform.AutoMapper">
+      <HintPath>..\..\packages\IntelliFlo.Platform.AutoMapper.0.2.189\lib\net451\IntelliFlo.Platform.AutoMapper.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.Bus, Version=0.2.98.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\IntelliFlo.Platform.Bus.0.2.98.0\lib\net451\IntelliFlo.Platform.Bus.dll</HintPath>
+    <Reference Include="IntelliFlo.Platform.Bus">
+      <HintPath>..\..\packages\IntelliFlo.Platform.Bus.0.2.189\lib\net451\IntelliFlo.Platform.Bus.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.Caching, Version=0.2.98.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\IntelliFlo.Platform.Security.0.2.98.0\lib\net451\IntelliFlo.Platform.Caching.dll</HintPath>
+    <Reference Include="IntelliFlo.Platform.Caching">
+      <HintPath>..\..\packages\IntelliFlo.Platform.Caching.0.2.189\lib\net451\IntelliFlo.Platform.Caching.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.Client, Version=0.2.98.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\IntelliFlo.Platform.Security.0.2.98.0\lib\net451\IntelliFlo.Platform.Client.dll</HintPath>
+    <Reference Include="IntelliFlo.Platform.Client">
+      <HintPath>..\..\packages\IntelliFlo.Platform.Client.0.2.101\lib\net451\IntelliFlo.Platform.Client.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.Client.OData, Version=0.2.98.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\IntelliFlo.Platform.Client.OData.0.2.98.0\lib\net451\IntelliFlo.Platform.Client.OData.dll</HintPath>
+    <Reference Include="IntelliFlo.Platform.Client.OData">
+      <HintPath>..\..\packages\IntelliFlo.Platform.Client.OData.0.2.189\lib\net451\IntelliFlo.Platform.Client.OData.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.Http, Version=0.2.98.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\IntelliFlo.Platform.Security.0.2.98.0\lib\net451\IntelliFlo.Platform.Http.dll</HintPath>
+    <Reference Include="IntelliFlo.Platform.Http">
+      <HintPath>..\..\packages\IntelliFlo.Platform.Http.0.2.189\lib\net451\IntelliFlo.Platform.Http.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.Http.Documentation, Version=0.2.98.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\IntelliFlo.Platform.Http.Documentation.0.2.98.0\lib\net451\IntelliFlo.Platform.Http.Documentation.dll</HintPath>
+    <Reference Include="IntelliFlo.Platform.Http.Documentation">
+      <HintPath>..\..\packages\IntelliFlo.Platform.Http.Documentation.0.2.189\lib\net451\IntelliFlo.Platform.Http.Documentation.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.Logging, Version=0.2.98.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\IntelliFlo.Platform.Logging.0.2.98.0\lib\net451\IntelliFlo.Platform.Logging.dll</HintPath>
+    <Reference Include="IntelliFlo.Platform.Logging">
+      <HintPath>..\..\packages\IntelliFlo.Platform.Logging.0.2.189\lib\net451\IntelliFlo.Platform.Logging.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="IntelliFlo.Platform.MicroService">
-      <HintPath>..\..\packages\IntelliFlo.Platform.MicroService.0.2.98.0\lib\net451\IntelliFlo.Platform.MicroService.dll</HintPath>
+      <HintPath>..\..\packages\IntelliFlo.Platform.MicroService.0.2.108\lib\net451\IntelliFlo.Platform.MicroService.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.NHibernate, Version=0.2.98.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\IntelliFlo.Platform.NHibernate.0.2.98.0\lib\net451\IntelliFlo.Platform.NHibernate.dll</HintPath>
+    <Reference Include="IntelliFlo.Platform.NHibernate">
+      <HintPath>..\..\packages\IntelliFlo.Platform.NHibernate.0.2.189\lib\net451\IntelliFlo.Platform.NHibernate.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.Security, Version=0.2.98.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\IntelliFlo.Platform.Security.0.2.98.0\lib\net451\IntelliFlo.Platform.Security.dll</HintPath>
+    <Reference Include="IntelliFlo.Platform.Security">
+      <HintPath>..\..\packages\IntelliFlo.Platform.Security.0.2.189\lib\net451\IntelliFlo.Platform.Security.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IntelliFlo.Platform.Testing">
+      <HintPath>..\..\packages\IntelliFlo.Platform.Testing.0.2.189\lib\net451\IntelliFlo.Platform.Testing.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="IntelliFlo.PowerShell.DevLib">
       <HintPath>..\..\packages\IntelliFlo.PowerShell.DevLib.0.0.3.0\lib\net45\IntelliFlo.PowerShell.DevLib.dll</HintPath>
@@ -182,6 +189,10 @@
     <Reference Include="Metrics">
       <HintPath>..\..\packages\Metrics.NET.0.2.16\lib\net45\Metrics.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Owin.Hosting">
+      <HintPath>..\..\packages\Microsoft.Owin.Hosting.3.0.0\lib\net45\Microsoft.Owin.Hosting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.CoreUtility">
       <Private>False</Private>
     </Reference>
@@ -197,9 +208,6 @@
     <Reference Include="Microsoft.Owin.Host.HttpListener">
       <HintPath>..\..\packages\Microsoft.Owin.Host.HttpListener.3.0.0\lib\net45\Microsoft.Owin.Host.HttpListener.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Owin.Hosting">
-      <HintPath>..\..\packages\Microsoft.Owin.Hosting.2.1.0\lib\net45\Microsoft.Owin.Hosting.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Owin.Security">
       <HintPath>..\..\packages\Microsoft.Owin.Security.3.0.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
     </Reference>
@@ -208,6 +216,14 @@
     </Reference>
     <Reference Include="Microsoft.Owin.Security.OAuth">
       <HintPath>..\..\packages\Microsoft.Owin.Security.OAuth.3.0.0\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure">
+      <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Moq">
+      <HintPath>..\..\packages\Moq.4.2.1507.0118\lib\net40\Moq.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -218,11 +234,16 @@
       <HintPath>..\..\packages\NHibernate.3.4.0.4000\lib\Net35\NHibernate.dll</HintPath>
     </Reference>
     <Reference Include="NHibernate.OData">
-      <HintPath>..\..\packages\NHibernate.OData.0.5.0.0\lib\net35\NHibernate.OData.dll</HintPath>
+      <HintPath>..\..\packages\NHibernate.OData.0.5.1\lib\NHibernate.OData.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="NLog, Version=2.1.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\NLog.3.2.1\lib\net45\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Owin">
       <HintPath>..\..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
@@ -257,6 +278,10 @@
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Helpers">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.1.1\lib\net45\System.Web.Helpers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Web.Http, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Core.5.2.2\lib\net45\System.Web.Http.dll</HintPath>
@@ -271,6 +296,26 @@
     <Reference Include="System.Web.Http.WebHost, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.2\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc">
+      <HintPath>..\..\packages\Microsoft.AspNet.Mvc.5.1.1\lib\net45\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Razor">
+      <HintPath>..\..\packages\Microsoft.AspNet.Razor.3.1.1\lib\net45\System.Web.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.1.1\lib\net45\System.Web.WebPages.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.1.1\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.1.1\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
@@ -305,14 +350,12 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConfigureTrustedClientAuth.cs" />
     <Compile Include="Engine\ExceptionLogger.cs" />
     <Compile Include="Engine\WorkflowHostConstants.cs" />
     <Compile Include="Host\WorkflowStartup.cs" />
     <Compile Include="IoC.cs" />
     <Compile Include="GenericEnumMapper.cs" />
     <Compile Include="IDomainObject.cs" />
-    <Compile Include="DefaultMicroService.cs" />
     <Compile Include="JsonMappedToTypeNameTypeListConverter.cs" />
     <Compile Include="Modules\NHibernateConfigurationModule.cs" />
     <Compile Include="RepositoryExtensions.cs" />
