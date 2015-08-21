@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
-                   assembly="MicroService.Workflow"
-                   namespace="IntelliFlo.Platform.Services.Workflow.Domain"
+                   assembly="Microservice.Workflow"
+                   namespace="Microservice.Workflow.Domain"
                    default-lazy="true"
                    default-access="property"
                    default-cascade="save-update"
@@ -12,7 +12,7 @@
       <generator class="identity"/>
     </id>
 
-    <property name="TriggerType" type="IntelliFlo.Platform.Services.Workflow.GenericEnumMapper`1[[IntelliFlo.Platform.Services.Workflow.Domain.TriggerType, MicroService.Workflow]], MicroService.Workflow" />
+    <property name="TriggerType" type="Microservice.Workflow.GenericEnumMapper`1[[Microservice.Workflow.Domain.TriggerType, Microservice.Workflow]], Microservice.Workflow" />
 
     <many-to-one name="TemplateVersion"
                 class="TemplateVersion"
@@ -25,7 +25,7 @@
 
     <property name="PropertyList"
               column="TriggerList"
-             type="IntelliFlo.Platform.Services.Workflow.XmlType`1[[IntelliFlo.Platform.Services.Workflow.Domain.TriggerPropertyList, MicroService.Workflow]], MicroService.Workflow"
+             type="Microservice.Workflow.XmlType`1[[Microservice.Workflow.Domain.TriggerPropertyList, Microservice.Workflow]], Microservice.Workflow"
              not-null="false" />
 
     <property name="ConcurrencyId"/>

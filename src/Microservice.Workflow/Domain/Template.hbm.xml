@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
-                   assembly="MicroService.Workflow"
-                   namespace="IntelliFlo.Platform.Services.Workflow.Domain"
+                   assembly="Microservice.Workflow"
+                   namespace="Microservice.Workflow.Domain"
                    default-lazy="true"
 									 default-access="field.camelcase"
                    schema="workflow.dbo">
@@ -13,7 +13,7 @@
 
     <property name="Name" />
     <property name="CreatedDate" type="UtcDateTime"/>
-    <property name="RelatedTo" type="IntelliFlo.Platform.Services.Workflow.GenericEnumMapper`1[[IntelliFlo.Platform.Services.Workflow.Domain.WorkflowRelatedTo, MicroService.Workflow]], MicroService.Workflow" />
+    <property name="RelatedTo" type="Microservice.Workflow.GenericEnumMapper`1[[Microservice.Workflow.Domain.WorkflowRelatedTo, Microservice.Workflow]], Microservice.Workflow" />
     <property name="TenantId" access="field.camelcase"/>
     <property name="ConcurrencyId"/>
     <!-- This is a workaround because we can't query Status property on TemplateVersion via OData -->
