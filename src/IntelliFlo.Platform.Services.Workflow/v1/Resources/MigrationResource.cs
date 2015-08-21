@@ -129,7 +129,7 @@ namespace IntelliFlo.Platform.Services.Workflow.v1.Resources
             if (instance == null)
                 throw new InstanceNotFoundException();
 
-            if ((instance.Status != "In Progress" && instance.Status != InstanceStatus.Processing.ToString()) || instance.Template.Version >= TemplateDefinition.DefaultVersion)
+            if ((instance.Status != "In Progress" && instance.Status != InstanceStatus.Processing.ToString()) || instance.Version >= TemplateDefinition.DefaultVersion)
                 return new InstanceMigrationResponse() {Id = instanceId, Status = MigrationStatus.Skipped.ToString()};
 
             var userSubject = await GetSubject(instance.UserId);

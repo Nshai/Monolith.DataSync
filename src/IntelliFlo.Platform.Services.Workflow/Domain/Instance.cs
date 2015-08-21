@@ -5,8 +5,6 @@ namespace IntelliFlo.Platform.Services.Workflow.Domain
 {
     public class Instance : EqualityAndHashCodeProvider<Instance, Guid>
     {
-        public const int DefaultVersion = 1;
-
         public virtual int UserId { get; set; }
         public virtual int TenantId { get; set; }
         public virtual TemplateDefinition Template { get; set; }

@@ -57,7 +57,7 @@ namespace IntelliFlo.Platform.Services.Workflow.v1.Activities
                                 TenantId = userContext.Value.TenantId,
                                 CreateDate = DateTime.UtcNow,
                                 UniqueId = checkForDuplicates ? Guid.Empty : Guid.NewGuid(),
-                                Version = Instance.DefaultVersion
+                                Version = TemplateDefinition.DefaultVersion
                             };
 
                             if (ctx.ClientId > 0)
