@@ -40,6 +40,7 @@ namespace IntelliFlo.Platform.Services.Workflow.Tests
         private Mock<ITrustedClientAuthenticationScheme> trustedClientAuthenticationScheme;
         private Mock<IServiceAddressRegistry> addressRegistry;
         private IWorkflowServiceFactory serviceFactory;
+        private Mock<ISessionFactory> sessionFactory;
         private Mock<ISession> session;
         private Mock<ITransaction> transaction;
         private Template clientTemplate;
@@ -88,8 +89,11 @@ namespace IntelliFlo.Platform.Services.Workflow.Tests
             serviceCaseTemplate = new Template("Test", TenantId, category, WorkflowRelatedTo.ServiceCase, OwnerUserId);
             planTemplate = new Template("Test", TenantId, category, WorkflowRelatedTo.Plan, OwnerUserId);
 
+            sessionFactory = new Mock<ISessionFactory>();
+            
             session = new Mock<ISession>();
             transaction = new Mock<ITransaction>();
+            sessionFactory.Setup(s => s.OpenSession()).Returns(session.Object);
             session.Setup(s => s.BeginTransaction()).Returns(transaction.Object);
 
             var builder = new ContainerBuilder();
@@ -97,7 +101,7 @@ namespace IntelliFlo.Platform.Services.Workflow.Tests
             builder.RegisterInstance(serviceClientFactory.Object).As<IServiceHttpClientFactory>();
             builder.RegisterInstance(entityTaskFactory).As<IEntityTaskBuilderFactory>();
             builder.RegisterInstance(addressRegistry.Object).As<IServiceAddressRegistry>();
-            builder.RegisterInstance(session.Object).As<ISession>();
+            builder.RegisterInstance(sessionFactory.Object).As<ISessionFactory>();
             IoC.Initialize(Engine.Constants.ContainerId, builder.Build());
         }
 

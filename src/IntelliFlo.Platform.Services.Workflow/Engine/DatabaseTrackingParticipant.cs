@@ -8,112 +8,118 @@ namespace IntelliFlo.Platform.Services.Workflow.Engine
 {
     public class DatabaseTrackingParticipant : TrackingParticipant
     {
-        private readonly IRepository<Instance> instanceRepository;
-        private readonly IRepository<InstanceHistory> instanceHistoryRepository;
-        private readonly ISession session;
+        private readonly ISessionFactory sessionFactory;
 
-        public DatabaseTrackingParticipant(IRepository<Instance> instanceRepository, IRepository<InstanceHistory> instanceHistoryRepository, ISession session)
+        /// <summary>
+        /// Updates instance history
+        /// </summary>
+        /// <param name="sessionFactory"></param>
+        public DatabaseTrackingParticipant(ISessionFactory sessionFactory)
         {
-            this.instanceRepository = instanceRepository;
-            this.instanceHistoryRepository = instanceHistoryRepository;
-            this.session = session;
+            this.sessionFactory = sessionFactory;
         }
 
         protected override void Track(TrackingRecord record, TimeSpan timeout)
         {
-            using (var tx = session.BeginTransaction())
+            using (var session = sessionFactory.OpenSession())
             {
-                try
-                {
-                    InstanceHistory instanceHistory = null;
+                var instanceRepository = new NHibernateRepository<Instance>(session);
+                var instanceHistoryRepository = new NHibernateRepository<InstanceHistory>(session);
 
-                    var completedRecord = record as WorkflowInstanceRecord;
-                    if (completedRecord != null)
+                using (var tx = session.BeginTransaction())
+                {
+                    try
                     {
-                        switch (completedRecord.State)
+                        InstanceHistory instanceHistory = null;
+
+                        var completedRecord = record as WorkflowInstanceRecord;
+                        if (completedRecord != null)
                         {
-                            case "Completed":
-                                if (SetInstanceStatus(record.InstanceId, InstanceStatus.Completed))
-                                {
-                                    instanceHistory = InstanceHistory.Completed(record.InstanceId, record.EventTime);
-                                }
-                                break;
-                            case "Aborted":
-                            case "Terminated":
-                                if (SetInstanceStatus(record.InstanceId, InstanceStatus.Aborted))
-                                {
-                                    instanceHistory = InstanceHistory.Aborted(record.InstanceId, record.EventTime);
-                                }
-                                break;
-                            case "UnhandledException":
-                                if (SetInstanceStatus(record.InstanceId, InstanceStatus.Errored))
-                                {
-                                    var unhandledException = record as WorkflowInstanceUnhandledExceptionRecord;
-                                    if (unhandledException != null)
+                            switch (completedRecord.State)
+                            {
+                                case "Completed":
+                                    if (SetInstanceStatus(instanceRepository, record.InstanceId, InstanceStatus.Completed))
                                     {
-                                        var errorId = ExceptionLogger.Log(unhandledException.UnhandledException);
-
-                                        instanceHistory = InstanceHistory.Errored(record.InstanceId, record.EventTime);
-                                        instanceHistory.Data = new LogData
-                                        {
-                                            Detail = new ExceptionLog
-                                            {
-                                                ErrorId = errorId
-                                            }
-                                        };
+                                        instanceHistory = InstanceHistory.Completed(record.InstanceId, record.EventTime);
                                     }
-                                }
-                                break;
-                            case "Unsuspended":
-                                SetInstanceStatus(record.InstanceId, InstanceStatus.Processing);
-                                break;
+                                    break;
+                                case "Aborted":
+                                case "Terminated":
+                                    if (SetInstanceStatus(instanceRepository, record.InstanceId, InstanceStatus.Aborted))
+                                    {
+                                        instanceHistory = InstanceHistory.Aborted(record.InstanceId, record.EventTime);
+                                    }
+                                    break;
+                                case "UnhandledException":
+                                    if (SetInstanceStatus(instanceRepository, record.InstanceId, InstanceStatus.Errored))
+                                    {
+                                        var unhandledException = record as WorkflowInstanceUnhandledExceptionRecord;
+                                        if (unhandledException != null)
+                                        {
+                                            var errorId = ExceptionLogger.Log(unhandledException.UnhandledException);
+
+                                            instanceHistory = InstanceHistory.Errored(record.InstanceId, record.EventTime);
+                                            instanceHistory.Data = new LogData
+                                            {
+                                                Detail = new ExceptionLog
+                                                {
+                                                    ErrorId = errorId
+                                                }
+                                            };
+                                        }
+                                    }
+                                    break;
+                                case "Unsuspended":
+                                    SetInstanceStatus(instanceRepository, record.InstanceId, InstanceStatus.Processing);
+                                    break;
+                            }
                         }
-                    }
 
-                    var activityRecord = record as CustomTrackingRecord;
-                    if (activityRecord != null)
+                        var activityRecord = record as CustomTrackingRecord;
+                        if (activityRecord != null)
+                        {
+                            var activityTypeName = activityRecord.Activity.TypeName;
+                            var activityAssembly = typeof (ILogActivity).Assembly;
+                            var activityType = activityAssembly.GetType(activityTypeName);
+                            if (!typeof (ILogActivity).IsAssignableFrom(activityType)) return;
+
+                            LogData data = null;
+                            if (activityRecord.Data.ContainsKey("Data"))
+                                data = (LogData) activityRecord.Data["Data"];
+
+                            Guid stepId;
+                            if (activityRecord.Data.ContainsKey("StepId"))
+                                stepId = (Guid) activityRecord.Data["StepId"];
+                            else
+                                stepId = Guid.NewGuid();
+
+                            instanceHistory = new InstanceHistory(record.InstanceId, stepId, activityRecord.Name, record.EventTime);
+
+                            if (activityRecord.Data.ContainsKey("IsComplete"))
+                                instanceHistory.IsComplete = (bool) activityRecord.Data["IsComplete"];
+                            else
+                                instanceHistory.IsComplete = true;
+
+
+                            if (data != null)
+                                instanceHistory.Data = data;
+                        }
+
+                        if (instanceHistory != null)
+                            instanceHistoryRepository.Save(instanceHistory);
+
+
+                        tx.Commit();
+                    }
+                    catch (Exception)
                     {
-                        var activityTypeName = activityRecord.Activity.TypeName;
-                        var activityAssembly = typeof (ILogActivity).Assembly;
-                        var activityType = activityAssembly.GetType(activityTypeName);
-                        if (!typeof (ILogActivity).IsAssignableFrom(activityType)) return;
-
-                        LogData data = null;
-                        if (activityRecord.Data.ContainsKey("Data"))
-                            data = (LogData) activityRecord.Data["Data"];
-
-                        Guid stepId;
-                        if (activityRecord.Data.ContainsKey("StepId"))
-                            stepId = (Guid) activityRecord.Data["StepId"];
-                        else
-                            stepId = Guid.NewGuid();
-
-                        instanceHistory = new InstanceHistory(record.InstanceId, stepId, activityRecord.Name, record.EventTime);
-
-                        if (activityRecord.Data.ContainsKey("IsComplete"))
-                            instanceHistory.IsComplete = (bool) activityRecord.Data["IsComplete"];
-                        else
-                            instanceHistory.IsComplete = true;
-
-
-                        if (data != null)
-                            instanceHistory.Data = data;
+                        tx.Rollback();
                     }
-
-                    if (instanceHistory != null)
-                        instanceHistoryRepository.Save(instanceHistory);
-
-
-                    tx.Commit();
-                }
-                catch (Exception)
-                {
-                    tx.Rollback();
                 }
             }
         }
 
-        private bool SetInstanceStatus(Guid instanceId, InstanceStatus status)
+        private bool SetInstanceStatus(IRepository<Instance> instanceRepository, Guid instanceId, InstanceStatus status)
         {
             var instance = instanceRepository.Get(instanceId);
 

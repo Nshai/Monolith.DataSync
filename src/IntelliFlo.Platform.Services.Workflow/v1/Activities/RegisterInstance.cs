@@ -36,45 +36,48 @@ namespace IntelliFlo.Platform.Services.Workflow.v1.Activities
 
                 try
                 {
-                    var session = IoC.Resolve<ISession>(Constants.ContainerId);
-                    var templateDefinitionRepository = new NHibernateRepository<TemplateDefinition>(session);
-                    var instanceRepository = new NHibernateRepository<Instance>(session);
-
-                    using (var tx = session.BeginTransaction())
+                    var sessionFactory = IoC.Resolve<ISessionFactory>(Constants.ContainerId);
+                    using (var session = sessionFactory.OpenSession())
                     {
-                        try
-                        {
-                            var instance = new Instance
-                            {
-                                Id = instanceId,
-                                Template = templateDefinitionRepository.Load(templateId),
-                                CorrelationId = ctx.CorrelationId,
-                                EntityType = entityType,
-                                EntityId = ctx.EntityId,
-                                RelatedEntityId = ctx.RelatedEntityId,
-                                Status = InstanceStatus.Processing.ToString(),
-                                UserId = userContext.Value.UserId,
-                                TenantId = userContext.Value.TenantId,
-                                CreateDate = DateTime.UtcNow,
-                                UniqueId = checkForDuplicates ? Guid.Empty : Guid.NewGuid(),
-                                Version = TemplateDefinition.DefaultVersion
-                            };
+                        var templateDefinitionRepository = new NHibernateRepository<TemplateDefinition>(session);
+                        var instanceRepository = new NHibernateRepository<Instance>(session);
 
-                            if (ctx.ClientId > 0)
+                        using (var tx = session.BeginTransaction())
+                        {
+                            try
                             {
-                                instance.ParentEntityType = "Client";
-                                instance.ParentEntityId = ctx.ClientId;
+                                var instance = new Instance
+                                {
+                                    Id = instanceId,
+                                    Template = templateDefinitionRepository.Load(templateId),
+                                    CorrelationId = ctx.CorrelationId,
+                                    EntityType = entityType,
+                                    EntityId = ctx.EntityId,
+                                    RelatedEntityId = ctx.RelatedEntityId,
+                                    Status = InstanceStatus.Processing.ToString(),
+                                    UserId = userContext.Value.UserId,
+                                    TenantId = userContext.Value.TenantId,
+                                    CreateDate = DateTime.UtcNow,
+                                    UniqueId = checkForDuplicates ? Guid.Empty : Guid.NewGuid(),
+                                    Version = TemplateDefinition.DefaultVersion
+                                };
+
+                                if (ctx.ClientId > 0)
+                                {
+                                    instance.ParentEntityType = "Client";
+                                    instance.ParentEntityId = ctx.ClientId;
+                                }
+
+                                instanceRepository.Save(instance);
+                            }
+                            catch (Exception)
+                            {
+                                tx.Rollback();
+                                throw;
                             }
 
-                            instanceRepository.Save(instance);
+                            tx.Commit();
                         }
-                        catch (Exception)
-                        {
-                            tx.Rollback();
-                            throw;
-                        }
-
-                        tx.Commit();
                     }
                 }
                 catch (GenericADOException ex)

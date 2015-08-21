@@ -50,26 +50,29 @@ namespace IntelliFlo.Platform.Services.Workflow.Host
             if(!Platform.IoC.Container.TryResolve(out host))
                 return;
 
-            var session = IoC.Resolve<ISession>(Constants.ContainerId);
-            var instanceStepRepository = new NHibernateRepository<InstanceHistory>(session);
-            var instanceRepository = new NHibernateRepository<Instance>(session);
-
-            var pausedInstanceIds = (from step in instanceStepRepository.Query()
-                where step.IsComplete == false && step.Step == StepName.Delay.ToString()
-                select step.InstanceId).ToList();
-
-            var templateGroups = instanceRepository.Query().Where(i => pausedInstanceIds.Contains(i.Id)).Select(i => i.Template);
-
-            foreach (var template in templateGroups)
+            var sessionFactory = IoC.Resolve<ISessionFactory>(Constants.ContainerId);
+            using (var session = sessionFactory.OpenSession())
             {
-                log.InfoFormat("Initialising template {0}", template.Id);
-                try
+                var instanceStepRepository = new NHibernateRepository<InstanceHistory>(session);
+                var instanceRepository = new NHibernateRepository<Instance>(session);
+
+                var pausedInstanceIds = (from step in instanceStepRepository.Query()
+                    where step.IsComplete == false && step.Step == StepName.Delay.ToString()
+                    select step.InstanceId).ToList();
+
+                var templateGroups = instanceRepository.Query().Where(i => pausedInstanceIds.Contains(i.Id)).Select(i => i.Template);
+
+                foreach (var template in templateGroups)
                 {
-                    host.Initialise(template);
-                }
-                catch (Exception ex)
-                {
-                    log.WarnFormat("Failed to initialise template {0}", ex, template.Id);
+                    log.InfoFormat("Initialising template {0}", template.Id);
+                    try
+                    {
+                        host.Initialise(template);
+                    }
+                    catch (Exception ex)
+                    {
+                        log.WarnFormat("Failed to initialise template {0}", ex, template.Id);
+                    }
                 }
             }
         }
@@ -147,8 +150,8 @@ namespace IntelliFlo.Platform.Services.Workflow.Host
             builder.Register(c =>
             {
                 var provider = c.Resolve<IReadWriteSessionFactoryProvider>();
-                return provider.SessionFactory.OpenSession();
-            }).As<ISession>();
+                return provider.SessionFactory;
+            }).As<ISessionFactory>();
 
             var container = builder.Build();
 

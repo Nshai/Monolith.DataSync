@@ -6,6 +6,7 @@ using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
 using IntelliFlo.Platform.NHibernate.Repositories;
 using IntelliFlo.Platform.Services.Workflow.Domain;
+using NHibernate;
 using ISession = NHibernate.ISession;
 
 namespace IntelliFlo.Platform.Services.Workflow.Engine
@@ -20,8 +21,11 @@ namespace IntelliFlo.Platform.Services.Workflow.Engine
             var worflowServiceHost = serviceHostBase as WorkflowServiceHost;
             var trackingProfile = GetProfile();
 
-            var session = IoC.Resolve<ISession>(Constants.ContainerId);
-            worflowServiceHost.WorkflowExtensions.Add(() => new DatabaseTrackingParticipant(new NHibernateRepository<Instance>(session), new NHibernateRepository<InstanceHistory>(session), session) { TrackingProfile = trackingProfile });
+            var sessionFactory = IoC.Resolve<ISessionFactory>(Constants.ContainerId);
+            using (var session = sessionFactory.OpenSession())
+            {
+                worflowServiceHost.WorkflowExtensions.Add(() => new DatabaseTrackingParticipant(sessionFactory) {TrackingProfile = trackingProfile});
+            }
         }
 
         public virtual void AddBindingParameters(ServiceDescription serviceDescription, ServiceHostBase serviceHostBase, Collection<ServiceEndpoint> endpoints, BindingParameterCollection bindingParameters) {}
