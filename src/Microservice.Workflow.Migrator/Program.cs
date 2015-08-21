@@ -79,7 +79,7 @@ namespace Microservice.Workflow.Migrator
 
         private static void ShowHelp(OptionSet p)
         {
-            Console.WriteLine("Usage: IntelliFlo.Platform.Services.Workflow.Migrator.Console [OPTIONS]+");
+            Console.WriteLine("Usage: Microservice.Workflow.Migrator [OPTIONS]+");
             Console.WriteLine("Migrate workflow templates and instances");
             Console.WriteLine();
             if (p == null) return;

@@ -8,6 +8,8 @@ using IntelliFlo.Platform.Http.Client;
 using IntelliFlo.Platform.Principal;
 using Microservice.Workflow.Collaborators.v1;
 using Microservice.Workflow.Domain;
+using Check = IntelliFlo.Platform.Check;
+using Constants = IntelliFlo.Platform.Principal.Constants;
 
 namespace Microservice.Workflow.v1.Activities
 {
@@ -123,9 +125,9 @@ namespace Microservice.Workflow.v1.Activities
 
                 var claims = userInfoResponse.Resource;
 
-                Check.IsTrue(claims.ContainsKey(Principal.Constants.ApplicationClaimTypes.PartyId), "Couldn't retrieve party id claim for user subject {0}", subject);
+                Check.IsTrue(claims.ContainsKey(Constants.ApplicationClaimTypes.PartyId), "Couldn't retrieve party id claim for user subject {0}", subject);
 
-                return int.Parse(claims[Principal.Constants.ApplicationClaimTypes.PartyId].ToString());
+                return int.Parse(claims[Constants.ApplicationClaimTypes.PartyId].ToString());
             }
         }
     }

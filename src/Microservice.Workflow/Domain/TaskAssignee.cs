@@ -1,4 +1,4 @@
-﻿namespace IntelliFlo.Platform.Services.Workflow.Domain
+﻿namespace Microservice.Workflow.Domain
 {
     public enum TaskAssignee
     {
