@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="Microservice.Workflow"
+                   namespace="Microservice.Workflow.Domain"
+                   default-lazy="true"
+									 default-access="property"
+                   schema="workflow.dbo">
+
+  <class name="TemplateCategory" table="TTemplateCategory" >
+    <id name="Id" column="TemplateCategoryId">
+      <generator class="identity"/>
+    </id>
+
+    <version name="ConcurrencyId" type="Int64" />
+
+    <property name="Name" />
+    <property name="TenantId" />
+    <property name="IsArchived" />
+
+  </class>
+
+</hibernate-mapping>
