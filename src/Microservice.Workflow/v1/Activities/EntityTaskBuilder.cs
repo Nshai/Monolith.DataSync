@@ -55,7 +55,7 @@ namespace Microservice.Workflow.v1.Activities
                 taskRequest.AssignedToPartyId = ownerPartyId;
             }
 
-            if (taskRequest.AssignedToPartyId == 0 && taskRequest.AssignedToRoleId == 0)
+            if ((!taskRequest.AssignedToPartyId.HasValue || taskRequest.AssignedToPartyId == 0) && (!taskRequest.AssignedToRoleId.HasValue || taskRequest.AssignedToRoleId == 0))
                 throw new FaultException("Failed to create task because assigned user or role could not be resolved", new FaultCode(FaultCodes.CreateTaskFailed));
             
             await PrepareRequest(taskRequest, workflowContext);
