@@ -79,6 +79,7 @@ namespace Microservice.Workflow.Modules
             Mapper.CreateMap<TemplateTrigger.StatusTransitionDefinition, TemplateTriggerDocument.StatusTransitionDefinition>();
 
             Mapper.CreateMap<CreateTemplateTriggerRequest, CreateTemplateTrigger>();
+            Mapper.CreateMap<CreateTemplateTriggerRequest.CreateTemplateTriggerStatusTransitionDefinition, CreateTemplateTrigger.CreateTemplateTriggerStatusTransitionDefinition>();
 
             Mapper.CreateMap<TemplateTrigger, TemplateTriggerDocument>();
 
