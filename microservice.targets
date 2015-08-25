@@ -28,7 +28,7 @@
 			OutputFile="$(AssemblyInfoDir)\GlobalAssemblyInfo.cs"
 			AssemblyConfiguration="$(Configuration)"
 			AssemblyCompany="IntelliFlo Ltd"
-			AssemblyProduct="Microservice.$(MicroserviceName)"
+			AssemblyProduct="$(MicroserviceName)"
 			AssemblyCopyright="Copyright ©2015 IntelliFlo Ltd"
 			CLSCompliant="false"
 			AssemblyVersion="$(MajorNumber).$(MinorNumber).$(BuildNumber).0"
