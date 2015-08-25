@@ -13,6 +13,8 @@
 [assembly: System.Reflection.AssemblyProduct("Microservice.Microservice.Workflow")]
 [assembly: System.Reflection.AssemblyCopyright("Copyright ©2015 IntelliFlo Ltd")]
 [assembly: System.CLSCompliant(false)]
-[assembly: System.Reflection.AssemblyVersion("1.2.3.033ab5c90e3422204b5c576dfa2db4359dde0d65")]
-[assembly: System.Reflection.AssemblyFileVersion("1.2.3.033ab5c90e3422204b5c576dfa2db4359dde0d65")]
-[assembly: System.Reflection.AssemblyInformationalVersion("1.2.3")]
+[assembly: System.Reflection.AssemblyVersion("1.2.3.0")]
+[assembly: System.Reflection.AssemblyFileVersion("1.2.3.0")]
+[assembly: System.Reflection.AssemblyInformationalVersion("1.2.3.033ab5c90e3422204b5c576dfa2db4359dde0d65")]
+
+

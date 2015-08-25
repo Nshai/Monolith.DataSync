@@ -31,9 +31,9 @@
 			AssemblyProduct="Microservice.$(MicroserviceName)"
 			AssemblyCopyright="Copyright ©2015 IntelliFlo Ltd"
 			CLSCompliant="false"
-			AssemblyVersion="$(MajorNumber).$(MinorNumber).$(BuildNumber).$(GitHash)"
-			AssemblyFileVersion="$(MajorNumber).$(MinorNumber).$(BuildNumber).$(GitHash)"
-			AssemblyInformationalVersion="$(Build)"
+			AssemblyVersion="$(MajorNumber).$(MinorNumber).$(BuildNumber).0"
+			AssemblyFileVersion="$(MajorNumber).$(MinorNumber).$(BuildNumber).0"
+			AssemblyInformationalVersion="$(MajorNumber).$(MinorNumber).$(BuildNumber).$(GitHash)"
 			/>
   </Target>
   <Target Name="Version" DependsOnTargets="AssemblyInfoVersion">
