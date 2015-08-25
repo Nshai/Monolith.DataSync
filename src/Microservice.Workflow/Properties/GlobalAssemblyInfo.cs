@@ -10,7 +10,7 @@
 
 [assembly: System.Reflection.AssemblyConfiguration("Release")]
 [assembly: System.Reflection.AssemblyCompany("IntelliFlo Ltd")]
-[assembly: System.Reflection.AssemblyProduct("Microservice.Microservice.Workflow")]
+[assembly: System.Reflection.AssemblyProduct("Microservice.Workflow")]
 [assembly: System.Reflection.AssemblyCopyright("Copyright ©2015 IntelliFlo Ltd")]
 [assembly: System.CLSCompliant(false)]
 [assembly: System.Reflection.AssemblyVersion("1.2.3.0")]
