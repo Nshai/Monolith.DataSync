@@ -102,7 +102,7 @@ namespace Microservice.Workflow.Tests
             builder.RegisterInstance(entityTaskFactory).As<IEntityTaskBuilderFactory>();
             builder.RegisterInstance(addressRegistry.Object).As<IServiceAddressRegistry>();
             builder.RegisterInstance(sessionFactory.Object).As<ISessionFactory>();
-            Microservice.Workflow.IoC.Initialize(Microservice.Workflow.Engine.Constants.ContainerId, builder.Build());
+            IoC.Initialize(Engine.Constants.ContainerId, builder.Build());
         }
 
         [Test]
@@ -257,6 +257,33 @@ namespace Microservice.Workflow.Tests
 
             Assert.AreEqual(clientId, request.RelatedPartyId);
             Assert.AreEqual(adviserId, request.AssignedToPartyId);
+        }
+
+        [Test]
+        public void WhenExecuteCreateTaskStepForClientThenTaskRelatedToClient()
+        {
+            var createTask = new CreateTaskStep(Guid.NewGuid(), TaskTransition.Immediately, 111, TaskAssignee.User, assignedToPartyId: OwnerPartyId);
+            var request = ExecuteCreateTaskWorkflow(clientTemplate, new[] { createTask }, c => { c.EntityType = EntityType.Client.ToString(); });
+
+            Assert.AreEqual(EntityId, request.RelatedPartyId);
+        }
+
+        [Test]
+        public void WhenExecuteCreateTaskStepForLeadThenTaskRelatedToLead()
+        {
+            var createTask = new CreateTaskStep(Guid.NewGuid(), TaskTransition.Immediately, 111, TaskAssignee.User, assignedToPartyId: OwnerPartyId);
+            var request = ExecuteCreateTaskWorkflow(leadTemplate, new[] { createTask }, c => { c.EntityType = EntityType.Lead.ToString(); });
+
+            Assert.AreEqual(EntityId, request.RelatedPartyId);
+        }
+
+        [Test]
+        public void WhenExecuteCreateTaskStepForAdviserThenTaskRelatedToAdviser()
+        {
+            var createTask = new CreateTaskStep(Guid.NewGuid(), TaskTransition.Immediately, 111, TaskAssignee.User, assignedToPartyId: OwnerPartyId);
+            var request = ExecuteCreateTaskWorkflow(adviserTemplate, new[] { createTask }, c => { c.EntityType = EntityType.Adviser.ToString(); });
+
+            Assert.AreEqual(EntityId, request.RelatedPartyId);
         }
 
         [Test]

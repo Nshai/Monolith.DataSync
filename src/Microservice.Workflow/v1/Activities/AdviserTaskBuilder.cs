@@ -31,6 +31,7 @@ namespace Microservice.Workflow.v1.Activities
 
         public async override Task<int> PrepareRequest(CreateTaskRequest request, WorkflowContext context)
         {
+            request.RelatedPartyId = context.EntityId;
             return context.EntityId;
         }
     }
