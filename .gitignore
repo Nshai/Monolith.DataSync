@@ -7,3 +7,4 @@ dist/
 packages/
 /*.suo
 *.lnk
+/teamcityLog.log

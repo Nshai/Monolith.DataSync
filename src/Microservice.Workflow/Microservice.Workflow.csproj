@@ -357,6 +357,7 @@
     <Compile Include="IDomainObject.cs" />
     <Compile Include="JsonMappedToTypeNameTypeListConverter.cs" />
     <Compile Include="Modules\NHibernateConfigurationModule.cs" />
+    <Compile Include="Properties\GlobalAssemblyInfo.cs" />
     <Compile Include="RepositoryExtensions.cs" />
     <Compile Include="v1\Controllers\InstanceController.cs" />
     <Compile Include="v1\Controllers\InstanceHistoryController.cs" />
@@ -687,6 +688,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if not exist $(SolutionDir)dist md $(SolutionDir)dist
+
 PowerShell -NoProfile -ExecutionPolicy Bypass -Command "&amp; '$(SolutionDir)packages\IntelliFlo.PowerShell.DevLib.0.0.3.0\content\zip-directory.ps1' -ZIPFILENAME '$(SolutionDir)dist\$(TargetName).zip' -SOURCEDIR '$(TargetDir)'
 </PostBuildEvent>
   </PropertyGroup>
