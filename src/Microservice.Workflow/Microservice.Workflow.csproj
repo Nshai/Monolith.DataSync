@@ -357,6 +357,7 @@
     <Compile Include="IDomainObject.cs" />
     <Compile Include="JsonMappedToTypeNameTypeListConverter.cs" />
     <Compile Include="Modules\NHibernateConfigurationModule.cs" />
+    <Compile Include="Properties\GlobalAssemblyInfo.cs" />
     <Compile Include="RepositoryExtensions.cs" />
     <Compile Include="v1\Controllers\InstanceController.cs" />
     <Compile Include="v1\Controllers\InstanceHistoryController.cs" />

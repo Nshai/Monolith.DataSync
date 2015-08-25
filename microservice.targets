@@ -1,0 +1,54 @@
+<Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Target Name="BuildMicroservice" DependsOnTargets="AssemblyInfoVersion">
+    <MSBuild BuildInParallel="true" Projects="$(SolutionFile)" Targets="Build" Properties="Configuration=$(Configuration)">
+      <Output TaskParameter="TargetOutputs" ItemName="BuildAssemblies"/>
+    </MSBuild>
+    <Message Text="Compiled Assemblies:" Importance="High"/>
+    <Message Text="    %(BuildAssemblies.Filename)"/>
+  </Target>
+  <Target Name="SplitBuildVersionNumber">
+    <Message Text="Build: $(Build)" Importance="high"/>
+    <Message Text="Git SHA-1: $(GitHash)" Importance="high"/>
+    <CreateProperty Value="$(Build.Split('.')[0])">
+      <Output TaskParameter="Value" PropertyName="MajorNumber"/>
+    </CreateProperty>
+    <CreateProperty Value="$(Build.Split('.')[1])">
+      <Output TaskParameter="Value" PropertyName="MinorNumber"/>
+    </CreateProperty>
+    <CreateProperty Value="$(Build.Split('.')[2])">
+      <Output TaskParameter="Value" PropertyName="BuildNumber"/>
+    </CreateProperty>
+    <Message Text="MajorNumber: $(MajorNumber)" Importance="high"/>
+    <Message Text="MinorNumber: $(MinorNumber)" Importance="high"/>
+    <Message Text="BuildNumber: $(BuildNumber)" Importance="high"/>
+  </Target>
+  <Target Name="AssemblyInfoVersion" DependsOnTargets="SplitBuildVersionNumber">
+    <AssemblyInfo
+			CodeLanguage="CS"
+			OutputFile="$(AssemblyInfoDir)\GlobalAssemblyInfo.cs"
+			AssemblyConfiguration="$(Configuration)"
+			AssemblyCompany="IntelliFlo Ltd"
+			AssemblyProduct="Microservice.$(MicroserviceName)"
+			AssemblyCopyright="Copyright ©2015 IntelliFlo Ltd"
+			CLSCompliant="false"
+			AssemblyVersion="$(MajorNumber).$(MinorNumber).$(BuildNumber).$(GitHash)"
+			AssemblyFileVersion="$(MajorNumber).$(MinorNumber).$(BuildNumber).$(GitHash)"
+			AssemblyInformationalVersion="$(Build)"
+			/>
+  </Target>
+  <Target Name="Version" DependsOnTargets="AssemblyInfoVersion">
+    <ItemGroup>
+      <VersionFile Include="$(BuildFolder)\.version.\$(MajorNumber).$(MinorNumber).$(BuildNumber).$(GitHash)" />
+      <VersionExeFile Include="$(BuildFolder)\$(MicroserviceExe).version" />
+      <Line Include="line01">
+        <Text>$(MajorNumber).$(MinorNumber).$(BuildNumber).$(GitHash)</Text>
+      </Line>
+      <Lines Include="%(Line.Text)" />
+    </ItemGroup>
+    <Message Text="Create Version file: @(VersionFile)" Importance="high"/>
+    <MakeDir Directories="$(BuildFolder)\.version." />
+    <WriteLinesToFile File="@(VersionFile)" Lines="@(Lines)" Overwrite="true" />
+    <Message Text="Create Microservice Version file: @(VersionExeFile)" Importance="high"/>
+    <WriteLinesToFile File="@(VersionExeFile)" Lines="@(Lines)" Overwrite="true" />
+  </Target>
+</Project>
