@@ -3,7 +3,6 @@ using System.Activities;
 using System.Data.SqlClient;
 using System.ServiceModel;
 using IntelliFlo.Platform.NHibernate.Repositories;
-using log4net;
 using Microservice.Workflow.Domain;
 using Microservice.Workflow.Engine;
 using Newtonsoft.Json;
@@ -18,7 +17,6 @@ namespace Microservice.Workflow.v1.Activities
         public InArgument<string> EntityType { get; set; }
         public InArgument<Guid> TemplateId { get; set; }
 
-        private readonly ILog logger = LogManager.GetLogger(typeof(RegisterInstance));
         private const int SqlDuplicateExceptionNumber = 2601;
 
         protected override void Execute(NativeActivityContext context)
@@ -30,8 +28,7 @@ namespace Microservice.Workflow.v1.Activities
 
             using (var userContext = UserContextBuilder.FromBearerToken(ctx.BearerToken))
             {
-                logger.InfoFormat("Registering instance {0}", instanceId);
-
+                this.LogMessage(context, "Registering instance {0}", instanceId);
                 var checkForDuplicates = ctx.PreventDuplicates;
 
                 try

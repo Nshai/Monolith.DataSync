@@ -3,7 +3,6 @@ using System.Activities;
 using System.Collections.Generic;
 using System.Linq;
 using IntelliFlo.Platform.Http.Client;
-using log4net;
 using Microservice.Workflow.Collaborators.v1;
 using Microservice.Workflow.Domain;
 using Constants = Microservice.Workflow.Engine.Constants;
@@ -12,8 +11,6 @@ namespace Microservice.Workflow.v1.Activities
 {
     public sealed class CreateTask : NativeActivity, ILogActivity
     {
-        private readonly ILog logger = LogManager.GetLogger(typeof (CreateTask));
-
         public InArgument<int> TaskTypeId { get; set; }
         public InArgument<int> DueDelay { get; set; }
         public InArgument<bool> DueDelayBusinessDays { get; set; }
@@ -62,7 +59,7 @@ namespace Microservice.Workflow.v1.Activities
                     var taskResult = taskBuilder.Create(taskTypeId, dueDate, templateOwnerPartyId, assignedTo, ownerPartyId, ownerRoleId, ownerContextRole, workflowContext).ConfigureAwait(false);
                     var task = taskResult.GetAwaiter().GetResult();
 
-                    logger.InfoFormat("Created task {0}", taskTypeId);
+                    this.LogMessage(context, "Created task {0}", taskTypeId);
                     TaskId.Set(context, task.TaskId);
                 }
             }
