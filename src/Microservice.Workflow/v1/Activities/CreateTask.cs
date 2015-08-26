@@ -59,7 +59,6 @@ namespace Microservice.Workflow.v1.Activities
                     var taskResult = taskBuilder.Create(taskTypeId, dueDate, templateOwnerPartyId, assignedTo, ownerPartyId, ownerRoleId, ownerContextRole, workflowContext).ConfigureAwait(false);
                     var task = taskResult.GetAwaiter().GetResult();
 
-                    this.LogMessage(context, "Created task {0}", taskTypeId);
                     TaskId.Set(context, task.TaskId);
                 }
             }

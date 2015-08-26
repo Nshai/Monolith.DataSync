@@ -25,5 +25,10 @@ namespace Microservice.Workflow.Domain
         {
             return UserRequested;
         }
+
+        public override string ToString()
+        {
+            return string.Format("Instance aborted by user {0}", UserRequested);
+        }
     }
 }
