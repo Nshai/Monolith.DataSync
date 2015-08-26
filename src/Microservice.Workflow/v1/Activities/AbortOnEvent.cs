@@ -24,7 +24,7 @@ namespace Microservice.Workflow.v1.Activities
                 var serviceRegistry = IoC.Resolve<IServiceAddressRegistry>(Constants.ContainerId);
                 var clientConfiguration = serviceRegistry.GetServiceEndpoint("workflow");
 
-                this.LogMessage(context, "Subscribe to event {0} for entity {1}", eventType, entityId);
+                this.LogMessage(context, LogLevel.Info, "Subscribe to event {0} for entity {1}", eventType, entityId);
                 var abortUri = string.Format("{0}/{1}", clientConfiguration.BaseAddress.TrimEnd('/'), string.Format(Uris.Self.AbortInstance, context.WorkflowInstanceId));
 
                 var clientFactory = IoC.Resolve<IServiceHttpClientFactory>(Constants.ContainerId);

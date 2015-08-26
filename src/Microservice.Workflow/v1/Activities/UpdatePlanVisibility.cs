@@ -54,6 +54,7 @@ namespace Microservice.Workflow.v1.Activities
                     // Switch off flags for new plans (when excluded type)
                     if (plan.CurrentStatus == PlanStatus.Draft && isExcludedType)
                     {
+                        this.LogMessage(context, LogLevel.Info, "Clear plan visibility for plan (id: {0}) as type is excluded", workflowContext.EntityId);
                         PatchPlan(portfolioClient, workflowContext.ClientId, workflowContext.EntityId, new PlanPatchRequest()
                         {
                             IsVisibilityUpdatedByStatusChange = false,
@@ -66,6 +67,7 @@ namespace Microservice.Workflow.v1.Activities
                     var setVisible = PlanStatus.VisibleStatus.Contains(plan.CurrentStatus) && !isExcludedType;
                     if (plan.IsVisibilityUpdatedByStatusChange)
                     {
+                        this.LogMessage(context, LogLevel.Info, "Set plan visibility {0} for plan (id: {1})", setVisible ? "on" : "off", workflowContext.EntityId);
                         PatchPlan(portfolioClient, workflowContext.ClientId, workflowContext.EntityId, new PlanPatchRequest()
                         {
                             IsVisibleToClient = setVisible,
