@@ -41,7 +41,7 @@ namespace Microservice.Workflow.Domain
 
         public override string ToString()
         {
-            return string.Format("Created task (id: {0}) by user {1} to {2}", TaskId, AssignedUserId, AssignedPartyId.HasValue ? string.Format("party (id: {0})", AssignedPartyId) : string.Format("role (id: {0})", AssignedRoleId));
+            return string.Format("Created task (id: {0}) assigned to {2} by user (id: {1})", TaskId, AssignedUserId, AssignedPartyId.HasValue ? string.Format("party (id: {0})", AssignedPartyId) : string.Format("role (id: {0})", AssignedRoleId));
         }
     }
 }

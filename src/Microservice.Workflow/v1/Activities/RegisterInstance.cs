@@ -28,7 +28,7 @@ namespace Microservice.Workflow.v1.Activities
 
             using (var userContext = UserContextBuilder.FromBearerToken(ctx.BearerToken))
             {
-                this.LogMessage(context, "Registering instance {0}", instanceId);
+                this.LogMessage(context, LogLevel.Info, "Registering instance {0}", instanceId);
                 var checkForDuplicates = ctx.PreventDuplicates;
 
                 try
