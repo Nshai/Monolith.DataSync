@@ -54,7 +54,7 @@ namespace Microservice.Workflow.Host
             var sessionFactory = IoC.Resolve<ISessionFactory>(Constants.ContainerId);
             using (var session = sessionFactory.OpenSession())
             {
-                var instanceStepRepository = new NHibernateRepository<InstanceHistory>(session);
+                var instanceStepRepository = new NHibernateRepository<InstanceStep>(session);
                 var instanceRepository = new NHibernateRepository<Instance>(session);
 
                 var pausedInstanceIds = (from step in instanceStepRepository.Query()
