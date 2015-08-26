@@ -13,7 +13,6 @@ using System.Xml.Linq;
 using IntelliFlo.Platform.Http.Client;
 using Microservice.Workflow.Collaborators.v1;
 using Microservice.Workflow.Domain;
-using Microservice.Workflow.v1.Activities;
 using Check = IntelliFlo.Platform.Check;
 
 namespace Microservice.Workflow.v1.Activities
@@ -106,6 +105,7 @@ namespace Microservice.Workflow.v1.Activities
                 DueDelay = step.DueDelay,
                 DueDelayBusinessDays = step.DueDelayBusinessDays,
                 TaskTypeId = step.TaskTypeId,
+                AssignedTo = step.AssignedTo.ToString(),
                 TemplateOwnerPartyId = ownerPartyId,
                 OwnerPartyId = step.AssignedToPartyId.HasValue ? step.AssignedToPartyId.Value : (InArgument<int>)null,
                 OwnerRoleId = step.AssignedToRoleId.HasValue ? step.AssignedToRoleId.Value : (InArgument<int>)null,
@@ -191,7 +191,7 @@ namespace Microservice.Workflow.v1.Activities
                 new AssemblyReference {AssemblyName = new AssemblyName("System.Xml")},
                 new AssemblyReference {AssemblyName = new AssemblyName("WindowsBase")},
                 new AssemblyReference {AssemblyName = new AssemblyName("mscorlib")},
-                new AssemblyReference {AssemblyName = new AssemblyName("MicroService.Workflow")}
+                new AssemblyReference {AssemblyName = new AssemblyName("Microservice.Workflow")}
             });
         }
 

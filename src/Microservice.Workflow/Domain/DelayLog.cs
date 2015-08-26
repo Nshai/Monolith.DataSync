@@ -25,5 +25,10 @@ namespace Microservice.Workflow.Domain
         {
             return DelayUntil.GetHashCode();
         }
+
+        public override string ToString()
+        {
+            return string.Format("Delaying instance until {0}", DelayUntil);
+        }
     }
 }

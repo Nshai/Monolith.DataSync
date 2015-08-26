@@ -1,4 +1,5 @@
 ﻿using System;
+using Amazon.DynamoDBv2;
 
 namespace Microservice.Workflow.Domain
 {
@@ -24,6 +25,11 @@ namespace Microservice.Workflow.Domain
         public override int GetHashCode()
         {
             return (ErrorId != null ? ErrorId.GetHashCode() : 0);
+        }
+
+        public override string ToString()
+        {
+            return string.Format("An exception has occurred (id: {0})", ErrorId);
         }
     }
 }

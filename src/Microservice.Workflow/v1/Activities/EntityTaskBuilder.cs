@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Activities;
+using System.Collections.Generic;
 using System.ServiceModel;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,6 +8,8 @@ using IntelliFlo.Platform.Http.Client;
 using IntelliFlo.Platform.Principal;
 using Microservice.Workflow.Collaborators.v1;
 using Microservice.Workflow.Domain;
+using Check = IntelliFlo.Platform.Check;
+using Constants = IntelliFlo.Platform.Principal.Constants;
 
 namespace Microservice.Workflow.v1.Activities
 {
@@ -24,7 +27,7 @@ namespace Microservice.Workflow.v1.Activities
             this.context = context;
         }
 
-        public async Task<TaskDocument> Create(int taskTypeId, DateTime dueDate, int templateOwnerPartyId, int ownerPartyId, int ownerRoleId, string ownerContextRole, WorkflowContext workflowContext)
+        public async Task<TaskDocument> Create(int taskTypeId, DateTime dueDate, int templateOwnerPartyId, string assignedTo, int ownerPartyId, int ownerRoleId, string ownerContextRole, WorkflowContext workflowContext)
         {
             var taskRequest = new CreateTaskRequest
             {
@@ -33,22 +36,26 @@ namespace Microservice.Workflow.v1.Activities
                 AssignedByPartyId = templateOwnerPartyId
             };
 
-            if (ownerContextRole != null)
+            if (assignedTo == "ContextRole")
             {
                 var contextPartyId = await GetContextPartyId(ownerContextRole, workflowContext);
                 taskRequest.AssignedToPartyId = contextPartyId != PartyNotFound ? contextPartyId : templateOwnerPartyId;
             }
-            else if (ownerRoleId > 0)
+            else if (assignedTo == "Role")
             {
                 // TODO Replace fallback when role doesn't exist?
                 taskRequest.AssignedToRoleId = ownerRoleId;
+            }
+            else if (assignedTo == "LoggedInUser")
+            {
+                taskRequest.AssignedToPartyId = await GetUserPartyId();
             }
             else
             {
                 taskRequest.AssignedToPartyId = ownerPartyId;
             }
 
-            if (taskRequest.AssignedToPartyId == 0 && taskRequest.AssignedToRoleId == 0)
+            if ((!taskRequest.AssignedToPartyId.HasValue || taskRequest.AssignedToPartyId == 0) && (!taskRequest.AssignedToRoleId.HasValue || taskRequest.AssignedToRoleId == 0))
                 throw new FaultException("Failed to create task because assigned user or role could not be resolved", new FaultCode(FaultCodes.CreateTaskFailed));
             
             await PrepareRequest(taskRequest, workflowContext);
@@ -98,6 +105,29 @@ namespace Microservice.Workflow.v1.Activities
                 var taskResponse = await crmClient.Post<TaskDocument, CreateTaskRequest>(Uris.Crm.CreateTask, request);
                 taskResponse.OnException(s => { throw new HttpClientException(s); });
                 return taskResponse.Resource;
+            }
+        }
+
+        private async Task<int> GetUserPartyId()
+        {
+            using (var crmClient = clientFactory.Create("crm"))
+            {
+                var subject = Thread.CurrentPrincipal.AsIFloPrincipal().Subject;
+                HttpResponse<Dictionary<string, object>> userInfoResponse = null;
+                var userInfoTask = crmClient.Get<Dictionary<string, object>>(string.Format(Uris.Crm.GetUserInfoBySubject, subject))
+                    .ContinueWith(t =>
+                    {
+                        t.OnException(status => { throw new HttpClientException(status); });
+                        userInfoResponse = t.Result;
+                    });
+
+                userInfoTask.Wait();
+
+                var claims = userInfoResponse.Resource;
+
+                Check.IsTrue(claims.ContainsKey(Constants.ApplicationClaimTypes.PartyId), "Couldn't retrieve party id claim for user subject {0}", subject);
+
+                return int.Parse(claims[Constants.ApplicationClaimTypes.PartyId].ToString());
             }
         }
     }

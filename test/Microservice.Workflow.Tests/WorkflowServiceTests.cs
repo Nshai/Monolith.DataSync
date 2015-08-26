@@ -102,7 +102,7 @@ namespace Microservice.Workflow.Tests
             builder.RegisterInstance(entityTaskFactory).As<IEntityTaskBuilderFactory>();
             builder.RegisterInstance(addressRegistry.Object).As<IServiceAddressRegistry>();
             builder.RegisterInstance(sessionFactory.Object).As<ISessionFactory>();
-            Microservice.Workflow.IoC.Initialize(Microservice.Workflow.Engine.Constants.ContainerId, builder.Build());
+            IoC.Initialize(Engine.Constants.ContainerId, builder.Build());
         }
 
         [Test]
@@ -144,7 +144,7 @@ namespace Microservice.Workflow.Tests
         [Test]
         public void WhenCreateInstanceWithCreateTaskStepThenTaskIsCreatedSuccessfully()
         {
-            var createTask = new CreateTaskStep(Guid.NewGuid(), TaskTransition.OnCompletion, 111);
+            var createTask = new CreateTaskStep(Guid.NewGuid(), TaskTransition.OnCompletion, 111, TaskAssignee.User, assignedToPartyId: OwnerPartyId);
             ExecuteCreateTaskWorkflow(clientTemplate, new[] {createTask});
             serviceClient.Verify(c => c.Post<TaskDocument, CreateTaskRequest>(Uris.Crm.CreateTask, It.IsAny<CreateTaskRequest>()), Times.Once());
         }
@@ -153,7 +153,7 @@ namespace Microservice.Workflow.Tests
         public void WhenExecuteCreateTaskStepWithOwnerPartyThenTaskCreatedSuccessfully()
         {
             const int partyId = 1234;
-            var createTask = new CreateTaskStep(Guid.NewGuid(), TaskTransition.OnCompletion, 111, 0, false, partyId);
+            var createTask = new CreateTaskStep(Guid.NewGuid(), TaskTransition.OnCompletion, 111, TaskAssignee.User, assignedToPartyId: partyId);
             var request = ExecuteCreateTaskWorkflow(clientTemplate, new[] {createTask});
 
             serviceClient.Verify(c => c.Post<TaskDocument, CreateTaskRequest>(Uris.Crm.CreateTask, It.IsAny<CreateTaskRequest>()), Times.Once());
@@ -166,7 +166,7 @@ namespace Microservice.Workflow.Tests
         public void WhenExecuteCreateTaskStepWithOwnerRoleThenTaskCreatedSuccessfully()
         {
             const int roleId = 3742;
-            var createTask = new CreateTaskStep(Guid.NewGuid(), TaskTransition.OnCompletion, 111, 0, false, assignedToRoleId: roleId);
+            var createTask = new CreateTaskStep(Guid.NewGuid(), TaskTransition.OnCompletion, 111, TaskAssignee.Role, assignedToRoleId: roleId);
             var request = ExecuteCreateTaskWorkflow(clientTemplate, new[] {createTask});
 
             Assert.AreEqual(EntityId, request.RelatedPartyId);
@@ -179,7 +179,7 @@ namespace Microservice.Workflow.Tests
             const int adviserId = 9393;
             serviceClient.Setup(c => c.Get<ClientDocument>(string.Format(Uris.Crm.GetClient, EntityId), null)).Returns(() => Task.FromResult(new HttpResponse<ClientDocument> {Raw = new HttpResponseMessage(HttpStatusCode.OK), Resource = new ClientDocument {CurrentAdviserPartyId = adviserId}}));
 
-            var createTask = new CreateTaskStep(Guid.NewGuid(), TaskTransition.OnCompletion, 111, 0, false, assignedToRoleContext: RoleContextType.ServicingAdviser);
+            var createTask = new CreateTaskStep(Guid.NewGuid(), TaskTransition.OnCompletion, 111, TaskAssignee.ContextRole, assignedToRoleContext: RoleContextType.ServicingAdviser);
             var request = ExecuteCreateTaskWorkflow(clientTemplate, new[] {createTask});
 
             serviceClient.Verify(c => c.Post<TaskDocument, CreateTaskRequest>(Uris.Crm.CreateTask, It.IsAny<CreateTaskRequest>()), Times.Once());
@@ -194,7 +194,7 @@ namespace Microservice.Workflow.Tests
             const int adviserId = 9393;
             serviceClient.Setup(c => c.Get<LeadDocument>(string.Format(Uris.Crm.GetLead, EntityId), null)).Returns(() => Task.FromResult(new HttpResponse<LeadDocument> {Raw = new HttpResponseMessage(HttpStatusCode.OK), Resource = new LeadDocument {CurrentAdviserPartyId = adviserId}}));
 
-            var createTask = new CreateTaskStep(Guid.NewGuid(), TaskTransition.OnCompletion, 111, 0, false, assignedToRoleContext: RoleContextType.Adviser);
+            var createTask = new CreateTaskStep(Guid.NewGuid(), TaskTransition.OnCompletion, 111, TaskAssignee.ContextRole, assignedToRoleContext: RoleContextType.Adviser);
             var request = ExecuteCreateTaskWorkflow(leadTemplate, new[] {createTask}, c => c.EntityType = EntityType.Lead.ToString());
 
             serviceClient.Verify(c => c.Post<TaskDocument, CreateTaskRequest>(Uris.Crm.CreateTask, It.IsAny<CreateTaskRequest>()), Times.Once());
@@ -210,7 +210,7 @@ namespace Microservice.Workflow.Tests
             serviceClient.Setup(c => c.Get<LeadDocument>(string.Format(Uris.Crm.GetLead, EntityId), null)).Returns(() => Task.FromResult(new HttpResponse<LeadDocument> {Raw = new HttpResponseMessage(HttpStatusCode.NotFound)}));
             serviceClient.Setup(c => c.Get<ClientDocument>(string.Format(Uris.Crm.GetClient, EntityId), null)).Returns(() => Task.FromResult(new HttpResponse<ClientDocument> {Raw = new HttpResponseMessage(HttpStatusCode.OK), Resource = new ClientDocument {CurrentAdviserPartyId = adviserId}}));
 
-            var createTask = new CreateTaskStep(Guid.NewGuid(), TaskTransition.OnCompletion, 111, 0, false, assignedToRoleContext: RoleContextType.Adviser);
+            var createTask = new CreateTaskStep(Guid.NewGuid(), TaskTransition.OnCompletion, 111, TaskAssignee.ContextRole, assignedToRoleContext: RoleContextType.Adviser);
             var request = ExecuteCreateTaskWorkflow(leadTemplate, new[] {createTask}, c => c.EntityType = EntityType.Lead.ToString());
 
             serviceClient.Verify(c => c.Post<TaskDocument, CreateTaskRequest>(Uris.Crm.CreateTask, It.IsAny<CreateTaskRequest>()), Times.Once());
@@ -226,7 +226,7 @@ namespace Microservice.Workflow.Tests
             const int adviserId = 9393;
             serviceClient.Setup(c => c.Get<ServiceCaseDocument>(string.Format(Uris.Crm.GetServiceCase, clientId, EntityId), null)).Returns(() => Task.FromResult(new HttpResponse<ServiceCaseDocument> {Raw = new HttpResponseMessage(HttpStatusCode.OK), Resource = new ServiceCaseDocument {ServicingAdviserId = adviserId}}));
 
-            var createTask = new CreateTaskStep(Guid.NewGuid(), TaskTransition.OnCompletion, 111, 0, false, assignedToRoleContext: RoleContextType.Adviser);
+            var createTask = new CreateTaskStep(Guid.NewGuid(), TaskTransition.OnCompletion, 111, TaskAssignee.ContextRole, assignedToRoleContext: RoleContextType.Adviser);
             var request = ExecuteCreateTaskWorkflow(serviceCaseTemplate, new[] {createTask}, c =>
             {
                 c.EntityType = EntityType.ServiceCase.ToString();
@@ -246,7 +246,7 @@ namespace Microservice.Workflow.Tests
             const int adviserId = 9393;
             serviceClient.Setup(c => c.Get<PlanDocument>(string.Format(Uris.Portfolio.GetPlan, clientId, EntityId), null)).Returns(() => Task.FromResult(new HttpResponse<PlanDocument> {Raw = new HttpResponseMessage(HttpStatusCode.OK), Resource = new PlanDocument {SellingAdviserPartyId = adviserId, Owners = new[] {new PlanDocument.PlanOwner {ClientId = clientId, PlanOwnerId = clientId}}}}));
 
-            var createTask = new CreateTaskStep(Guid.NewGuid(), TaskTransition.OnCompletion, 111, 0, false, assignedToRoleContext: RoleContextType.SellingAdviser);
+            var createTask = new CreateTaskStep(Guid.NewGuid(), TaskTransition.OnCompletion, 111, TaskAssignee.ContextRole, assignedToRoleContext: RoleContextType.SellingAdviser);
             var request = ExecuteCreateTaskWorkflow(planTemplate, new[] {createTask}, c =>
             {
                 c.EntityType = EntityType.Plan.ToString();
@@ -260,12 +260,39 @@ namespace Microservice.Workflow.Tests
         }
 
         [Test]
+        public void WhenExecuteCreateTaskStepForClientThenTaskRelatedToClient()
+        {
+            var createTask = new CreateTaskStep(Guid.NewGuid(), TaskTransition.Immediately, 111, TaskAssignee.User, assignedToPartyId: OwnerPartyId);
+            var request = ExecuteCreateTaskWorkflow(clientTemplate, new[] { createTask }, c => { c.EntityType = EntityType.Client.ToString(); });
+
+            Assert.AreEqual(EntityId, request.RelatedPartyId);
+        }
+
+        [Test]
+        public void WhenExecuteCreateTaskStepForLeadThenTaskRelatedToLead()
+        {
+            var createTask = new CreateTaskStep(Guid.NewGuid(), TaskTransition.Immediately, 111, TaskAssignee.User, assignedToPartyId: OwnerPartyId);
+            var request = ExecuteCreateTaskWorkflow(leadTemplate, new[] { createTask }, c => { c.EntityType = EntityType.Lead.ToString(); });
+
+            Assert.AreEqual(EntityId, request.RelatedPartyId);
+        }
+
+        [Test]
+        public void WhenExecuteCreateTaskStepForAdviserThenTaskRelatedToAdviser()
+        {
+            var createTask = new CreateTaskStep(Guid.NewGuid(), TaskTransition.Immediately, 111, TaskAssignee.User, assignedToPartyId: OwnerPartyId);
+            var request = ExecuteCreateTaskWorkflow(adviserTemplate, new[] { createTask }, c => { c.EntityType = EntityType.Adviser.ToString(); });
+
+            Assert.AreEqual(EntityId, request.RelatedPartyId);
+        }
+
+        [Test]
         public void WhenExecuteCreateTaskStepForAdviserWithOwnerContextRoleThenTaskCreatedSuccessfully()
         {
             const int tAndCCoachPartyId = 345;
             serviceClient.Setup(c => c.Get<AdviserDocument>(string.Format(Uris.Crm.GetAdviser, EntityId), null)).Returns(Task.FromResult(new HttpResponse<AdviserDocument> {Raw = new HttpResponseMessage(HttpStatusCode.OK), Resource = new AdviserDocument {TnCCoachPartyId = tAndCCoachPartyId}}));
 
-            var createTask = new CreateTaskStep(Guid.NewGuid(), TaskTransition.OnCompletion, 111, 0, false, assignedToRoleContext: RoleContextType.TandCCoach);
+            var createTask = new CreateTaskStep(Guid.NewGuid(), TaskTransition.OnCompletion, 111, TaskAssignee.ContextRole, assignedToRoleContext: RoleContextType.TandCCoach);
             var request = ExecuteCreateTaskWorkflow(adviserTemplate, new[] {createTask}, c => { c.EntityType = EntityType.Adviser.ToString(); });
 
             serviceClient.Verify(c => c.Post<TaskDocument, CreateTaskRequest>(Uris.Crm.CreateTask, It.IsAny<CreateTaskRequest>()), Times.Once());
@@ -283,7 +310,7 @@ namespace Microservice.Workflow.Tests
 
             var additionalContext = JsonConvert.SerializeObject(new AdditionalContext {RunTo = new RunToAdditionalContext {StepIndex = 0, TaskId = 776}});
 
-            var createTask = new CreateTaskStep(Guid.NewGuid(), TaskTransition.OnCompletion, 111, 0, false, assignedToRoleContext: RoleContextType.SellingAdviser);
+            var createTask = new CreateTaskStep(Guid.NewGuid(), TaskTransition.OnCompletion, 111, TaskAssignee.ContextRole, assignedToRoleContext: RoleContextType.SellingAdviser);
             var request = ExecuteCreateTaskWorkflow(planTemplate, new[] {createTask}, c =>
             {
                 c.EntityType = EntityType.Plan.ToString();
@@ -306,7 +333,7 @@ namespace Microservice.Workflow.Tests
 
             var additionalContext = JsonConvert.SerializeObject(new AdditionalContext {RunTo = new RunToAdditionalContext {StepIndex = 1, TaskId = 776}});
 
-            var createTask = new CreateTaskStep(Guid.NewGuid(), TaskTransition.OnCompletion, 111, 0, false, assignedToRoleContext: RoleContextType.SellingAdviser);
+            var createTask = new CreateTaskStep(Guid.NewGuid(), TaskTransition.OnCompletion, 111, TaskAssignee.ContextRole, assignedToRoleContext: RoleContextType.SellingAdviser);
             var request = ExecuteCreateTaskWorkflow(planTemplate, new[] {createTask}, c =>
             {
                 c.EntityType = EntityType.Plan.ToString();
@@ -325,8 +352,8 @@ namespace Microservice.Workflow.Tests
         {
             var createTaskSteps = new[]
             {
-                new CreateTaskStep(Guid.NewGuid(), TaskTransition.OnCompletion, 111),
-                new CreateTaskStep(Guid.NewGuid(), TaskTransition.Immediately, 222)
+                new CreateTaskStep(Guid.NewGuid(), TaskTransition.OnCompletion, 111, TaskAssignee.User, assignedToPartyId: OwnerPartyId),
+                new CreateTaskStep(Guid.NewGuid(), TaskTransition.Immediately, 222, TaskAssignee.User, assignedToPartyId: OwnerPartyId)
             };
 
             serviceClient
@@ -365,7 +392,7 @@ namespace Microservice.Workflow.Tests
             var uri = "";
             serviceClient.Setup(c => c.Get<IEnumerable<HolidayDocument>>(It.IsAny<string>(), It.IsAny<long?>())).Callback<string, long?>((u, e) => uri = u).Returns(Task.FromResult(new HttpResponse<IEnumerable<HolidayDocument>>()));
 
-            var createTask = new CreateTaskStep(Guid.NewGuid(), TaskTransition.OnCompletion, 111, 2, true);
+            var createTask = new CreateTaskStep(Guid.NewGuid(), TaskTransition.OnCompletion, 111, TaskAssignee.User, 2, true, OwnerPartyId);
             ExecuteCreateTaskWorkflow(clientTemplate, new[] { createTask });
 
             var holidayUriRegex = new Regex(@".*\?from=[\d\-\w:]*&to=[\d\-\w:]*");

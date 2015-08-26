@@ -38,5 +38,10 @@ namespace Microservice.Workflow.Domain
                 return hashCode;
             }
         }
+
+        public override string ToString()
+        {
+            return string.Format("Created task (id: {0}) by user {1} to {2}", TaskId, AssignedUserId, AssignedPartyId.HasValue ? string.Format("party (id: {0})", AssignedPartyId) : string.Format("role (id: {0})", AssignedRoleId));
+        }
     }
 }

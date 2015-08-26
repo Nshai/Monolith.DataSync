@@ -14,7 +14,8 @@ namespace Microservice.Workflow.Domain
                     return new CreateTaskStep(
                         request.StepId ?? GuidCombGenerator.Generate(),
                         (TaskTransition)Enum.Parse(typeof(TaskTransition), request.Transition),
-                        request.TaskTypeId.Value, 
+                        request.TaskTypeId.Value,
+                        (TaskAssignee)Enum.Parse(typeof(TaskAssignee), request.AssignedTo),
                         request.Delay ?? 0,
                         request.DelayBusinessDays ?? false,
                         request.AssignedToPartyId,

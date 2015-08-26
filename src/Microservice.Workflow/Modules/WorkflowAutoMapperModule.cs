@@ -42,6 +42,7 @@ namespace Microservice.Workflow.Modules
 
             Mapper.CreateMap<CreateTaskStep, TemplateStepDocument>()
                 .ForMember(dest => dest.Type, opt => opt.UseValue(StepType.CreateTask))
+                .ForMember(dest => dest.AssignedTo, opt => opt.MapFrom(src => src.AssignedTo))
                 .ForMember(dest => dest.Delay, opt => opt.MapFrom(src => src.DueDelay))
                 .ForMember(dest => dest.DelayBusinessDays, opt => opt.MapFrom(src => src.DueDelayBusinessDays));
 
@@ -78,6 +79,7 @@ namespace Microservice.Workflow.Modules
             Mapper.CreateMap<TemplateTrigger.StatusTransitionDefinition, TemplateTriggerDocument.StatusTransitionDefinition>();
 
             Mapper.CreateMap<CreateTemplateTriggerRequest, CreateTemplateTrigger>();
+            Mapper.CreateMap<CreateTemplateTriggerRequest.CreateTemplateTriggerStatusTransitionDefinition, CreateTemplateTrigger.CreateTemplateTriggerStatusTransitionDefinition>();
 
             Mapper.CreateMap<TemplateTrigger, TemplateTriggerDocument>();
 

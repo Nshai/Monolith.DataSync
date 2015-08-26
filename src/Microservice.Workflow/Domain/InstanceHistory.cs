@@ -41,6 +41,4 @@ namespace Microservice.Workflow.Domain
             return new InstanceHistory(instanceId, ErroredStepId, StepName.Errored.ToString(), timeStampUtc) { IsComplete = true };
         }
     }
-
-
 }
