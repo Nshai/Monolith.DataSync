@@ -109,6 +109,12 @@
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>if not exist $(SolutionDir)dist md $(SolutionDir)dist
+
+PowerShell -NoProfile -ExecutionPolicy Bypass -Command "&amp; '$(SolutionDir)packages\IntelliFlo.PowerShell.DevLib.0.0.3.0\content\zip-directory.ps1' -ZIPFILENAME '$(SolutionDir)dist\$(TargetName).zip' -SOURCEDIR '$(TargetDir)'
+</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
