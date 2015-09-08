@@ -20,6 +20,9 @@ using Microservice.Workflow.v1.Contracts;
 using Newtonsoft.Json;
 using NHibernate.Criterion;
 using Check = IntelliFlo.Platform.Check;
+using DelayStep = Microservice.Workflow.Domain.DelayStep;
+using Instance = Microservice.Workflow.Domain.Instance;
+using InstanceStatus = Microservice.Workflow.Domain.InstanceStatus;
 
 namespace Microservice.Workflow.v1.Resources
 {
@@ -85,10 +88,15 @@ namespace Microservice.Workflow.v1.Resources
             var template = templateRepository.Get(templateId);
             if (template == null)
                 throw new TemplateNotFoundException();
-
+            
             // Don't migrate draft templates
             if (template.Status == WorkflowStatus.Draft)
-                return new TemplateMigrationResponse() {Id = templateId, Status = MigrationStatus.Skipped.ToString()};
+                return new TemplateMigrationResponse() {Id = templateId, Status = MigrationStatus.Skipped.ToString(), Description = "Draft templates aren't migrated"};
+
+
+            var templateDefinition = templateDefinitionRepository.Get(template.Guid);
+            if(templateDefinition.Version >= TemplateDefinition.DefaultVersion)
+                return new TemplateMigrationResponse() { Id = templateId, Status = MigrationStatus.Skipped.ToString(), Description = "Template already migrated"};
 
             var userSubject = await GetSubject(template.OwnerUserId);
 
@@ -129,7 +137,11 @@ namespace Microservice.Workflow.v1.Resources
                 throw new InstanceNotFoundException();
 
             if ((instance.Status != "In Progress" && instance.Status != InstanceStatus.Processing.ToString()) || instance.Version >= TemplateDefinition.DefaultVersion)
-                return new InstanceMigrationResponse() {Id = instanceId, Status = MigrationStatus.Skipped.ToString()};
+                return new InstanceMigrationResponse() {Id = instanceId, Status = MigrationStatus.Skipped.ToString(), Description = "Instance already migrated"};
+
+            var templateDefinition = templateDefinitionRepository.Get(instance.Template.Id);
+            if(templateDefinition.Version < TemplateDefinition.DefaultVersion)
+                return new InstanceMigrationResponse() { Id = instanceId, Status = MigrationStatus.Skipped.ToString(), Description = "Instance template was not migrated"};
 
             var userSubject = await GetSubject(instance.UserId);
             var identity = new ClaimsIdentity(new[]
@@ -168,17 +180,31 @@ namespace Microservice.Workflow.v1.Resources
                     }
                 }
 
-                var additionalContext = JsonConvert.SerializeObject(new AdditionalContext
+                var delayedStart = false;
+                var startTime = DateTime.UtcNow;
+                if (stepIndex == 0 && currentStep.Step == StepName.Delay.ToString())
                 {
-                    RunTo = new RunToAdditionalContext
+                    var template = templateRepository.Query().Single(t => t.Guid == templateDefinition.Id);
+                    if (template.Steps[0].GetType() != typeof (DelayStep))
                     {
-                        StepIndex = stepIndex,
-                        TaskId = taskDetail != null ? taskDetail.TaskId : (int?) null,
-                        DelayTime = delayDetail != null ? delayDetail.DelayUntil : (DateTime?) null
+                        startTime = delayDetail.DelayUntil;
+                        delayedStart = true;
                     }
-                });
+                }
 
-                var templateDefinition = templateDefinitionRepository.Get(instance.Template.Id);
+                var additionalContext = string.Empty;
+                if (!delayedStart)
+                {
+                    additionalContext = JsonConvert.SerializeObject(new AdditionalContext
+                    {
+                        RunTo = new RunToAdditionalContext
+                        {
+                            StepIndex = stepIndex,
+                            TaskId = taskDetail != null ? taskDetail.TaskId : (int?) null,
+                            DelayTime = delayDetail != null ? delayDetail.DelayUntil : (DateTime?) null
+                        }
+                    });
+                }
 
                 Guid? newInstanceId = workflowHost.Create(templateDefinition, new WorkflowContext
                 {
@@ -188,7 +214,7 @@ namespace Microservice.Workflow.v1.Resources
                     CorrelationId = instance.Id,
                     RelatedEntityId = instance.RelatedEntityId,
                     BearerToken = bearerToken,
-                    Start = DateTime.UtcNow,
+                    Start = startTime,
                     AdditionalContext = additionalContext,
                     PreventDuplicates = false
                 });

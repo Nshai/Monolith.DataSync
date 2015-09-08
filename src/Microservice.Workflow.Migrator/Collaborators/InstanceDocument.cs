@@ -6,6 +6,7 @@ namespace Microservice.Workflow.Migrator.Collaborators
     {
         public Guid Id { get; set; }
         public int UserId { get; set; }
+        public InstanceTemplate Template { get; set; }
         public int TenantId { get; set; }
         public string EntityType { get; set; }
         public int EntityId { get; set; }
@@ -13,5 +14,10 @@ namespace Microservice.Workflow.Migrator.Collaborators
         public string Status { get; set; }
         public DateTime CreateDate { get; set; }
         public Guid CorrelationId { get; set; }
+
+        public class InstanceTemplate
+        {
+            public Guid TemplateId { get; set; }
+        }
     }
 }

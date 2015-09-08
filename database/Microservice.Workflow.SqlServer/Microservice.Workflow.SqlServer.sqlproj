@@ -107,6 +107,7 @@
     <Build Include="dbo\Stored Procedures\dbo.SpNAuditTemplateTriggerSet.sql" />
     <Build Include="dbo\Stored Procedures\dbo.SpNAuditTemplateVersion.sql" />
     <Build Include="dbo\Stored Procedures\dbo.SpNMigrationMergeInstances.sql" />
+    <Build Include="dbo\Views\dbo.vwTemplate.sql" />
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>PowerShell -NoProfile -ExecutionPolicy Bypass -Command "&amp; '$(SolutionDir)packages\IntelliFlo.PowerShell.DevLib.0.0.3.0\content\zip-directory.ps1' -ZIPFILENAME '$(SolutionDir)dist\db-workflow.zip' -SOURCEDIR '$(ProjectDir)dbo\'

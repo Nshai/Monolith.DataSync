@@ -17,6 +17,7 @@ namespace Microservice.Workflow.Migrator
         private readonly HttpClient client;
         private readonly List<MediaTypeFormatter> formatters = new List<MediaTypeFormatter>();
         private TokenResponse token;
+        private int MaxRetries = 10;
 
         public Client()
         {
@@ -43,6 +44,7 @@ namespace Microservice.Workflow.Migrator
 
         public async Task<TResource> Get<TResource>(string uri)
         {
+            var retries = 0;
             while (true)
             {
                 var request = new HttpRequestMessage(HttpMethod.Get, uri);
@@ -52,14 +54,18 @@ namespace Microservice.Workflow.Migrator
                 var result = await client.SendAsync(request).ConfigureAwait(false);
                 if (result.IsSuccessStatusCode)
                     return await result.Content.ReadAsAsync<TResource>(formatters);
-                if (result.StatusCode != HttpStatusCode.Unauthorized) 
+                if (result.StatusCode != HttpStatusCode.Unauthorized || retries > MaxRetries) 
                     throw new Exception(string.Format("GET {0} failed with HTTP {1} ", uri, (int) result.StatusCode));
+                
+                retries++;
+
                 await InitialiseToken();
             }
         }
         
         public async Task<TResource> Post<TResource>(string uri)
         {
+            var retries = 0;
             while (true)
             {
                 var request = new HttpRequestMessage(HttpMethod.Post, uri);
@@ -69,8 +75,11 @@ namespace Microservice.Workflow.Migrator
                 var result = await client.SendAsync(request).ConfigureAwait(false);
                 if (result.IsSuccessStatusCode)
                     return await result.Content.ReadAsAsync<TResource>(formatters);
-                if (result.StatusCode != HttpStatusCode.Unauthorized)
+                if (result.StatusCode != HttpStatusCode.Unauthorized || retries > MaxRetries)
                     throw new Exception(string.Format("POST {0} failed with HTTP {1} ", uri, (int)result.StatusCode));
+
+                retries++;
+
                 await InitialiseToken();
             }
         }

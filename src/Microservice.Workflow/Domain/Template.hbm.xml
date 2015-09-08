@@ -6,7 +6,7 @@
 									 default-access="field.camelcase"
                    schema="workflow.dbo">
 
-  <class name="Template" table="TTemplate" >
+  <class name="Template" table="vwTemplate" >
     <id name="Id" column="TemplateId">
       <generator class="identity"/>
     </id>
@@ -14,10 +14,10 @@
     <property name="Name" />
     <property name="CreatedDate" type="UtcDateTime"/>
     <property name="RelatedTo" type="Microservice.Workflow.GenericEnumMapper`1[[Microservice.Workflow.Domain.WorkflowRelatedTo, Microservice.Workflow]], Microservice.Workflow" />
-    <property name="TenantId" access="field.camelcase"/>
+    <property name="TenantId"/>
     <property name="ConcurrencyId"/>
-    <!-- This is a workaround because we can't query Status property on TemplateVersion via OData -->
-    <property name="Status" formula="(select top 1 t.Status from workflow.dbo.TTemplateVersion t where t.TemplateId = TemplateId)"/>
+    <property name="Status" insert="false" update="false"/>
+    <property name="Guid" insert="false" update="false"/>
     
     <many-to-one name="Category"
                 class="TemplateCategory"

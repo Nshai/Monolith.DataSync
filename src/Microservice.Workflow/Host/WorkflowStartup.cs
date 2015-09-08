@@ -65,6 +65,7 @@ namespace Microservice.Workflow.Host
 
                 foreach (var template in templateGroups)
                 {
+                    if (template.Version < TemplateDefinition.DefaultVersion) continue;
                     log.InfoFormat("Initialising template {0}", template.Id);
                     try
                     {

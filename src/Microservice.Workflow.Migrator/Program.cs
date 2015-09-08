@@ -27,17 +27,24 @@ namespace Microservice.Workflow.Migrator
                         }
                     },
                     {
-                        "i|instanceId=", "Id of workflow instance to migrate", o =>
+                        "i=|instanceId=", "Id of workflow instance to migrate", o =>
                         {
                             var instanceId = Guid.Parse(o);
                             configuration.InstanceId = instanceId;
                         }
                     },
                     {
-                        "t|templateId=", "Id of workflow template to migrate", o =>
+                        "t=|templateId=", "Id of workflow template to migrate", o =>
                         {
                             var templateId = int.Parse(o);
                             configuration.TemplateId = templateId;
+                        }
+                    },
+                    {
+                        "n=", "Id of tenant to filter for instances", o =>
+                        {
+                            var tenantId = int.Parse(o);
+                            configuration.TenantId = tenantId;
                         }
                     },
                     {"h|?|help", "Show the help", o => showHelp = o != null}

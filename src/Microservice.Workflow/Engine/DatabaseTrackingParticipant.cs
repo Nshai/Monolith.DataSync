@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Activities.Tracking;
 using IntelliFlo.Platform.NHibernate.Repositories;
+using log4net;
 using Microservice.Workflow.Domain;
 using NHibernate;
 
@@ -9,6 +10,7 @@ namespace Microservice.Workflow.Engine
     public class DatabaseTrackingParticipant : TrackingParticipant
     {
         private readonly ISessionFactory sessionFactory;
+        private readonly ILog logger = LogManager.GetLogger(typeof(DatabaseTrackingParticipant));
 
         /// <summary>
         /// Updates instance history

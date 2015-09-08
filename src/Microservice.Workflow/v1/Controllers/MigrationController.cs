@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.OData.Query;
@@ -38,7 +39,7 @@ namespace Microservice.Workflow.v1.Controllers
 
         [Route("instances")]
         [ODataTop, ODataSkip]
-        [ODataFilter("Id", "EntityType", "EntityId", "RelatedEntityId", "Status", "Template/Name", "CorrelationId", Operators = AllowedLogicalOperators.All)]
+        [ODataFilter("Id", "EntityType", "EntityId", "RelatedEntityId", "Status", "Template/Name", "CorrelationId", "TenantId", Operators = AllowedLogicalOperators.All)]
         [ODataOrderBy]
         public IHttpActionResult<PagedRepresentationCollection<InstanceDocument>> GetInstances()
         {

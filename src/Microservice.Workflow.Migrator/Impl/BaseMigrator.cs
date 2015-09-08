@@ -9,7 +9,6 @@ namespace Microservice.Workflow.Migrator.Impl
     {
         private readonly string name;
         protected readonly MigrateConfiguration configuration;
-        private const int PageCount = 10;
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         protected BaseMigrator(string name, MigrateConfiguration configuration)
@@ -57,7 +56,7 @@ namespace Microservice.Workflow.Migrator.Impl
                         {
                             var response = await MigrateItem(client, GetId(instance));
                             status = (MigrationStatus) Enum.Parse(typeof (MigrationStatus), response.Status);
-                            logger.Info("{0} {1} {2}", name, GetId(instance), response.Status.ToLowerInvariant());
+                            logger.Info("{0} {1} {2} {3}", name, GetId(instance), response.Status.ToLowerInvariant(), !string.IsNullOrEmpty(response.Description) ? string.Format("({0})", response.Description) : string.Empty);
                         }
                         catch (Exception ex)
                         {
@@ -66,7 +65,9 @@ namespace Microservice.Workflow.Migrator.Impl
                         }
 
                         if (status == MigrationStatus.Skipped)
+                        {
                             skippedCount++;
+                        }
 
                         if (status == MigrationStatus.Failed)
                             failedCount++;
@@ -75,7 +76,7 @@ namespace Microservice.Workflow.Migrator.Impl
                         tick(string.Format("Migrating {0}... {1} of {2} ({3} skipped, {4} failed)", name.ToLowerInvariant(), index, count, skippedCount, failedCount));
                     }
 
-                    if (instanceCollection.Count < (batchNumber * PageCount))
+                    if (instanceCollection.Count < (batchNumber * configuration.BatchSize))
                     {
                         break;
                     }

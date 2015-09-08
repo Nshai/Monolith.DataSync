@@ -348,6 +348,8 @@
   <ItemGroup>
     <Compile Include="Domain\TaskAssignee.cs" />
     <Compile Include="Engine\ExceptionLogger.cs" />
+    <Compile Include="Engine\InstanceCountBehavior.cs" />
+    <Compile Include="Engine\InstanceCountParticipant.cs" />
     <Compile Include="Engine\WorkflowHostConstants.cs" />
     <Compile Include="Host\WorkflowStartup.cs" />
     <Compile Include="IoC.cs" />
@@ -369,7 +371,6 @@
     <Compile Include="v1\Controllers\TemplateTriggerController.cs" />
     <Compile Include="Engine\Impl\WorkflowHost.cs" />
     <Compile Include="Engine\DatabaseTrackingBehavior.cs" />
-    <Compile Include="Engine\DatabaseTrackingExtensionElement.cs" />
     <Compile Include="Engine\DatabaseTrackingParticipant.cs" />
     <Compile Include="Engine\IWorkflowHost.cs" />
     <Compile Include="Engine\Log4NetTraceListener.cs" />

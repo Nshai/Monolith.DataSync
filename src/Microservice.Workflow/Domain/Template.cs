@@ -17,6 +17,7 @@ namespace Microservice.Workflow.Domain
         private long concurrencyId;
         private TemplateCategory category;
         private string status;
+        private Guid guid;
 
         protected Template() {}
         public Template(string name, int tenantId, TemplateCategory category, WorkflowRelatedTo relatedTo, int ownerUserId)
@@ -96,7 +97,10 @@ namespace Microservice.Workflow.Domain
         
         public virtual Guid Guid
         {
-            get { return CurrentVersion.Guid; }
+            get
+            {
+                return guid == Guid.Empty ? guid : CurrentVersion.Guid;
+            }
         }
 
         public virtual int OwnerUserId

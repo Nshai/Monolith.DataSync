@@ -67,19 +67,20 @@ namespace Microservice.Workflow.Tests
 
             tokenBuilder = new Mock<ITrustedClientAuthenticationTokenBuilder>();
 
+            var template = new Template("MyTest", TenantId, new TemplateCategory("Test", TenantId), WorkflowRelatedTo.Client, UserId);
             instance = new Instance()
             {
                 Id = Guid.NewGuid(),
                 UserId = UserId,
                 TenantId = TenantId,
-                Template = new TemplateDefinition() { Version = 0 },
-
+                Template = new TemplateDefinition() { Id = template.Guid, Version = TemplateDefinition.DefaultVersion }
             };
+
+            var templateDefinition = new TemplateDefinition() { Id = template.Guid, Version = TemplateDefinition.DefaultVersion };
+            templateDefinitionRepository.Setup(t => t.Get(It.IsAny<Guid>())).Returns(templateDefinition);
 
             instanceRepository.Setup(i => i.Get(It.IsAny<Guid>())).Returns(instance);
             instanceStepRepository.Setup(i => i.Query()).Returns(instanceSteps.AsQueryable);
-
-            var template = new Template("MyTest", TenantId, new TemplateCategory("Test", TenantId), WorkflowRelatedTo.Client, UserId);
 
             templateRepository.Setup(t => t.Get(TemplateId)).Returns(template);
 
