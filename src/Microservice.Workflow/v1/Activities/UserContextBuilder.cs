@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading;
 using IntelliFlo.Platform;
 using IntelliFlo.Platform.Identity;
@@ -13,9 +16,7 @@ namespace Microservice.Workflow.v1.Activities
         {
             var previous = Thread.CurrentPrincipal;
 
-            var trustedClientAuthentication = IoC.Resolve<ITrustedClientAuthenticationScheme>(Constants.ContainerId);
-
-            var claims = trustedClientAuthentication.Validate(token).Result;
+            var claims = ExtractClaims(token);
             var userIdClaim = claims.SingleOrDefault(c => c.Type == IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.UserId);
             if(userIdClaim == null)
                 throw new ClaimNotFoundException(IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.UserId);
@@ -31,6 +32,16 @@ namespace Microservice.Workflow.v1.Activities
             {
                 Thread.CurrentPrincipal = previous;
             }, principal);
+        }
+
+        private static IEnumerable<Claim> ExtractClaims(string token)
+        {
+            // We don't care whether the token has expired, we are just using it to extract the claims
+            var signManager = IoC.Resolve<ISignManager>(Constants.ContainerId);
+            var signAuthenticationMessageBuilder = IoC.Resolve<ISignAuthenticationMessageBuilder>(Constants.ContainerId);
+            var message = signManager.ExtractFromToken(token);
+            var claimsDictionary = signAuthenticationMessageBuilder.ExtractOriginalMessage(message);
+            return claimsDictionary.Select(c => new Claim(c.Key, c.Value));
         }
     }
 }

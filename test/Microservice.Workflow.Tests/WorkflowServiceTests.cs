@@ -37,7 +37,8 @@ namespace Microservice.Workflow.Tests
     {
         private Mock<IServiceHttpClientFactory> serviceClientFactory;
         private Mock<IServiceHttpClient> serviceClient;
-        private Mock<ITrustedClientAuthenticationScheme> trustedClientAuthenticationScheme;
+        private Mock<ISignManager> signManager;
+        private Mock<ISignAuthenticationMessageBuilder> messageBuilder;
         private Mock<IServiceAddressRegistry> addressRegistry;
         private IWorkflowServiceFactory serviceFactory;
         private Mock<ISessionFactory> sessionFactory;
@@ -63,7 +64,8 @@ namespace Microservice.Workflow.Tests
 
             serviceClientFactory = new Mock<IServiceHttpClientFactory>();
             serviceClient = new Mock<IServiceHttpClient>();
-            trustedClientAuthenticationScheme = new Mock<ITrustedClientAuthenticationScheme>();
+            signManager = new Mock<ISignManager>();
+            messageBuilder = new Mock<ISignAuthenticationMessageBuilder>();
             addressRegistry = new Mock<IServiceAddressRegistry>();
 
             serviceClient.Setup(c => c.Get<Dictionary<string, object>>(string.Format(Uris.Crm.GetUserInfoByUserId, OwnerUserId), null)).Returns(Task.FromResult(new HttpResponse<Dictionary<string, object>> {Raw = new HttpResponseMessage(HttpStatusCode.OK), Resource = new Dictionary<string, object> {{Constants.ApplicationClaimTypes.PartyId, OwnerPartyId}}}));
@@ -74,14 +76,15 @@ namespace Microservice.Workflow.Tests
 
             serviceFactory = new WorkflowServiceFactory(new DayDelayPeriod(), serviceClientFactory.Object);
 
-            var claims = new List<Claim>
+            var claims = new Dictionary<string, string>
             {
-                new Claim(Constants.ApplicationClaimTypes.UserId, UserId.ToString(CultureInfo.InvariantCulture)),
-                new Claim(Constants.ApplicationClaimTypes.TenantId, TenantId.ToString(CultureInfo.InvariantCulture)),
-                new Claim(Constants.ApplicationClaimTypes.Subject, Guid.NewGuid().ToString())
+                { Constants.ApplicationClaimTypes.UserId, UserId.ToString(CultureInfo.InvariantCulture)},
+                { Constants.ApplicationClaimTypes.TenantId, TenantId.ToString(CultureInfo.InvariantCulture)},
+                { Constants.ApplicationClaimTypes.Subject, Guid.NewGuid().ToString()}
             };
 
-            trustedClientAuthenticationScheme.Setup(c => c.Validate(It.IsAny<string>())).Returns(Task.FromResult(claims.AsEnumerable()));
+            messageBuilder.Setup(m => m.ExtractOriginalMessage(It.IsAny<string>())).Returns(claims.AsEnumerable());
+
             var category = new TemplateCategory("Test", TenantId);
             clientTemplate = new Template("Test", TenantId, category, WorkflowRelatedTo.Client, OwnerUserId);
             leadTemplate = new Template("Test", TenantId, category, WorkflowRelatedTo.Lead, OwnerUserId);
@@ -97,7 +100,10 @@ namespace Microservice.Workflow.Tests
             session.Setup(s => s.BeginTransaction()).Returns(transaction.Object);
 
             var builder = new ContainerBuilder();
-            builder.RegisterInstance(trustedClientAuthenticationScheme.Object).As<ITrustedClientAuthenticationScheme>();
+            
+            builder.RegisterInstance(signManager.Object).As<ISignManager>();
+            builder.RegisterInstance(messageBuilder.Object).As<ISignAuthenticationMessageBuilder>();
+
             builder.RegisterInstance(serviceClientFactory.Object).As<IServiceHttpClientFactory>();
             builder.RegisterInstance(entityTaskFactory).As<IEntityTaskBuilderFactory>();
             builder.RegisterInstance(addressRegistry.Object).As<IServiceAddressRegistry>();
