@@ -15,14 +15,10 @@ namespace Microservice.Workflow.Engine
             var workflowServiceHost = serviceHostBase as WorkflowServiceHost;
             if (workflowServiceHost == null) return;
 
-            var worflowServiceHost = serviceHostBase as WorkflowServiceHost;
             var trackingProfile = GetProfile();
 
             var sessionFactory = IoC.Resolve<ISessionFactory>(Constants.ContainerId);
-            using (var session = sessionFactory.OpenSession())
-            {
-                worflowServiceHost.WorkflowExtensions.Add(() => new DatabaseTrackingParticipant(sessionFactory) {TrackingProfile = trackingProfile});
-            }
+            workflowServiceHost.WorkflowExtensions.Add(() => new DatabaseTrackingParticipant(sessionFactory) { TrackingProfile = trackingProfile });
         }
 
         public virtual void AddBindingParameters(ServiceDescription serviceDescription, ServiceHostBase serviceHostBase, Collection<ServiceEndpoint> endpoints, BindingParameterCollection bindingParameters) {}

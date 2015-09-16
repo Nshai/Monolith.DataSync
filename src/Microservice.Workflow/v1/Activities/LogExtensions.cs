@@ -5,7 +5,6 @@ using System.Threading;
 using IntelliFlo.Platform;
 using IntelliFlo.Platform.Principal;
 using log4net;
-using log4net.Core;
 using Microservice.Workflow.Domain;
 
 namespace Microservice.Workflow.v1.Activities

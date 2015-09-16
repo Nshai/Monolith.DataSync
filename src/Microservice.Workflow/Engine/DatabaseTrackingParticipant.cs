@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Activities.Tracking;
+using System.Threading;
+using IntelliFlo.Platform;
 using IntelliFlo.Platform.NHibernate.Repositories;
+using IntelliFlo.Platform.Principal;
 using log4net;
 using Microservice.Workflow.Domain;
 using NHibernate;
@@ -44,6 +47,7 @@ namespace Microservice.Workflow.Engine
                                     {
                                         instanceHistory = InstanceHistory.Completed(record.InstanceId, record.EventTime);
                                     }
+                                    LogMessage(record, LogLevel.Info, "Instance completed");
                                     break;
                                 case "Aborted":
                                 case "Terminated":
@@ -51,15 +55,15 @@ namespace Microservice.Workflow.Engine
                                     {
                                         instanceHistory = InstanceHistory.Aborted(record.InstanceId, record.EventTime);
                                     }
+                                    LogMessage(record, LogLevel.Warning, "Instance aborted");
                                     break;
                                 case "UnhandledException":
-                                    if (SetInstanceStatus(instanceRepository, record.InstanceId, InstanceStatus.Errored))
+                                    var unhandledException = record as WorkflowInstanceUnhandledExceptionRecord;
+                                    if (unhandledException != null)
                                     {
-                                        var unhandledException = record as WorkflowInstanceUnhandledExceptionRecord;
-                                        if (unhandledException != null)
+                                        var errorId = ExceptionLogger.Log(unhandledException.UnhandledException);
+                                        if (SetInstanceStatus(instanceRepository, record.InstanceId, InstanceStatus.Errored))
                                         {
-                                            var errorId = ExceptionLogger.Log(unhandledException.UnhandledException);
-
                                             instanceHistory = InstanceHistory.Errored(record.InstanceId, record.EventTime);
                                             instanceHistory.Data = new LogData
                                             {
@@ -68,11 +72,14 @@ namespace Microservice.Workflow.Engine
                                                     ErrorId = errorId
                                                 }
                                             };
+
                                         }
+                                        LogMessage(record, LogLevel.Error, "Instance errored (error_code={0})", errorId);
                                     }
                                     break;
                                 case "Unsuspended":
                                     SetInstanceStatus(instanceRepository, record.InstanceId, InstanceStatus.Processing);
+                                    LogMessage(record, LogLevel.Warning, "Instance suspended");
                                     break;
                             }
                         }
@@ -97,11 +104,11 @@ namespace Microservice.Workflow.Engine
 
                             instanceHistory = new InstanceHistory(record.InstanceId, stepId, activityRecord.Name, record.EventTime);
 
+                            var isComplete = true;
                             if (activityRecord.Data.ContainsKey("IsComplete"))
-                                instanceHistory.IsComplete = (bool) activityRecord.Data["IsComplete"];
-                            else
-                                instanceHistory.IsComplete = true;
-
+                                isComplete = (bool)activityRecord.Data["IsComplete"];
+                            
+                            instanceHistory.IsComplete = isComplete;
 
                             if (data != null)
                                 instanceHistory.Data = data;
@@ -119,6 +126,40 @@ namespace Microservice.Workflow.Engine
                     }
                 }
             }
+        }
+
+        public void LogMessage(TrackingRecord record, LogLevel level, string message, params object[] args)
+        {
+            using (WithDefaultLogInfo(record))
+            {
+                switch (level)
+                {
+                    case LogLevel.Error:
+                        logger.ErrorFormat(message, args);
+                        break;
+                    case LogLevel.Warning:
+                        logger.WarnFormat(message, args);
+                        break;
+                    case LogLevel.Info:
+                        logger.InfoFormat(message, args);
+                        break;
+                }
+            }
+        }
+
+        private static DisposableAction WithDefaultLogInfo(TrackingRecord record)
+        {
+            LogicalThreadContext.Properties["correlationId"] = record.InstanceId;
+
+            if (Thread.CurrentPrincipal != null && Thread.CurrentPrincipal.AsIFloPrincipal() != null)
+            {
+                var principal = Thread.CurrentPrincipal.AsIFloPrincipal();
+                LogicalThreadContext.Properties["userId"] = principal.UserId;
+                LogicalThreadContext.Properties["tenantId"] = principal.TenantId;
+                LogicalThreadContext.Properties["subject"] = principal.Subject;
+            }
+
+            return new DisposableAction(() => LogicalThreadContext.Properties.Clear());
         }
 
         private bool SetInstanceStatus(IRepository<Instance> instanceRepository, Guid instanceId, InstanceStatus status)

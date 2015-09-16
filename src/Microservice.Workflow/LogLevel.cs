@@ -1,4 +1,4 @@
-﻿namespace Microservice.Workflow.v1.Activities
+﻿namespace Microservice.Workflow
 {
     public enum LogLevel
     {

@@ -366,7 +366,7 @@
     <Compile Include="Modules\NHibernateConfigurationModule.cs" />
     <Compile Include="Properties\GlobalAssemblyInfo.cs" />
     <Compile Include="RepositoryExtensions.cs" />
-    <Compile Include="v1\Activities\LogLevel.cs" />
+    <Compile Include="LogLevel.cs" />
     <Compile Include="v1\Controllers\InstanceController.cs" />
     <Compile Include="v1\Controllers\InstanceHistoryController.cs" />
     <Compile Include="v1\Controllers\InstanceStepController.cs" />
