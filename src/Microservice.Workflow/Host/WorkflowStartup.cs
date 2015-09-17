@@ -61,9 +61,9 @@ namespace Microservice.Workflow.Host
                     where step.IsComplete == false && step.Step == StepName.Delay.ToString()
                     select step.InstanceId).ToList();
 
-                var templateGroups = instanceRepository.Query().Where(i => pausedInstanceIds.Contains(i.Id)).Select(i => i.Template);
-
-                foreach (var template in templateGroups)
+                var templates = instanceRepository.Query().Where(i => pausedInstanceIds.Contains(i.Id)).Select(i => i.Template).ToList();
+                
+                foreach (var template in templates.Distinct())
                 {
                     if (template.Version < TemplateDefinition.DefaultVersion) continue;
                     log.InfoFormat("Initialising template {0}", template.Id);
