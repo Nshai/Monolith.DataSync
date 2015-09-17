@@ -140,9 +140,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\IntelliFlo.Platform.Logging.0.2.201\lib\net451\IntelliFlo.Platform.Logging.dll</HintPath>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.MicroService, Version=0.2.122.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="IntelliFlo.Platform.MicroService, Version=0.2.124.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\IntelliFlo.Platform.MicroService.0.2.122\lib\net451\IntelliFlo.Platform.MicroService.dll</HintPath>
+      <HintPath>..\..\packages\IntelliFlo.Platform.MicroService.0.2.124\lib\net451\IntelliFlo.Platform.MicroService.dll</HintPath>
     </Reference>
     <Reference Include="IntelliFlo.Platform.NHibernate, Version=0.2.201.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
