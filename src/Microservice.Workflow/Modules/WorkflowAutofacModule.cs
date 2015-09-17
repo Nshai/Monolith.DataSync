@@ -29,7 +29,8 @@ namespace Microservice.Workflow.Modules
                 .SingleInstance();
 
             builder.RegisterType<WorkflowHost>()
-                .As<IWorkflowHost>();
+                .As<IWorkflowHost>()
+                .SingleInstance();
 
             var delayInMinutes = ConfigurationManager.AppSettings["workflowDelayInMinutes"];
             if (delayInMinutes != null && delayInMinutes == "true")

@@ -25,26 +25,24 @@ namespace Microservice.Workflow.Engine.Impl
     public class WorkflowHost : IWorkflowHost
     {
         private readonly IWorkflowClientFactory workflowClientFactory;
-        private static readonly IDictionary<Guid, WorkflowServiceHost> services = new Dictionary<Guid, WorkflowServiceHost>();
-        private static readonly IDictionary<Guid, int> templateInstanceCount = new Dictionary<Guid, int>();
-        private static volatile object lockObj = new object();
+        private readonly IDictionary<Guid, WorkflowServiceHost> services = new Dictionary<Guid, WorkflowServiceHost>();
+        private readonly IDictionary<Guid, int> templateInstanceCount = new Dictionary<Guid, int>();
+        private volatile object lockObj = new object();
         private readonly Binding binding;
-        private static readonly ILog logger = LogManager.GetLogger(typeof(WorkflowHost));
-        private static readonly Timer timer;
-
-        static WorkflowHost()
-        {
-            var interval = Convert.ToInt32(ConfigurationManager.AppSettings["templatePurgeIntervalSeconds"]);
-            timer = new Timer(Purge, null, TimeSpan.FromSeconds(interval), TimeSpan.FromSeconds(interval));
-        }
+        private readonly ILog logger = LogManager.GetLogger(typeof(WorkflowHost));
+        private readonly Timer timer;
+        private bool shuttingDown = false;
 
         public WorkflowHost(IWorkflowClientFactory workflowClientFactory)
         {
             this.workflowClientFactory = workflowClientFactory;
             binding = new NetNamedPipeBinding(NetNamedPipeSecurityMode.None);
+
+            var interval = Convert.ToInt32(ConfigurationManager.AppSettings["templatePurgeIntervalSeconds"]);
+            timer = new Timer(Purge, null, TimeSpan.FromSeconds(interval), TimeSpan.FromSeconds(interval));
         }
 
-        private static void Purge(object state)
+        private void Purge(object state)
         {
             var delayedTemplates = GetDelayedTemplates();            
             lock (lockObj)
