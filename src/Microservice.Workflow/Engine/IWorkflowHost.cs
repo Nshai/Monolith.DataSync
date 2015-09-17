@@ -4,7 +4,7 @@ using Microservice.Workflow.v1;
 
 namespace Microservice.Workflow.Engine
 {
-    public interface IWorkflowHost
+    public interface IWorkflowHost : IDisposable
     {
         Guid Create(TemplateDefinition template, WorkflowContext context);
         void CreateAsync(TemplateDefinition template, WorkflowContext context);

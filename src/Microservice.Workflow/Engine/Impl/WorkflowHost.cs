@@ -9,7 +9,6 @@ using System.ServiceModel;
 using System.ServiceModel.Activities;
 using System.ServiceModel.Channels;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Xaml;
 using System.Xml.Linq;
 using IntelliFlo.Platform;
@@ -31,7 +30,7 @@ namespace Microservice.Workflow.Engine.Impl
         private readonly Binding binding;
         private readonly ILog logger = LogManager.GetLogger(typeof(WorkflowHost));
         private readonly Timer timer;
-        private bool shuttingDown = false;
+        private bool shuttingDown;
 
         public WorkflowHost(IWorkflowClientFactory workflowClientFactory)
         {
@@ -44,9 +43,12 @@ namespace Microservice.Workflow.Engine.Impl
 
         private void Purge(object state)
         {
+            if (shuttingDown) return;
             var delayedTemplates = GetDelayedTemplates();            
             lock (lockObj)
             {
+                if (shuttingDown) return;
+
                 var templatesToPurge = templateInstanceCount.Where(k => !delayedTemplates.Contains(k.Key) && k.Value == 0).Select(k => k.Key);
                 if (templatesToPurge.Any())
                 {
@@ -55,8 +57,8 @@ namespace Microservice.Workflow.Engine.Impl
                         services.Remove(templateId);
                     }
                     templateInstanceCount.RemoveAll(k => templatesToPurge.Contains(k.Key));
-                    logger.InfoFormat("loadedTemplates={0} totalInstances={1}", services.Count, templateInstanceCount.Sum(t => t.Value));
                 }
+                logger.InfoFormat("loadedTemplates={0} totalInstances={1}", services.Count, templateInstanceCount.Sum(t => t.Value));
             }
         }
 
@@ -79,8 +81,11 @@ namespace Microservice.Workflow.Engine.Impl
 
         public void IncrementInstanceCount(Guid templateId)
         {
+            if (shuttingDown) return;
             lock (lockObj)
             {
+                if (shuttingDown) return;
+
                 if (!templateInstanceCount.ContainsKey(templateId))
                 {
                     templateInstanceCount.Add(templateId, 1);
@@ -95,8 +100,10 @@ namespace Microservice.Workflow.Engine.Impl
 
         public void DecrementInstanceCount(Guid templateId)
         {
+            if (shuttingDown) return;
             lock (lockObj)
             {
+                if (shuttingDown) return;
                 templateInstanceCount[templateId]--;
                 logger.InfoFormat("loadedTemplates={0} totalInstances={1}", services.Count, templateInstanceCount.Sum(t => t.Value));
             }
@@ -185,6 +192,31 @@ namespace Microservice.Workflow.Engine.Impl
             using (var client = workflowClientFactory.GetControlClient(binding, new EndpointAddress(hostUri)))
             {
                 client.Unsuspend(instanceId);
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (!disposing) return;
+            shuttingDown = true;
+
+            timer.Dispose();
+
+            lock (lockObj)
+            {
+                foreach (var service in services.Values)
+                {
+                    service.Close();
+                }
+
+                services.Clear();
+                templateInstanceCount.Clear();
             }
         }
 

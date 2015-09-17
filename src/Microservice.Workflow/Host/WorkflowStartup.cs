@@ -42,6 +42,12 @@ namespace Microservice.Workflow.Host
 
         public override void Dispose()
         {
+            IWorkflowHost host;
+            if (!IntelliFlo.Platform.IoC.Container.TryResolve(out host))
+                return;
+
+            host.Dispose();
+
             IoC.Reset(Constants.ContainerId);
         }
 
