@@ -52,6 +52,7 @@ namespace Microservice.Workflow.v1.Resources
         public void Handle(TemplateGroupUpdated args)
         {
             var template = templateResource.GetTemplate(args.TemplateId);
+            
             template.CurrentVersion.Roles.Clear();
 
             templateRepository.Save(template);

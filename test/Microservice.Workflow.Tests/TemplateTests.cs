@@ -20,7 +20,7 @@ namespace Microservice.Workflow.Tests
             template = new Template("My template", TenantId, category, WorkflowRelatedTo.Client, OwnerUserId) {Id = TemplateId};
 
             var builder = new ContainerBuilder();
-            Microservice.Workflow.IoC.Initialize(builder.Build());
+            IoC.Initialize(builder.Build());
 
             var identity = new IntelliFloClaimsIdentity("Bob", "Basic");
             identity.AddClaim(new Claim(Constants.ApplicationClaimTypes.UserId, UserId.ToString(CultureInfo.InvariantCulture)));
@@ -255,6 +255,23 @@ namespace Microservice.Workflow.Tests
             template.SetStatus(updatedStatus);
 
             return string.Join(",", template.Events.Select(e => e.GetType().Name));
+        }
+
+        [Test]
+        public void WhenUpdateGroupThenVerifyEventFired()
+        {
+            template.ApplicableToGroupId = 398;
+            Assert.AreEqual("TemplateGroupUpdated", string.Join(",", template.Events.Select(e => e.GetType().Name)));
+        }
+
+        [Test]
+        public void WhenCreateTemplateWithAssignedGroupThenVerifyEventIsNotFired()
+        {
+            // Fake new template
+            template.Id = 0;
+
+            template.ApplicableToGroupId = 398;
+            Assert.AreEqual("", string.Join(",", template.Events.Select(e => e.GetType().Name)));
         }
     }
 }

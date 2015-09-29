@@ -122,10 +122,13 @@ namespace Microservice.Workflow.Domain
                 IsValidForUpdate();
 
                 CurrentVersion.ApplicableToGroupId = value;
-                RaiseEvent(new TemplateGroupUpdated()
+                if (!IsPhantom)
                 {
-                    TemplateId = Id
-                });
+                    RaiseEvent(new TemplateGroupUpdated()
+                    {
+                        TemplateId = Id
+                    });
+                }
             }
         }
 
@@ -334,6 +337,11 @@ namespace Microservice.Workflow.Domain
         {
             if (IsActive || Status == WorkflowStatus.Archived)
                 throw new TemplateNotUpdatableException(Status == WorkflowStatus.Archived);
+        }
+
+        private bool IsPhantom
+        {
+            get { return Id == 0; }
         }
     }
 }
