@@ -32,5 +32,9 @@
       <one-to-many class="TemplateVersion" />
     </bag>
 
+    <sql-delete>
+      delete from workflow.dbo.TTemplate where TemplateId = ?
+    </sql-delete>
   </class>
+  
 </hibernate-mapping>
