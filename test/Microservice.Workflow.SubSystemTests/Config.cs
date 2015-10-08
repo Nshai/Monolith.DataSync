@@ -22,6 +22,7 @@ namespace Microservice.Workflow.SubSystemTests
         public static readonly int TenantBId = 999;
         public static readonly int ClientId = 6180642;
         public static readonly int User1Id = 111;
+        public static readonly int RoleId = 123;
 
         private static Client[] allClients;
 
@@ -128,6 +129,7 @@ namespace Microservice.Workflow.SubSystemTests
                     new Claim("pfp_domain", "intellliflo99.mypfp.co.uk"),
                     new Claim("email_verified", "True"),
                     new Claim("group_id", "4000001"),
+                    new Claim("role_id", RoleId.ToString()),
 
                     new Claim("scope", "openid"),
                     new Claim("scope", "profile"),

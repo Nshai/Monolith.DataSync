@@ -102,7 +102,7 @@ namespace Microservice.Workflow.Domain
         {
             get
             {
-                return guid == Guid.Empty ? guid : CurrentVersion.Guid;
+                return guid != Guid.Empty ? guid : CurrentVersion.Guid;
             }
         }
 

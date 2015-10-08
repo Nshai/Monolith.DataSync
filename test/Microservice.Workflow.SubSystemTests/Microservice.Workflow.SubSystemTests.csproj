@@ -192,11 +192,15 @@
     <Compile Include="Helpers\Apis\TemplateExtensions.cs" />
     <Compile Include="Helpers\InMemoryUserExtensions.cs" />
     <Compile Include="v1\ApiTestBase.cs" />
+    <Compile Include="v1\Models\TemplateRoleDocument.cs" />
+    <Compile Include="v1\Models\TemplatePatchRequest.cs" />
     <Compile Include="v1\Models\CreateTemplateRequest.cs" />
     <Compile Include="v1\Models\CreateTemplateCategoryRequest.cs" />
     <Compile Include="v1\Models\TemplateCategoryDocument.cs" />
     <Compile Include="v1\Models\TemplateCollection.cs" />
     <Compile Include="v1\Models\TemplateDocument.cs" />
+    <Compile Include="v1\Template\CreateInstanceTests.cs" />
+    <Compile Include="v1\Template\CloneTests.cs" />
     <Compile Include="v1\Template\GetTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
