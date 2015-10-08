@@ -111,56 +111,56 @@
       <HintPath>..\..\packages\Iesi.Collections.3.2.0.4000\lib\Net35\Iesi.Collections.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="IntelliFlo.Platform, Version=0.2.205.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="IntelliFlo.Platform, Version=0.2.208.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\IntelliFlo.Platform.0.2.205\lib\net451\IntelliFlo.Platform.dll</HintPath>
+      <HintPath>..\..\packages\IntelliFlo.Platform.0.2.208\lib\net451\IntelliFlo.Platform.dll</HintPath>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.AutoMapper, Version=0.2.205.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="IntelliFlo.Platform.AutoMapper, Version=0.2.208.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\IntelliFlo.Platform.AutoMapper.0.2.205\lib\net451\IntelliFlo.Platform.AutoMapper.dll</HintPath>
+      <HintPath>..\..\packages\IntelliFlo.Platform.AutoMapper.0.2.208\lib\net451\IntelliFlo.Platform.AutoMapper.dll</HintPath>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.Bus, Version=0.2.205.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="IntelliFlo.Platform.Bus, Version=0.2.208.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\IntelliFlo.Platform.Bus.0.2.205\lib\net451\IntelliFlo.Platform.Bus.dll</HintPath>
+      <HintPath>..\..\packages\IntelliFlo.Platform.Bus.0.2.208\lib\net451\IntelliFlo.Platform.Bus.dll</HintPath>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.Caching, Version=0.2.205.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="IntelliFlo.Platform.Caching, Version=0.2.208.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\IntelliFlo.Platform.Caching.0.2.205\lib\net451\IntelliFlo.Platform.Caching.dll</HintPath>
+      <HintPath>..\..\packages\IntelliFlo.Platform.Caching.0.2.208\lib\net451\IntelliFlo.Platform.Caching.dll</HintPath>
     </Reference>
     <Reference Include="IntelliFlo.Platform.Client, Version=0.2.104.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\IntelliFlo.Platform.Client.0.2.104\lib\net451\IntelliFlo.Platform.Client.dll</HintPath>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.Client.OData, Version=0.2.205.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="IntelliFlo.Platform.Client.OData, Version=0.2.208.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\IntelliFlo.Platform.Client.OData.0.2.205\lib\net451\IntelliFlo.Platform.Client.OData.dll</HintPath>
+      <HintPath>..\..\packages\IntelliFlo.Platform.Client.OData.0.2.208\lib\net451\IntelliFlo.Platform.Client.OData.dll</HintPath>
     </Reference>
     <Reference Include="IntelliFlo.Platform.Database">
-      <HintPath>..\..\packages\IntelliFlo.Platform.Database.0.2.205\lib\net451\IntelliFlo.Platform.Database.dll</HintPath>
+      <HintPath>..\..\packages\IntelliFlo.Platform.Database.0.2.208\lib\net451\IntelliFlo.Platform.Database.dll</HintPath>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.Http, Version=0.2.205.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="IntelliFlo.Platform.Http, Version=0.2.208.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\IntelliFlo.Platform.Http.0.2.205\lib\net451\IntelliFlo.Platform.Http.dll</HintPath>
+      <HintPath>..\..\packages\IntelliFlo.Platform.Http.0.2.208\lib\net451\IntelliFlo.Platform.Http.dll</HintPath>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.Http.Documentation, Version=0.2.205.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="IntelliFlo.Platform.Http.Documentation, Version=0.2.208.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\IntelliFlo.Platform.Http.Documentation.0.2.205\lib\net451\IntelliFlo.Platform.Http.Documentation.dll</HintPath>
+      <HintPath>..\..\packages\IntelliFlo.Platform.Http.Documentation.0.2.208\lib\net451\IntelliFlo.Platform.Http.Documentation.dll</HintPath>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.Logging, Version=0.2.205.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="IntelliFlo.Platform.Logging, Version=0.2.208.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\IntelliFlo.Platform.Logging.0.2.205\lib\net451\IntelliFlo.Platform.Logging.dll</HintPath>
+      <HintPath>..\..\packages\IntelliFlo.Platform.Logging.0.2.208\lib\net451\IntelliFlo.Platform.Logging.dll</HintPath>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.MicroService, Version=0.2.126.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="IntelliFlo.Platform.MicroService, Version=0.2.130.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\IntelliFlo.Platform.MicroService.0.2.126\lib\net451\IntelliFlo.Platform.MicroService.dll</HintPath>
+      <HintPath>..\..\packages\IntelliFlo.Platform.MicroService.0.2.130\lib\net451\IntelliFlo.Platform.MicroService.dll</HintPath>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.NHibernate, Version=0.2.205.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="IntelliFlo.Platform.NHibernate, Version=0.2.208.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\IntelliFlo.Platform.NHibernate.0.2.205\lib\net451\IntelliFlo.Platform.NHibernate.dll</HintPath>
+      <HintPath>..\..\packages\IntelliFlo.Platform.NHibernate.0.2.208\lib\net451\IntelliFlo.Platform.NHibernate.dll</HintPath>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.Security, Version=0.2.205.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="IntelliFlo.Platform.Security, Version=0.2.208.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\IntelliFlo.Platform.Security.0.2.205\lib\net451\IntelliFlo.Platform.Security.dll</HintPath>
+      <HintPath>..\..\packages\IntelliFlo.Platform.Security.0.2.208\lib\net451\IntelliFlo.Platform.Security.dll</HintPath>
     </Reference>
     <Reference Include="IntelliFlo.PowerShell.DevLib">
       <HintPath>..\..\packages\IntelliFlo.PowerShell.DevLib.0.0.3.0\lib\net45\IntelliFlo.PowerShell.DevLib.dll</HintPath>
@@ -354,6 +354,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Domain\EnumExtension.cs" />
+    <Compile Include="DataProfiles\DevInitialiser.cs" />
+    <Compile Include="DataProfiles\SeedWithTestData.cs" />
     <Compile Include="Domain\TaskAssignee.cs" />
     <Compile Include="Engine\ExceptionLogger.cs" />
     <Compile Include="Engine\GenerationList.cs" />
