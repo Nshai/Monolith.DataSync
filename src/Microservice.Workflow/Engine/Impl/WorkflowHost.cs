@@ -25,7 +25,7 @@ namespace Microservice.Workflow.Engine.Impl
     {
         private readonly IWorkflowClientFactory workflowClientFactory;
         private readonly IDictionary<Guid, WorkflowServiceHost> services = new Dictionary<Guid, WorkflowServiceHost>();
-        private readonly IDictionary<Guid, int> templateInstanceCount = new Dictionary<Guid, int>();
+        private readonly IDictionary<Guid, HashSet<Guid>> templateInstanceCount = new Dictionary<Guid, HashSet<Guid>>();
         private volatile object lockObj = new object();
         private readonly Binding binding;
         private readonly ILog logger = LogManager.GetLogger(typeof(WorkflowHost));
@@ -51,7 +51,7 @@ namespace Microservice.Workflow.Engine.Impl
             {
                 if (shuttingDown) return;
 
-                var templatesToPurge = templateInstanceCount.Where(k => !delayedTemplates.Contains(k.Key) && k.Value == 0).Select(k => k.Key);
+                var templatesToPurge = templateInstanceCount.Where(k => !delayedTemplates.Contains(k.Key) && k.Value.Count == 0).Select(k => k.Key);
                 if (templatesToPurge.Any())
                 {
                     foreach (var templateId in templatesToPurge.Where(templateId => services.ContainsKey(templateId))) {
@@ -67,7 +67,7 @@ namespace Microservice.Workflow.Engine.Impl
         private void LogResourceUsage()
         {
             var serviceCount = services.Count;
-            var instanceCount = templateInstanceCount.Sum(t => t.Value);
+            var instanceCount = templateInstanceCount.Sum(t => t.Value.Count);
             if (lastServiceCount == serviceCount && lastInstanceCount == instanceCount) return;
             logger.InfoFormat("loadedTemplates={0} totalInstances={1}", serviceCount, instanceCount);
             lastServiceCount = serviceCount;
@@ -91,7 +91,7 @@ namespace Microservice.Workflow.Engine.Impl
             }
         }
 
-        public void IncrementInstanceCount(Guid templateId)
+        public void IncrementInstanceCount(Guid templateId, Guid instanceId)
         {
             if (shuttingDown) return;
             lock (lockObj)
@@ -100,23 +100,32 @@ namespace Microservice.Workflow.Engine.Impl
 
                 if (!templateInstanceCount.ContainsKey(templateId))
                 {
-                    templateInstanceCount.Add(templateId, 1);
+                    var instanceList = new HashSet<Guid>() { instanceId };
+                    templateInstanceCount.Add(templateId, instanceList);
                 }
                 else
                 {
-                    templateInstanceCount[templateId]++;
+                    var instanceList = templateInstanceCount[templateId];
+                    if (!instanceList.Contains(instanceId))
+                    {
+                        instanceList.Add(instanceId);
+                    }
                 }
                 LogResourceUsage();
             }
         }
 
-        public void DecrementInstanceCount(Guid templateId)
+        public void DecrementInstanceCount(Guid templateId, Guid instanceId)
         {
             if (shuttingDown) return;
             lock (lockObj)
             {
                 if (shuttingDown) return;
-                templateInstanceCount[templateId]--;
+                var instanceList = templateInstanceCount[templateId];
+                if (instanceList.Contains(instanceId))
+                {
+                    instanceList.Remove(instanceId);
+                }
                 LogResourceUsage();
             }
         }

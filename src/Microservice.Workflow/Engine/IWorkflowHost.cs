@@ -12,7 +12,7 @@ namespace Microservice.Workflow.Engine
         void Abort(TemplateDefinition template, Guid instanceId);
         void Unsuspend(TemplateDefinition template, Guid instanceId);
         void Initialise(TemplateDefinition template);
-        void IncrementInstanceCount(Guid templateId);
-        void DecrementInstanceCount(Guid templateId);
+        void IncrementInstanceCount(Guid templateId, Guid instanceId);
+        void DecrementInstanceCount(Guid templateId, Guid instanceId);
     }
 }

@@ -25,11 +25,14 @@ namespace Microservice.Workflow.Engine
                 {
                     case "Started":
                     case "Resumed":
-                        host.IncrementInstanceCount(templateId);
+                    case "Unsuspended":
+                        host.IncrementInstanceCount(templateId, instanceRecord.InstanceId);
                         break;
                     case "Aborted":
                     case "Unloaded":
-                        host.DecrementInstanceCount(templateId);
+                    case "Suspended":
+                    case "Deleted":
+                        host.DecrementInstanceCount(templateId, instanceRecord.InstanceId);
                         break;
                 }
                 logger.DebugFormat("InstanceId={0} InstanceState={1}", instanceRecord.InstanceId, instanceRecord.State);
