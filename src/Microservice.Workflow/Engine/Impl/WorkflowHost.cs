@@ -31,6 +31,8 @@ namespace Microservice.Workflow.Engine.Impl
         private readonly ILog logger = LogManager.GetLogger(typeof(WorkflowHost));
         private readonly Timer timer;
         private bool shuttingDown;
+        private int lastServiceCount;
+        private int lastInstanceCount;
 
         public WorkflowHost(IWorkflowClientFactory workflowClientFactory)
         {
@@ -58,8 +60,18 @@ namespace Microservice.Workflow.Engine.Impl
                     }
                     templateInstanceCount.RemoveAll(k => templatesToPurge.Contains(k.Key));
                 }
-                logger.InfoFormat("loadedTemplates={0} totalInstances={1}", services.Count, templateInstanceCount.Sum(t => t.Value));
+                LogResourceUsage();
             }
+        }
+
+        private void LogResourceUsage()
+        {
+            var serviceCount = services.Count;
+            var instanceCount = templateInstanceCount.Sum(t => t.Value);
+            if (lastServiceCount == serviceCount && lastInstanceCount == instanceCount) return;
+            logger.InfoFormat("loadedTemplates={0} totalInstances={1}", serviceCount, instanceCount);
+            lastServiceCount = serviceCount;
+            lastInstanceCount = instanceCount;
         }
 
         private static IEnumerable<Guid> GetDelayedTemplates()
@@ -94,7 +106,7 @@ namespace Microservice.Workflow.Engine.Impl
                 {
                     templateInstanceCount[templateId]++;
                 }
-                logger.InfoFormat("loadedTemplates={0} totalInstances={1}", services.Count, templateInstanceCount.Sum(t => t.Value));
+                LogResourceUsage();
             }
         }
 
@@ -105,7 +117,7 @@ namespace Microservice.Workflow.Engine.Impl
             {
                 if (shuttingDown) return;
                 templateInstanceCount[templateId]--;
-                logger.InfoFormat("loadedTemplates={0} totalInstances={1}", services.Count, templateInstanceCount.Sum(t => t.Value));
+                LogResourceUsage();
             }
         }
 
