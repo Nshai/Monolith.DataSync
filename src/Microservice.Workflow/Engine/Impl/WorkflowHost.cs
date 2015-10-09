@@ -46,21 +46,28 @@ namespace Microservice.Workflow.Engine.Impl
         private void Purge(object state)
         {
             if (shuttingDown) return;
-            var delayedTemplates = GetDelayedTemplates();            
-            lock (lockObj)
+            var delayedTemplates = GetDelayedTemplates();
+            
+            if (!Monitor.TryEnter(lockObj)) return;
+            try
             {
                 if (shuttingDown) return;
 
-                var templatesToPurge = templateInstanceCount.Where(k => !delayedTemplates.Contains(k.Key) && k.Value.Count == 0).Select(k => k.Key);
+                var templatesToPurge = templateInstanceCount.Where(k => !delayedTemplates.Contains(k.Key) && k.Value.Count == 0).Select(k => k.Key).ToList();
                 if (templatesToPurge.Any())
                 {
-                    foreach (var templateId in templatesToPurge.Where(templateId => services.ContainsKey(templateId))) {
+                    foreach (var templateId in templatesToPurge.Where(templateId => services.ContainsKey(templateId)))
+                    {
                         services[templateId].Close();
                         services.Remove(templateId);
                     }
                     templateInstanceCount.RemoveAll(k => templatesToPurge.Contains(k.Key));
                 }
                 LogResourceUsage();
+            }
+            finally
+            {
+                Monitor.Exit(lockObj);
             }
         }
 
