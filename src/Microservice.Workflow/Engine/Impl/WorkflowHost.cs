@@ -45,29 +45,36 @@ namespace Microservice.Workflow.Engine.Impl
 
         private void Purge(object state)
         {
-            if (shuttingDown) return;
-            var delayedTemplates = GetDelayedTemplates();
-            
-            if (!Monitor.TryEnter(lockObj)) return;
             try
             {
                 if (shuttingDown) return;
+                var delayedTemplates = GetDelayedTemplates();
 
-                var templatesToPurge = templateInstanceCount.Where(k => !delayedTemplates.Contains(k.Key) && k.Value.Count == 0).Select(k => k.Key).ToList();
-                if (templatesToPurge.Any())
+                if (!Monitor.TryEnter(lockObj)) return;
+                try
                 {
-                    foreach (var templateId in templatesToPurge.Where(templateId => services.ContainsKey(templateId)))
+                    if (shuttingDown) return;
+
+                    var templatesToPurge = templateInstanceCount.Where(k => !delayedTemplates.Contains(k.Key) && k.Value.Count == 0).Select(k => k.Key).ToList();
+                    if (templatesToPurge.Any())
                     {
-                        services[templateId].Close();
-                        services.Remove(templateId);
+                        foreach (var templateId in templatesToPurge.Where(templateId => services.ContainsKey(templateId)))
+                        {
+                            services[templateId].Close();
+                            services.Remove(templateId);
+                        }
+                        templateInstanceCount.RemoveAll(k => templatesToPurge.Contains(k.Key));
                     }
-                    templateInstanceCount.RemoveAll(k => templatesToPurge.Contains(k.Key));
+                    LogResourceUsage();
                 }
-                LogResourceUsage();
+                finally
+                {
+                    Monitor.Exit(lockObj);
+                }
             }
-            finally
+            catch (Exception ex)
             {
-                Monitor.Exit(lockObj);
+                logger.Error("Purge failed", ex);
             }
         }
 
