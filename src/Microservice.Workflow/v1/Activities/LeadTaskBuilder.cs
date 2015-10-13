@@ -1,4 +1,5 @@
 ﻿using System.Activities;
+using System.Net;
 using System.Threading.Tasks;
 using IntelliFlo.Platform.Http.Client;
 using Microservice.Workflow.Collaborators.v1;
@@ -13,24 +14,23 @@ namespace Microservice.Workflow.v1.Activities
         {
             if (ownerContextRole != "Adviser") 
                 return PartyNotFound;
-
-
+            
             using (var crmClient = ClientFactory.Create("crm"))
             {
                 var adviserId = PartyNotFound;
                 var leadResponse = await crmClient.Get<LeadDocument>(string.Format(Uris.Crm.GetLead, context.EntityId));
-                leadResponse.OnNotFound(async () =>
+                await leadResponse.OnNotFound(async () =>
                 {
                     var clientResponse = await crmClient.Get<ClientDocument>(string.Format(Uris.Crm.GetClient, context.EntityId));
                     clientResponse.OnException(s => { throw new HttpClientException(s); });
-                    
+
                     var client = clientResponse.Resource;
                     adviserId = client.CurrentAdviserPartyId;
                 });
 
                 if (adviserId != PartyNotFound)
                     return adviserId;
-
+                
                 leadResponse.OnException(s => { throw new HttpClientException(s); });
                 var lead = leadResponse.Resource;
                 return lead.CurrentAdviserPartyId.HasValue ? lead.CurrentAdviserPartyId.Value : PartyNotFound;

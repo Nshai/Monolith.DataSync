@@ -29,6 +29,19 @@ namespace Microservice.Workflow
             return response;
         }
 
+        public static async Task<HttpResponse<TResult>> OnNotFound<TResult>(this HttpResponse<TResult> response, Func<Task> continuationAction)
+        {
+            await Invoke(response, HttpStatusCode.NotFound, continuationAction);
+            return response;
+        }
+
+        private static async Task Invoke<TResult>(HttpResponse<TResult> response, HttpStatusCode statusCode, Func<Task> continuationAction)
+        {
+            var httpStatusCode = response.Raw.StatusCode;
+            if (httpStatusCode == statusCode)
+                await continuationAction.Invoke();
+        }
+
         private static void Invoke<TResult>(HttpResponse<TResult> response, HttpStatusCode statusCode, Action continuationAction)
         {
             var httpStatusCode = response.Raw.StatusCode;
