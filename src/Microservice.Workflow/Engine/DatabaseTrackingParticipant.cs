@@ -78,7 +78,7 @@ namespace Microservice.Workflow.Engine
                                     }
                                     break;
                                 case "Unsuspended":
-                                    SetInstanceStatus(instanceRepository, record.InstanceId, InstanceStatus.Processing);
+                                    SetInstanceStatus(instanceRepository, record.InstanceId, InstanceStatus.InProgress);
                                     LogMessage(record, LogLevel.Warning, "Instance suspended");
                                     break;
                             }
@@ -167,7 +167,7 @@ namespace Microservice.Workflow.Engine
             var instance = instanceRepository.Get(instanceId);
 
             if (instance == null) return false;
-            instance.Status = status.ToString();
+            instance.Status = status.ToPrettyString();
             instance.UniqueId = Guid.NewGuid();
             instanceRepository.Update(instance);
 

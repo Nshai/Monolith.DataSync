@@ -360,6 +360,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="EnumExtensionTests.cs" />
     <Compile Include="InstanceHistoryTests.cs" />
     <Compile Include="CreateTaskWrapper.cs" />
     <Compile Include="DateCalculatorTests.cs" />

@@ -2,7 +2,7 @@ namespace Microservice.Workflow.Domain
 {
     public enum InstanceStatus
     {
-        Processing,
+        InProgress,
         Completed,
         Aborted,
         Errored

@@ -353,6 +353,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Domain\EnumExtension.cs" />
     <Compile Include="Domain\TaskAssignee.cs" />
     <Compile Include="Engine\ExceptionLogger.cs" />
     <Compile Include="Engine\InstanceCountBehavior.cs" />

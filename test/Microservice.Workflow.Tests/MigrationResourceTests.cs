@@ -107,7 +107,7 @@ namespace Microservice.Workflow.Tests
         [Test]
         public void WhenMigrateInstanceWaitingForTaskThenNewInstanceCreatedCorrectly()
         {
-            instance.Status = InstanceStatus.Processing.ToString();
+            instance.Status = InstanceStatus.InProgress.ToPrettyString();
             instanceSteps.Add(new InstanceStep()
             {
                 Step = StepName.Created.ToString()
@@ -145,7 +145,7 @@ namespace Microservice.Workflow.Tests
         [Test]
         public void WhenMigrateInstanceWaitingForDelayThenNewInstanceCreatedCorrectly()
         {
-            instance.Status = InstanceStatus.Processing.ToString();
+            instance.Status = InstanceStatus.InProgress.ToPrettyString();
             instanceSteps.Add(new InstanceStep()
             {
                 Step = StepName.Created.ToString()

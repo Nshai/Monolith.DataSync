@@ -69,7 +69,7 @@ namespace Microservice.Workflow.v1.Resources
             {
                 Restrictions.Or(
                     Restrictions.Eq("Status", "In Progress"),
-                    Restrictions.Eq("Status", InstanceStatus.Processing.ToString()))
+                    Restrictions.Eq("Status", "Processing"))
             };
 
             int count;
@@ -136,7 +136,7 @@ namespace Microservice.Workflow.v1.Resources
             if (instance == null)
                 throw new InstanceNotFoundException();
 
-            if ((instance.Status != "In Progress" && instance.Status != InstanceStatus.Processing.ToString()) || instance.Version >= TemplateDefinition.DefaultVersion)
+            if ((instance.Status != "In Progress" && instance.Status != "Processing") || instance.Version >= TemplateDefinition.DefaultVersion)
                 return new InstanceMigrationResponse() {Id = instanceId, Status = MigrationStatus.Skipped.ToString(), Description = "Instance already migrated"};
 
             var templateDefinition = templateDefinitionRepository.Get(instance.Template.Id);

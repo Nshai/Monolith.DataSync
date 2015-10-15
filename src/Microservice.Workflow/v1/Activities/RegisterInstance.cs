@@ -51,7 +51,7 @@ namespace Microservice.Workflow.v1.Activities
                                     EntityType = entityType,
                                     EntityId = ctx.EntityId,
                                     RelatedEntityId = ctx.RelatedEntityId,
-                                    Status = InstanceStatus.Processing.ToString(),
+                                    Status = InstanceStatus.InProgress.ToPrettyString(),
                                     UserId = userContext.Value.UserId,
                                     TenantId = userContext.Value.TenantId,
                                     CreateDate = DateTime.UtcNow,
