@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading;
 using IntelliFlo.Platform;
 using IntelliFlo.Platform.Principal;
+using log4net;
+using log4net.Core;
 
 namespace Microservice.Workflow.Domain
 {
@@ -18,6 +20,7 @@ namespace Microservice.Workflow.Domain
         private TemplateCategory category;
         private string status;
         private Guid guid;
+        private static readonly ILog logger = LogManager.GetLogger(typeof(Template));
 
         protected Template() {}
         public Template(string name, int tenantId, TemplateCategory category, WorkflowRelatedTo relatedTo, int ownerUserId)
@@ -278,12 +281,19 @@ namespace Microservice.Workflow.Domain
                 if (IncludeSubGroups.HasValue && IncludeSubGroups.Value)
                 {
                     if (!groupIds.Contains(ApplicableToGroupId.Value))
+                    {
+                        logger.WarnFormat("User not permitted to run template {0} as users lineage ({1}) did not match template group {2}", Id, string.Join(",", groupIds), ApplicableToGroupId);
                         return false;
+                    }
                 }
                 else
                 {
-                    if (groupIds[0] != ApplicableToGroupId)
+                    var activeGroupId = groupIds.Last();
+                    if (activeGroupId != ApplicableToGroupId)
+                    {
+                        logger.WarnFormat("User not permitted to run template {0} as users group {1} (lineage: {2}) did not match template group {3}", Id, activeGroupId, string.Join(",", groupIds), ApplicableToGroupId);
                         return false;
+                    }
                 }
             }
 

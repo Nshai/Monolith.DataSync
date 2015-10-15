@@ -9,6 +9,7 @@ using IntelliFlo.Platform.Http.Client;
 using IntelliFlo.Platform.Identity;
 using IntelliFlo.Platform.NHibernate.Repositories;
 using IntelliFlo.Platform.Principal;
+using log4net.Config;
 using Microservice.Workflow.Domain;
 using Microservice.Workflow.Engine;
 using Microservice.Workflow.Modules;
@@ -46,6 +47,8 @@ namespace Microservice.Workflow.Tests
         [SetUp]
         public void SetUp()
         {
+            XmlConfigurator.Configure();
+
             category = new TemplateCategory("Test", TenantId) { Id = 1 };
             altCategory = new TemplateCategory("Alt", TenantId) { Id = 2};
 
@@ -83,7 +86,7 @@ namespace Microservice.Workflow.Tests
             identity.AddClaim(new Claim(IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.TenantId, TenantId.ToString(CultureInfo.InvariantCulture)));
             identity.AddClaim(new Claim(IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.Subject, Guid.NewGuid().ToString()));
             identity.AddClaim(new Claim(IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.RoleId, RoleId.ToString(CultureInfo.InvariantCulture)));
-            identity.AddClaim(new Claim(IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.GroupLineage, string.Join(",", new[] { GroupId, ParentGroupId })));
+            identity.AddClaim(new Claim(IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.GroupLineage, string.Join(",", new[] { ParentGroupId, GroupId })));
             Thread.CurrentPrincipal = new IntelliFloClaimsPrincipal(identity);
 
             new WorkflowAutoMapperModule().Load();
