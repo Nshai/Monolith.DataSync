@@ -30,8 +30,8 @@ namespace Microservice.Workflow.Tests
         private Mock<IRepository<TemplateCategory>> templateCategoryRepository;
         private Mock<IRepository<TemplateDefinition>> templateDefinitionRepository;
         private Mock<ITrustedClientAuthenticationTokenBuilder> tokenBuilder;
-        private Mock<IServiceHttpClientFactory> clientFactory;
-        private Mock<IServiceHttpClient> client;
+        private Mock<IHttpClientFactory> clientFactory;
+        private Mock<IHttpClient> client;
         private Mock<IEventDispatcher> eventDispatcher;
         private Mock<IWorkflowHost> workflowHost;
         private Template template;
@@ -64,8 +64,8 @@ namespace Microservice.Workflow.Tests
             tokenBuilder = new Mock<ITrustedClientAuthenticationTokenBuilder>();
             templateDefinitionRepository = new Mock<IRepository<TemplateDefinition>>();
             
-            clientFactory = new Mock<IServiceHttpClientFactory>();
-            client = new Mock<IServiceHttpClient>();
+            clientFactory = new Mock<IHttpClientFactory>();
+            client = new Mock<IHttpClient>();
             eventDispatcher = new Mock<IEventDispatcher>();
 
             workflowHost = new Mock<IWorkflowHost>();

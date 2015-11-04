@@ -58,7 +58,7 @@ namespace Microservice.Workflow.SubSystemTests.v1.Template
                     .Run();
 
                 // TODO Replace this with wait until instance is unloaded?
-                Task.Delay(5000).Wait();
+                Task.Delay(10000).Wait();
 
                 taskStub.Verify().IsCalled(Times.Once());
                 subscriptionStub.Verify().IsCalled(Times.Twice());

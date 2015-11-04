@@ -10,7 +10,7 @@ namespace Microservice.Workflow.DataProfiles
     {
         public DevInitialiser(IDatabaseInstance instance, IReadWriteSessionFactoryProvider provider)
             : base(new CreateDatabaseTask(instance),
-                  new SyncroniseDatabaseTask(instance){ IncludeObjectTypes = "UserDefinedType,Assembly,Table,Function,View,StoredProcedure"},
+                  new SynchroniseDatabaseTask(instance){ IncludeObjectTypes = "UserDefinedType,Assembly,Table,Function,View,StoredProcedure"},
                   new AddRefDataTask(instance),
                   new SeedWithTestData(provider))
         {

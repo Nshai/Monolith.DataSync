@@ -8,7 +8,7 @@ namespace Microservice.Workflow.v1.Activities
 {
     public class LeadTaskBuilder : EntityTaskBuilder
     {
-        public LeadTaskBuilder(IServiceHttpClientFactory clientFactory, Activity parentActivity, NativeActivityContext context) : base(clientFactory, parentActivity, context) { }
+        public LeadTaskBuilder(IHttpClientFactory clientFactory, Activity parentActivity, NativeActivityContext context) : base(clientFactory, parentActivity, context) { }
 
         public async override Task<int> GetContextPartyId(string ownerContextRole, WorkflowContext context)
         {

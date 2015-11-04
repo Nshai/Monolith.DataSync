@@ -26,7 +26,7 @@ namespace Microservice.Workflow.v1.Resources
     public class TemplateResource : ITemplateResource, IHandle<TemplateMadeActive>
     {
         private const int SystemTenantId = 0;
-        private readonly IServiceHttpClientFactory clientFactory;
+        private readonly IHttpClientFactory clientFactory;
         private readonly IRepository<TemplateCategory> templateCategoryRepository;
         private readonly IRepository<TemplateDefinition> templateDefinitionRepository;
         private readonly IRepository<Template> templateRepository;
@@ -49,7 +49,7 @@ namespace Microservice.Workflow.v1.Resources
         public TemplateResource(IRepository<Template> templateRepository,
             IRepository<TemplateCategory> templateCategoryRepository,
             ITrustedClientAuthenticationTokenBuilder tokenBuilder,
-            IServiceHttpClientFactory clientFactory,
+            IHttpClientFactory clientFactory,
             IRepository<TemplateDefinition> templateDefinitionRepository, IWorkflowServiceFactory workflowServiceFactory, IEventDispatcher eventDispatcher, IWorkflowHost workflowHost)
         {
             this.templateRepository = templateRepository;

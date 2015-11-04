@@ -31,8 +31,8 @@ namespace Microservice.Workflow.DataProfiles
         private const int RoleId = 10115;
         private const int PartyId = 3500000;
         private const int TaskTypeId = 57881;
-        private readonly Mock<IServiceHttpClientFactory> clientFactory = new Mock<IServiceHttpClientFactory>();
-        private readonly Mock<IServiceHttpClient> client = new Mock<IServiceHttpClient>();
+        private readonly Mock<IHttpClientFactory> clientFactory = new Mock<IHttpClientFactory>();
+        private readonly Mock<IHttpClient> client = new Mock<IHttpClient>();
 
         public SeedWithTestData(IReadWriteSessionFactoryProvider provider)
         {

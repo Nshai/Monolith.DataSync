@@ -6,9 +6,9 @@ namespace Microservice.Workflow.v1.Activities
 {
     public class EntityTaskBuilderFactory : IEntityTaskBuilderFactory
     {
-        private readonly IServiceHttpClientFactory clientFactory;
+        private readonly IHttpClientFactory clientFactory;
 
-        public EntityTaskBuilderFactory(IServiceHttpClientFactory clientFactory)
+        public EntityTaskBuilderFactory(IHttpClientFactory clientFactory)
         {
             this.clientFactory = clientFactory;
         }

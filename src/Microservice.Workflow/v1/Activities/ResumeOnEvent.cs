@@ -29,7 +29,7 @@ namespace Microservice.Workflow.v1.Activities
                 var bookmark = string.Format("{0}:{1}", eventType, entityId);
                 var resumeUri = string.Format("{0}/{1}", clientConfiguration.BaseAddress.TrimEnd('/'), string.Format(Uris.Self.ResumeInstance, context.WorkflowInstanceId, bookmark));
 
-                var clientFactory = IoC.Resolve<IServiceHttpClientFactory>(Constants.ContainerId);
+                var clientFactory = IoC.Resolve<IHttpClientFactory>(Constants.ContainerId);
                 using (var workflowClient = clientFactory.Create("eventmanagement"))
                 {
                     var subscribeTask = workflowClient.Post<EventSubscriptionDocument, SubscribeRequest>(Uris.EventManagement.Post, new SubscribeRequest()

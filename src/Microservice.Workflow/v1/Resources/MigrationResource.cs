@@ -30,7 +30,7 @@ namespace Microservice.Workflow.v1.Resources
     {
         private readonly IRepository<Template> templateRepository;
         private readonly IRepository<TemplateDefinition> templateDefinitionRepository;
-        private readonly IServiceHttpClientFactory clientFactory;
+        private readonly IHttpClientFactory clientFactory;
         private readonly IReadOnlyRepository<Instance> instanceRepository;
         private readonly IReadOnlyRepository<InstanceStep> instanceStepRepository;
         private readonly IServiceAddressRegistry serviceAddressRegistry;
@@ -39,7 +39,7 @@ namespace Microservice.Workflow.v1.Resources
         private readonly IEventDispatcher eventDispatcher;
         private readonly IRepository<InstanceHistory> instanceHistoryRepository;
 
-        public MigrationResource(IRepository<Template> templateRepository, IRepository<TemplateDefinition> templateDefinitionRepository, IReadOnlyRepository<Instance> instanceRepository, IReadOnlyRepository<InstanceStep> instanceStepRepository, IServiceAddressRegistry serviceAddressRegistry, IServiceHttpClientFactory clientFactory, ITrustedClientAuthenticationTokenBuilder tokenBuilder, IWorkflowHost workflowHost, IEventDispatcher eventDispatcher, IRepository<InstanceHistory> instanceHistoryRepository)
+        public MigrationResource(IRepository<Template> templateRepository, IRepository<TemplateDefinition> templateDefinitionRepository, IReadOnlyRepository<Instance> instanceRepository, IReadOnlyRepository<InstanceStep> instanceStepRepository, IServiceAddressRegistry serviceAddressRegistry, IHttpClientFactory clientFactory, ITrustedClientAuthenticationTokenBuilder tokenBuilder, IWorkflowHost workflowHost, IEventDispatcher eventDispatcher, IRepository<InstanceHistory> instanceHistoryRepository)
         {
             this.templateRepository = templateRepository;
             this.templateDefinitionRepository = templateDefinitionRepository;

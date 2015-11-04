@@ -35,8 +35,8 @@ namespace Microservice.Workflow.Tests
     [TestFixture]
     public class WorkflowServiceTests
     {
-        private Mock<IServiceHttpClientFactory> serviceClientFactory;
-        private Mock<IServiceHttpClient> serviceClient;
+        private Mock<IHttpClientFactory> serviceClientFactory;
+        private Mock<IHttpClient> serviceClient;
         private Mock<ISignManager> signManager;
         private Mock<ISignAuthenticationMessageBuilder> messageBuilder;
         private Mock<IServiceAddressRegistry> addressRegistry;
@@ -62,8 +62,8 @@ namespace Microservice.Workflow.Tests
         {
             XmlConfigurator.Configure();
 
-            serviceClientFactory = new Mock<IServiceHttpClientFactory>();
-            serviceClient = new Mock<IServiceHttpClient>();
+            serviceClientFactory = new Mock<IHttpClientFactory>();
+            serviceClient = new Mock<IHttpClient>();
             signManager = new Mock<ISignManager>();
             messageBuilder = new Mock<ISignAuthenticationMessageBuilder>();
             addressRegistry = new Mock<IServiceAddressRegistry>();
@@ -104,7 +104,7 @@ namespace Microservice.Workflow.Tests
             builder.RegisterInstance(signManager.Object).As<ISignManager>();
             builder.RegisterInstance(messageBuilder.Object).As<ISignAuthenticationMessageBuilder>();
 
-            builder.RegisterInstance(serviceClientFactory.Object).As<IServiceHttpClientFactory>();
+            builder.RegisterInstance(serviceClientFactory.Object).As<IHttpClientFactory>();
             builder.RegisterInstance(entityTaskFactory).As<IEntityTaskBuilderFactory>();
             builder.RegisterInstance(addressRegistry.Object).As<IServiceAddressRegistry>();
             builder.RegisterInstance(sessionFactory.Object).As<ISessionFactory>();
@@ -396,7 +396,7 @@ namespace Microservice.Workflow.Tests
         public void WhenExecuteCreateTaskStepWithDueDelayForBusinessDaysThenVerifyHolidayApiCalledCorrectly()
         {
             var uri = "";
-            serviceClient.Setup(c => c.Get<IEnumerable<HolidayDocument>>(It.IsAny<string>(), It.IsAny<long?>())).Callback<string, long?>((u, e) => uri = u).Returns(Task.FromResult(new HttpResponse<IEnumerable<HolidayDocument>>()));
+            serviceClient.Setup(c => c.Get<IEnumerable<HolidayDocument>>(It.IsAny<string>(), It.IsAny<object>())).Callback<string, object>((u, e) => uri = u).Returns(Task.FromResult(new HttpResponse<IEnumerable<HolidayDocument>>()));
 
             var createTask = new CreateTaskStep(Guid.NewGuid(), TaskTransition.OnCompletion, 111, TaskAssignee.User, 2, true, OwnerPartyId);
             ExecuteCreateTaskWorkflow(clientTemplate, new[] { createTask });

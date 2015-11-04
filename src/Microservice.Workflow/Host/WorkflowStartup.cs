@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Configuration;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Formatting;
 using System.Reflection;
 using Autofac;
 using Autofac.Configuration;
@@ -90,24 +92,15 @@ namespace Microservice.Workflow.Host
 
             #region Client
 
-            builder.Register(c => new FuncMutator(x => x))
-                .As<IHttpClientConfigurationMutator>();
+            builder.RegisterModule(new AutofacHttpClientModule());
 
-            builder.RegisterType<ServiceHttpClientFactory>()
-                .As<IServiceHttpClientFactory>();
+            builder.Register(c => new DefaultHttpClientFactory(c.Resolve<IServiceAddressRegistry>(), client => client.ResponseFormatters.Add(new JsonMediaTypeFormatter()), () => new [] { new TrustedClientAuthenticationDelegatingHandler() }))
+                .As<IHttpClientFactory>()
+                .InstancePerDependency();
 
             builder.Register(c => ServiceAddressRegistrySection.GetSection())
                .As<IServiceAddressRegistry>()
                .SingleInstance();
-
-            builder.RegisterType<DefaultHttpClientConfiguration>()
-                .As<IHttpClientConfiguration>();
-
-            builder.RegisterType<ConfigureHalFormatters>()
-                .As<IHttpClientConfigurationMutator>();
-
-            builder.RegisterType<ConfigureTrustedClientAuth>()
-                .As<IHttpClientConfigurationMutator>();
 
             #endregion
 

@@ -27,7 +27,7 @@ namespace Microservice.Workflow.v1.Activities
                 this.LogMessage(context, LogLevel.Info, "Subscribe to event {0} for entity {1}", eventType, entityId);
                 var abortUri = string.Format("{0}/{1}", clientConfiguration.BaseAddress.TrimEnd('/'), string.Format(Uris.Self.AbortInstance, context.WorkflowInstanceId));
 
-                var clientFactory = IoC.Resolve<IServiceHttpClientFactory>(Constants.ContainerId);
+                var clientFactory = IoC.Resolve<IHttpClientFactory>(Constants.ContainerId);
                 using (var workflowClient = clientFactory.Create("eventmanagement"))
                 {
                     var subscribeTask = workflowClient.Post<EventSubscriptionDocument, SubscribeRequest>(Uris.EventManagement.Post, new SubscribeRequest()

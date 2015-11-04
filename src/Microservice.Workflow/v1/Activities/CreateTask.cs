@@ -36,7 +36,7 @@ namespace Microservice.Workflow.v1.Activities
                 var templateOwnerPartyId = TemplateOwnerPartyId.Get(context);
                 var assignedTo = AssignedTo.Get(context);
 
-                var clientFactory = IoC.Resolve<IServiceHttpClientFactory>(Constants.ContainerId);
+                var clientFactory = IoC.Resolve<IHttpClientFactory>(Constants.ContainerId);
                 using (var crmClient = clientFactory.Create("crm"))
                 {
                     var dueDate = DateCalculator.AddDays(DateTime.UtcNow, TimeSpan.FromDays(dueDelay), dueDelayBusinessDays, (s, e) =>

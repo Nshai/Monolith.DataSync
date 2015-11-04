@@ -15,10 +15,10 @@ namespace Microservice.Workflow.v1.Resources
     {
         private readonly IRepository<Template> templateRepository;
         private readonly ITemplateResource templateResource;
-        private readonly IServiceHttpClientFactory clientFactory;
+        private readonly IHttpClientFactory clientFactory;
         private readonly IServiceAddressRegistry serviceAddressRegistry;
 
-        public TemplateTriggerResource(IRepository<Template> templateRepository, ITemplateResource templateResource, IServiceHttpClientFactory clientFactory, IServiceAddressRegistry serviceAddressRegistry)
+        public TemplateTriggerResource(IRepository<Template> templateRepository, ITemplateResource templateResource, IHttpClientFactory clientFactory, IServiceAddressRegistry serviceAddressRegistry)
         {
             this.templateRepository = templateRepository;
             this.templateResource = templateResource;

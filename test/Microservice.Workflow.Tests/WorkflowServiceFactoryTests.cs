@@ -17,8 +17,8 @@ namespace Microservice.Workflow.Tests
     [TestFixture]
     public class WorkflowServiceFactoryTests
     {
-        private Mock<IServiceHttpClientFactory> clientFactory;
-        private Mock<IServiceHttpClient> client;
+        private Mock<IHttpClientFactory> clientFactory;
+        private Mock<IHttpClient> client;
         private IWorkflowServiceFactory underTest;
         private const int TenantId = 123;
         private const int OwnerId = 222;
@@ -27,8 +27,8 @@ namespace Microservice.Workflow.Tests
         [SetUp]
         public void SetUp()
         {
-            clientFactory = new Mock<IServiceHttpClientFactory>();
-            client = new Mock<IServiceHttpClient>();
+            clientFactory = new Mock<IHttpClientFactory>();
+            client = new Mock<IHttpClient>();
 
             clientFactory.Setup(c => c.Create(It.IsAny<string>())).Returns(client.Object);
             client.Setup(c => c.Get<Dictionary<string, object>>(string.Format(Uris.Crm.GetUserInfoByUserId, OwnerId), null)).Returns(Task.FromResult(new HttpResponse<Dictionary<string, object>>() {Raw = new HttpResponseMessage(HttpStatusCode.OK), Resource = new Dictionary<string, object> {{IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.PartyId, OwnerPartyId}}}));

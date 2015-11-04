@@ -15,12 +15,12 @@ namespace Microservice.Workflow.v1.Activities
 {
     public class EntityTaskBuilder
     {
-        private readonly IServiceHttpClientFactory clientFactory;
+        private readonly IHttpClientFactory clientFactory;
         private readonly Activity parentActivity;
         private readonly NativeActivityContext context;
         public const int PartyNotFound = 0;
 
-        public EntityTaskBuilder(IServiceHttpClientFactory clientFactory, Activity parentActivity, NativeActivityContext context)
+        public EntityTaskBuilder(IHttpClientFactory clientFactory, Activity parentActivity, NativeActivityContext context)
         {
             this.clientFactory = clientFactory;
             this.parentActivity = parentActivity;
@@ -93,7 +93,7 @@ namespace Microservice.Workflow.v1.Activities
             return PartyNotFound;
         }
 
-        protected IServiceHttpClientFactory ClientFactory
+        protected IHttpClientFactory ClientFactory
         {
             get { return clientFactory; }
         }

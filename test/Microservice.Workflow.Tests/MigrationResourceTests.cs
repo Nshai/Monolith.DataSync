@@ -32,9 +32,9 @@ namespace Microservice.Workflow.Tests
         private Mock<IRepository<TemplateDefinition>> templateDefinitionRepository;
         private Mock<IReadOnlyRepository<InstanceStep>> instanceStepRepository;
         private Mock<IRepository<InstanceHistory>> instanceHistoryRepository;
-        private Mock<IServiceHttpClientFactory> clientFactory;
+        private Mock<IHttpClientFactory> clientFactory;
         private Mock<ITrustedClientAuthenticationTokenBuilder> tokenBuilder;
-        private Mock<IServiceHttpClient> client;
+        private Mock<IHttpClient> client;
         private Mock<IWorkflowHost> workflowHost;
         private Mock<IEventDispatcher> eventDispatcher;
         private Mock<IServiceAddressRegistry> addressRegistry;
@@ -60,8 +60,8 @@ namespace Microservice.Workflow.Tests
             addressRegistry = new Mock<IServiceAddressRegistry>();
             addressRegistry.Setup(a => a.GetServiceEndpoint("workflow")).Returns(() => serviceEndpoint.Object);
 
-            client = new Mock<IServiceHttpClient>();
-            clientFactory = new Mock<IServiceHttpClientFactory>();
+            client = new Mock<IHttpClient>();
+            clientFactory = new Mock<IHttpClientFactory>();
             clientFactory.Setup(c => c.Create(It.IsAny<string>())).Returns(client.Object);
 
             workflowHost = new Mock<IWorkflowHost>();

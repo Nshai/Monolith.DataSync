@@ -20,7 +20,7 @@ namespace Microservice.Workflow.Tests
         private const int UserId = 1;
         private readonly Mock<IRepository<Template>> templateRepository = new Mock<IRepository<Template>>();
         private readonly Mock<ITemplateResource> templateResource = new Mock<ITemplateResource>();
-        private readonly Mock<IServiceHttpClientFactory> clientFactory = new Mock<IServiceHttpClientFactory>();
+        private readonly Mock<IHttpClientFactory> clientFactory = new Mock<IHttpClientFactory>();
         private readonly Mock<IServiceAddressRegistry> addressRegistry = new Mock<IServiceAddressRegistry>();
         private ITemplateTriggerResource underTest;
 

@@ -109,6 +109,7 @@
     <Build Include="dbo\Views\dbo.vwTemplate.sql" />
     <Build Include="dbo\Tables\dbo._MetadataLog.sql" />
     <None Include="dbo\Stored Procedures\dbo.SpNGetDelayedTemplates.sql" />
+    <Build Include="dbo\Tables\dbo._EventLog.sql" />
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>PowerShell -NoProfile -ExecutionPolicy Bypass -Command "&amp; '$(SolutionDir)packages\IntelliFlo.PowerShell.DevLib.0.0.3.0\content\zip-directory.ps1' -ZIPFILENAME '$(SolutionDir)dist\db-workflow.zip' -SOURCEDIR '$(ProjectDir)dbo\'

@@ -7,7 +7,7 @@ namespace Microservice.Workflow.v1.Activities
 {
     public class AdviserTaskBuilder : EntityTaskBuilder
     {
-        public AdviserTaskBuilder(IServiceHttpClientFactory clientFactory, Activity parentActivity, NativeActivityContext context) : base(clientFactory, parentActivity, context) { }
+        public AdviserTaskBuilder(IHttpClientFactory clientFactory, Activity parentActivity, NativeActivityContext context) : base(clientFactory, parentActivity, context) { }
 
         public async override Task<int> GetContextPartyId(string ownerContextRole, WorkflowContext context)
         {

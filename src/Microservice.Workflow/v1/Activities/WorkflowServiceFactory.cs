@@ -20,11 +20,11 @@ namespace Microservice.Workflow.v1.Activities
     public class WorkflowServiceFactory : IWorkflowServiceFactory, IMapActivity
     {
         private readonly IDelayPeriod delayPeriod;
-        private readonly IServiceHttpClientFactory clientFactory;
+        private readonly IHttpClientFactory clientFactory;
         private const string DynamicWorkflow = "DynamicWorkflow";
         private const string ActivityPresentationNs = "http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation";
 
-        public WorkflowServiceFactory(IDelayPeriod delayPeriod, IServiceHttpClientFactory clientFactory)
+        public WorkflowServiceFactory(IDelayPeriod delayPeriod, IHttpClientFactory clientFactory)
         {
             this.delayPeriod = delayPeriod;
             this.clientFactory = clientFactory;

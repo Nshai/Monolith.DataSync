@@ -35,7 +35,7 @@ namespace Microservice.Workflow.v1.Activities
 
             using (UserContextBuilder.FromBearerToken(workflowContext.BearerToken))
             {
-                var clientFactory = IoC.Resolve<IServiceHttpClientFactory>(Constants.ContainerId);
+                var clientFactory = IoC.Resolve<IHttpClientFactory>(Constants.ContainerId);
 
                 using (var portfolioClient = clientFactory.Create("portfolio"))
                 {
@@ -78,7 +78,7 @@ namespace Microservice.Workflow.v1.Activities
             }
         }
 
-        private static void PatchPlan(IServiceHttpClient httpClient, int clientId, int planId, PlanPatchRequest request)
+        private static void PatchPlan(IHttpClient httpClient, int clientId, int planId, PlanPatchRequest request)
         {
             var planTask = httpClient.Patch<PlanDocument, PlanPatchRequest>(string.Format(Uris.Portfolio.PatchPlan, clientId, planId), request)
                 .ContinueWith(t =>

@@ -7,11 +7,11 @@ namespace Microservice.Workflow.v1.Activities
 {
     public class ClientTaskBuilder : EntityTaskBuilder
     {
-        public ClientTaskBuilder(IServiceHttpClientFactory clientFactory, Activity parentActivity, NativeActivityContext context) : base(clientFactory, parentActivity, context) { }
+        public ClientTaskBuilder(IHttpClientFactory clientFactory, Activity parentActivity, NativeActivityContext context) : base(clientFactory, parentActivity, context) { }
 
         public async override Task<int> GetContextPartyId(string ownerContextRole, WorkflowContext context)
         {
-            if (ownerContextRole != "ServicingAdviser") 
+            if (ownerContextRole != "ServicingAdviser")
                 return PartyNotFound;
 
             using (var crmClient = ClientFactory.Create("crm"))
