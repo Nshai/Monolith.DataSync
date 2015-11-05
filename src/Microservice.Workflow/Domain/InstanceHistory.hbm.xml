@@ -6,13 +6,14 @@
 									 default-access="property"
                    schema="workflow.dbo">
 
-  <class name="InstanceHistory" table="WF_TInstanceHistory">
+  <class name="InstanceHistory" table="vwInstanceHistory">
 
     <id name="Id">
       <generator class="identity"/>
     </id>
 
     <property name="InstanceId" />
+    <property name="TenantId" insert="false" update="false"/>
     <property name="StepId" />
     <property name="Step" />
     <property name="Data" type="IntelliFlo.Platform.NHibernate.Types.DocumentUserType`1[[Microservice.Workflow.Domain.LogData, Microservice.Workflow]], IntelliFlo.Platform.NHibernate" not-null="false" />

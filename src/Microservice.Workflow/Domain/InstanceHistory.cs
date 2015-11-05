@@ -19,6 +19,7 @@ namespace Microservice.Workflow.Domain
         }
 
         public virtual Guid InstanceId { get; set; }
+        public virtual int TenantId { get; set; }
         public virtual Guid StepId { get; set; }
         public virtual string Step { get; set; }
 
