@@ -372,6 +372,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collaborators\v1\GenericResponse.cs" />
     <Compile Include="Domain\EnumExtension.cs" />
     <Compile Include="DataProfiles\DevInitialiser.cs" />
     <Compile Include="DataProfiles\SeedWithTestData.cs" />
@@ -392,6 +393,7 @@
     <Compile Include="Properties\GlobalAssemblyInfo.cs" />
     <Compile Include="RepositoryExtensions.cs" />
     <Compile Include="LogLevel.cs" />
+    <Compile Include="v1\Activities\PostToService.cs" />
     <Compile Include="v1\Contracts\RegisterTemplateRequest.cs" />
     <Compile Include="v1\Contracts\TemplateRegistrationDocument.cs" />
     <Compile Include="v1\Controllers\InstanceController.cs" />
