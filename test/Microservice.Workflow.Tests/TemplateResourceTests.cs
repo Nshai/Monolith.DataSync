@@ -29,6 +29,7 @@ namespace Microservice.Workflow.Tests
         private Mock<IRepository<Template>> templateRepository;
         private Mock<IRepository<TemplateCategory>> templateCategoryRepository;
         private Mock<IRepository<TemplateDefinition>> templateDefinitionRepository;
+        private Mock<IRepository<TemplateRegistration>> templateRegistrationRepository;
         private Mock<ITrustedClientAuthenticationTokenBuilder> tokenBuilder;
         private Mock<IHttpClientFactory> clientFactory;
         private Mock<IHttpClient> client;
@@ -73,7 +74,7 @@ namespace Microservice.Workflow.Tests
             clientFactory.Setup(c => c.Create(It.IsAny<string>())).Returns(client.Object);
             var serviceFactory = new WorkflowServiceFactory(new DayDelayPeriod(), clientFactory.Object);
 
-            underTest = new TemplateResource(templateRepository.Object, templateCategoryRepository.Object, tokenBuilder.Object, clientFactory.Object, templateDefinitionRepository.Object, serviceFactory, eventDispatcher.Object, workflowHost.Object);
+            underTest = new TemplateResource(templateRepository.Object, templateCategoryRepository.Object, templateRegistrationRepository.Object, tokenBuilder.Object, clientFactory.Object, templateDefinitionRepository.Object, serviceFactory, eventDispatcher.Object, workflowHost.Object);
 
             var builder = new ContainerBuilder();
             builder.RegisterInstance(underTest).AsImplementedInterfaces();

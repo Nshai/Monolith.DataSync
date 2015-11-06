@@ -376,6 +376,7 @@
     <Compile Include="DataProfiles\DevInitialiser.cs" />
     <Compile Include="DataProfiles\SeedWithTestData.cs" />
     <Compile Include="Domain\TaskAssignee.cs" />
+    <Compile Include="Domain\TemplateRegistration.cs" />
     <Compile Include="Engine\ExceptionLogger.cs" />
     <Compile Include="Engine\GenerationList.cs" />
     <Compile Include="Engine\InstanceCountBehavior.cs" />
@@ -391,11 +392,14 @@
     <Compile Include="Properties\GlobalAssemblyInfo.cs" />
     <Compile Include="RepositoryExtensions.cs" />
     <Compile Include="LogLevel.cs" />
+    <Compile Include="v1\Contracts\RegisterTemplateRequest.cs" />
+    <Compile Include="v1\Contracts\TemplateRegistrationDocument.cs" />
     <Compile Include="v1\Controllers\InstanceController.cs" />
     <Compile Include="v1\Controllers\InstanceHistoryController.cs" />
     <Compile Include="v1\Controllers\InstanceStepController.cs" />
     <Compile Include="v1\Controllers\MigrationController.cs" />
     <Compile Include="v1\Controllers\TemplateCategoryController.cs" />
+    <Compile Include="v1\Controllers\TemplateController.Common.cs" />
     <Compile Include="v1\Controllers\TemplateController.cs" />
     <Compile Include="v1\Controllers\TemplateRoleController.cs" />
     <Compile Include="v1\Controllers\TemplateStepController.cs" />
@@ -405,6 +409,7 @@
     <Compile Include="Engine\DatabaseTrackingParticipant.cs" />
     <Compile Include="Engine\IWorkflowHost.cs" />
     <Compile Include="Engine\Log4NetTraceListener.cs" />
+    <Compile Include="v1\Resources\TemplateResource.Common.cs" />
     <Compile Include="XmlType.cs" />
     <Compile Include="DomainObject.cs" />
     <Compile Include="EventDispatcher.cs" />
@@ -717,6 +722,9 @@
     <EmbeddedResource Include="Domain\TemplateRole.hbm.xml" />
     <EmbeddedResource Include="Domain\TemplateTriggerSet.hbm.xml" />
     <EmbeddedResource Include="Domain\TemplateVersion.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\TemplateRegistration.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

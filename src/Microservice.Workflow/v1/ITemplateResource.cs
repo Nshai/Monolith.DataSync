@@ -12,11 +12,14 @@ namespace Microservice.Workflow.v1
         TemplateDocument Patch(int templateId, TemplatePatchRequest request);
         void Delete(int templateId);
         void CreateInstance(int templateId, CreateInstanceRequest request, bool triggeredInstance = false);
+        void CreateInstance(string templateIdentifier, CreateInstanceRequest request);
         Template GetTemplate(int templateId);
         PagedResult<TemplateDocument> Query(string query, IDictionary<string, object> routeValues);
         TemplateDocument Clone(int templateId, CloneTemplateRequest request);
         PagedResult<TemplateExtDocument> QueryExt(string query, IDictionary<string, object> routeValues);
         TemplateExtDocument GetExt(int templateId);
         void Initialise(int templateId);
+        TemplateRegistrationDocument Register(string identifier, RegisterTemplateRequest request);
+        void Unregister(string identifier);
     }
 }

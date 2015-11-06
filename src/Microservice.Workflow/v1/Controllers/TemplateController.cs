@@ -14,7 +14,7 @@ namespace Microservice.Workflow.v1.Controllers
     [Authorize]
     [BadRequestOnException(typeof(AssertionFailedException), typeof(BusinessException), typeof(ValidationException))]
     [RoutePrefix("v1/templates")]
-    public class TemplateController : ApiController
+    public partial class TemplateController : ApiController
     {
         private readonly ITemplateResource templateResource;
 
@@ -25,6 +25,36 @@ namespace Microservice.Workflow.v1.Controllers
         public TemplateController(ITemplateResource templateResource)
         {
             this.templateResource = templateResource;
+        }
+
+
+        /// <summary>
+        /// Initialise workflow service for specified template
+        /// </summary>
+        /// <remarks>Can be used to confirm template is working correctly</remarks>
+        /// <param name="templateId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("{templateId}/initialise")]
+        public NoContentActionResult Initialise(int templateId)
+        {
+            try
+            {
+                templateResource.Initialise(templateId);
+                return Request.CreateNoContentResult(HttpStatusCode.NoContent);
+            }
+            catch (TemplateNotFoundException)
+            {
+                return Request.CreateNoContentResult(HttpStatusCode.NotFound, "Template not found");
+            }
+            catch (TemplateNotActiveException)
+            {
+                return Request.CreateNoContentResult(HttpStatusCode.BadRequest, "Template not active");
+            }
+            catch (TemplatePermissionsException)
+            {
+                return Request.CreateNoContentResult(HttpStatusCode.Forbidden, "Not permitted to create this instance");
+            }
         }
 
         /// <summary>
@@ -60,36 +90,7 @@ namespace Microservice.Workflow.v1.Controllers
                 return Request.CreateNoContentResult(HttpStatusCode.BadRequest, "Not permitted to create a duplicate instance");
             }
         }
-
-        /// <summary>
-        /// Initialise workflow service for specified template
-        /// </summary>
-        /// <remarks>Can be used to confirm template is working correctly</remarks>
-        /// <param name="templateId"></param>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("{templateId}/initialise")]
-        public NoContentActionResult Initialise(int templateId)
-        {
-            try
-            {
-                templateResource.Initialise(templateId);
-                return Request.CreateNoContentResult(HttpStatusCode.NoContent);
-            }
-            catch (TemplateNotFoundException)
-            {
-                return Request.CreateNoContentResult(HttpStatusCode.NotFound, "Template not found");
-            }
-            catch (TemplateNotActiveException)
-            {
-                return Request.CreateNoContentResult(HttpStatusCode.BadRequest, "Template not active");
-            }
-            catch (TemplatePermissionsException)
-            {
-                return Request.CreateNoContentResult(HttpStatusCode.Forbidden, "Not permitted to create this instance");
-            }
-        }
-
+        
         /// <summary>
         /// Create an instance as a result of event trigger firing
         /// </summary>
@@ -121,7 +122,7 @@ namespace Microservice.Workflow.v1.Controllers
                 return Request.CreateNoContentResult(HttpStatusCode.BadRequest, "Not permitted to create a duplicate instance");
             }
         }
-        
+
         /// <summary>
         /// Get template
         /// </summary>

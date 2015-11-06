@@ -23,11 +23,12 @@ namespace Microservice.Workflow.v1.Resources
     /// <summary>
     /// Handle template requests
     /// </summary>
-    public class TemplateResource : ITemplateResource, IHandle<TemplateMadeActive>
+    public partial class TemplateResource : ITemplateResource, IHandle<TemplateMadeActive>
     {
         private const int SystemTenantId = 0;
         private readonly IHttpClientFactory clientFactory;
         private readonly IRepository<TemplateCategory> templateCategoryRepository;
+        private readonly IRepository<TemplateRegistration> templateRegistrationRepository;
         private readonly IRepository<TemplateDefinition> templateDefinitionRepository;
         private readonly IRepository<Template> templateRepository;
         private readonly ITrustedClientAuthenticationTokenBuilder tokenBuilder;
@@ -40,6 +41,7 @@ namespace Microservice.Workflow.v1.Resources
         /// </summary>
         /// <param name="templateRepository"></param>
         /// <param name="templateCategoryRepository"></param>
+        /// <param name="templateRegistrationRepository"></param>
         /// <param name="tokenBuilder"></param>
         /// <param name="clientFactory"></param>
         /// <param name="templateDefinitionRepository"></param>
@@ -48,12 +50,17 @@ namespace Microservice.Workflow.v1.Resources
         /// <param name="workflowHost"></param>
         public TemplateResource(IRepository<Template> templateRepository,
             IRepository<TemplateCategory> templateCategoryRepository,
+            IRepository<TemplateRegistration> templateRegistrationRepository,
             ITrustedClientAuthenticationTokenBuilder tokenBuilder,
             IHttpClientFactory clientFactory,
-            IRepository<TemplateDefinition> templateDefinitionRepository, IWorkflowServiceFactory workflowServiceFactory, IEventDispatcher eventDispatcher, IWorkflowHost workflowHost)
+            IRepository<TemplateDefinition> templateDefinitionRepository, 
+            IWorkflowServiceFactory workflowServiceFactory, 
+            IEventDispatcher eventDispatcher, 
+            IWorkflowHost workflowHost)
         {
             this.templateRepository = templateRepository;
             this.templateCategoryRepository = templateCategoryRepository;
+            this.templateRegistrationRepository = templateRegistrationRepository;
             this.tokenBuilder = tokenBuilder;
             this.clientFactory = clientFactory;
             this.templateDefinitionRepository = templateDefinitionRepository;

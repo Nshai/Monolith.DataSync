@@ -86,6 +86,8 @@ namespace Microservice.Workflow.Modules
             Mapper.CreateMap<TemplateStepPatchRequest, TemplateStepPatch>();
 
             Mapper.CreateMap<CreateTemplateStepRequest, CreateTemplateStep>();
+
+            Mapper.CreateMap<TemplateRegistration, TemplateRegistrationDocument>();
         }
     }
 }
