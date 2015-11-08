@@ -6,7 +6,7 @@
 									 default-access="property"
                    schema="workflow.dbo">
 
-  <class name="InstanceStep" table="vwInstanceStep">
+  <class name="InstanceStep" table="vwInstanceStep" mutable="false">
 
     <id name="Id" column="StepId">
       <generator class="identity"/>

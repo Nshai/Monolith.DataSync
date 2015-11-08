@@ -37,8 +37,9 @@ namespace Microservice.Workflow.v1.Resources
         private readonly ITrustedClientAuthenticationTokenBuilder tokenBuilder;
         private readonly IWorkflowHost workflowHost;
         private readonly IEventDispatcher eventDispatcher;
+        private readonly IRepository<InstanceHistory> instanceHistoryRepository;
 
-        public MigrationResource(IRepository<Template> templateRepository, IRepository<TemplateDefinition> templateDefinitionRepository, IReadOnlyRepository<Instance> instanceRepository, IReadOnlyRepository<InstanceStep> instanceStepRepository, IServiceAddressRegistry serviceAddressRegistry, IServiceHttpClientFactory clientFactory, ITrustedClientAuthenticationTokenBuilder tokenBuilder, IWorkflowHost workflowHost, IEventDispatcher eventDispatcher)
+        public MigrationResource(IRepository<Template> templateRepository, IRepository<TemplateDefinition> templateDefinitionRepository, IReadOnlyRepository<Instance> instanceRepository, IReadOnlyRepository<InstanceStep> instanceStepRepository, IServiceAddressRegistry serviceAddressRegistry, IServiceHttpClientFactory clientFactory, ITrustedClientAuthenticationTokenBuilder tokenBuilder, IWorkflowHost workflowHost, IEventDispatcher eventDispatcher, IRepository<InstanceHistory> instanceHistoryRepository)
         {
             this.templateRepository = templateRepository;
             this.templateDefinitionRepository = templateDefinitionRepository;
@@ -49,6 +50,7 @@ namespace Microservice.Workflow.v1.Resources
             this.tokenBuilder = tokenBuilder;
             this.workflowHost = workflowHost;
             this.eventDispatcher = eventDispatcher;
+            this.instanceHistoryRepository = instanceHistoryRepository;
         }
 
         public PagedResult<TemplateMigrationDocument> GetTemplates(string query, IDictionary<string, object> routeValues)
@@ -130,11 +132,41 @@ namespace Microservice.Workflow.v1.Resources
             return new TemplateMigrationResponse() {Id = templateId, Status = MigrationStatus.Success.ToString()};
         }
 
+        private void FixInstanceHistoryStepIds(Instance instance)
+        {
+            var template = templateRepository.Query().SingleOrDefault(t => t.Guid == instance.Template.Id);
+            var instanceHistory = instanceHistoryRepository.Query().Where(i => i.InstanceId == instance.Id).ToList();
+            var templateStepIds = template.Steps.Select(s => s.Id);
+
+            int stepIndex = 0;
+            var instanceSteps = instanceStepRepository.Query().Where(i => i.InstanceId == instance.Id).OrderBy(s => s.StepIndex);
+            foreach (var instanceStep in instanceSteps)
+            {
+                if (!new[] { StepName.CreateTask.ToString(), StepName.Delay.ToString() }.Contains(instanceStep.Step))
+                    continue;
+
+                if (templateStepIds.Contains(instanceStep.Id))
+                    continue;
+
+                var newStepId = template.Steps.ElementAt(stepIndex).Id;
+                foreach (var instanceHistoryRecord in instanceHistory.Where(i => i.StepId == instanceStep.Id))
+                {
+                    instanceHistoryRecord.StepId = newStepId;
+                    instanceHistoryRepository.Save(instanceHistoryRecord);
+                }
+
+                stepIndex++;
+            }
+        }
+
+        [Transaction]
         public async Task<InstanceMigrationResponse> MigrateInstance(Guid instanceId)
         {
             var instance = instanceRepository.Get(instanceId);
             if (instance == null)
                 throw new InstanceNotFoundException();
+            
+            FixInstanceHistoryStepIds(instance);
 
             if ((instance.Status != "In Progress" && instance.Status != "Processing") || instance.Version >= TemplateDefinition.DefaultVersion)
                 return new InstanceMigrationResponse() {Id = instanceId, Status = MigrationStatus.Skipped.ToString(), Description = "Instance already migrated"};

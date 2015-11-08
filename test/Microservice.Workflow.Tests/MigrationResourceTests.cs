@@ -16,6 +16,7 @@ using Microservice.Workflow.v1.Resources;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using CreateTaskStep = Microservice.Workflow.Domain.CreateTaskStep;
 
 namespace Microservice.Workflow.Tests
 {
@@ -25,10 +26,12 @@ namespace Microservice.Workflow.Tests
         private IMigrationResource underTest;
         private Instance instance;
         private readonly List<InstanceStep> instanceSteps = new List<InstanceStep>();
+        private readonly List<IWorkflowStep> templateSteps = new List<IWorkflowStep>();
         private Mock<IRepository<Instance>> instanceRepository;
         private Mock<IRepository<Template>> templateRepository;
         private Mock<IRepository<TemplateDefinition>> templateDefinitionRepository;
         private Mock<IReadOnlyRepository<InstanceStep>> instanceStepRepository;
+        private Mock<IRepository<InstanceHistory>> instanceHistoryRepository;
         private Mock<IServiceHttpClientFactory> clientFactory;
         private Mock<ITrustedClientAuthenticationTokenBuilder> tokenBuilder;
         private Mock<IServiceHttpClient> client;
@@ -39,6 +42,8 @@ namespace Microservice.Workflow.Tests
         private const int UserId = 123;
         private const int TenantId = 111;
         private const int TemplateId = 1;
+        private Guid stepOneGuid = new Guid("08BF9E40-BD4C-4A2B-9F26-F47AFF3A297B");
+        private Guid stepTwoGuid = new Guid("403844C7-934B-475D-8759-BB3675EDC116");
 
         [SetUp]
         public void SetUp()
@@ -46,7 +51,7 @@ namespace Microservice.Workflow.Tests
             instanceRepository = new Mock<IRepository<Instance>>();
             templateRepository = new Mock<IRepository<Template>>();
             templateDefinitionRepository = new Mock<IRepository<TemplateDefinition>>();
-
+            instanceHistoryRepository = new Mock<IRepository<InstanceHistory>>();
             instanceStepRepository = new Mock<IReadOnlyRepository<InstanceStep>>();
 
             serviceEndpoint = new Mock<IServiceEndpoint>();
@@ -68,6 +73,8 @@ namespace Microservice.Workflow.Tests
             tokenBuilder = new Mock<ITrustedClientAuthenticationTokenBuilder>();
 
             var template = new Template("MyTest", TenantId, new TemplateCategory("Test", TenantId), WorkflowRelatedTo.Client, UserId);
+            template.AddStep(new CreateTaskStep(stepOneGuid, TaskTransition.Immediately, 123, null));
+            template.AddStep(new CreateTaskStep(stepTwoGuid, TaskTransition.Immediately, 123, null));
             instance = new Instance()
             {
                 Id = Guid.NewGuid(),
@@ -81,10 +88,12 @@ namespace Microservice.Workflow.Tests
 
             instanceRepository.Setup(i => i.Get(It.IsAny<Guid>())).Returns(instance);
             instanceStepRepository.Setup(i => i.Query()).Returns(instanceSteps.AsQueryable);
+            instanceHistoryRepository.Setup(i => i.Query()).Returns(instanceSteps.Select(s => new InstanceHistory(instance.Id, s.Id, "CreateTask", DateTime.UtcNow)).AsQueryable());
 
             templateRepository.Setup(t => t.Get(TemplateId)).Returns(template);
+            templateRepository.Setup(t => t.Query()).Returns(new[] { template }.AsQueryable());
 
-            underTest = new MigrationResource(templateRepository.Object, templateDefinitionRepository.Object, instanceRepository.Object, instanceStepRepository.Object, addressRegistry.Object, clientFactory.Object, tokenBuilder.Object, workflowHost.Object, eventDispatcher.Object);
+            underTest = new MigrationResource(templateRepository.Object, templateDefinitionRepository.Object, instanceRepository.Object, instanceStepRepository.Object, addressRegistry.Object, clientFactory.Object, tokenBuilder.Object, workflowHost.Object, eventDispatcher.Object, instanceHistoryRepository.Object);
         }
 
         [Test]
@@ -180,6 +189,92 @@ namespace Microservice.Workflow.Tests
             Assert.AreEqual(new DateTime(2015, 7, 7, 14, 22, 0, DateTimeKind.Utc), runToContext.RunTo.DelayTime);
         }
 
+        [Test]
+        public void WhenMigrateInstanceThenCorrectStepIdIsSet()
+        {
+            instance.Status = InstanceStatus.InProgress.ToPrettyString();
+            instance.Version = TemplateDefinition.DefaultVersion;
+            instanceSteps.Add(new InstanceStep()
+            {
+                Step = StepName.Created.ToString()
+            });
+            instanceSteps.Add(new InstanceStep()
+            {
+                Id = Guid.NewGuid(),
+                InstanceId = instance.Id,
+                Step = StepName.CreateTask.ToString(),
+                Data = new[]
+                {
+                    new LogData(),
+                    new LogData() { Detail = new CreateTaskLog(){ TaskId = 123 }},
+                    new LogData()
+                },
+                IsComplete = true
+            });
+            instanceSteps.Add(new InstanceStep()
+            {
+                Id = Guid.NewGuid(),
+                InstanceId = instance.Id,
+                Step = StepName.Delay.ToString(),
+                Data = new[]
+                {
+                    new LogData(),
+                    new LogData() { Detail = new DelayLog(){ DelayUntil = new DateTime(2015, 7, 7, 14, 22, 0, DateTimeKind.Utc)}}
+                }
+            });
+
+            MigrateInstance();
+
+            instanceHistoryRepository.Verify(i => i.Save(It.Is<InstanceHistory>(h => h.StepId == stepOneGuid)), Times.Exactly(1));
+            instanceHistoryRepository.Verify(i => i.Save(It.Is<InstanceHistory>(h => h.StepId == stepTwoGuid)), Times.Exactly(1));
+        }
+
+        [Test]
+        public void WhenMigrateInstanceAndInstanceAlreadyProgressedThenCorrectStepIdIsSet()
+        {
+            instance.Status = InstanceStatus.InProgress.ToPrettyString();
+            instance.Version = TemplateDefinition.DefaultVersion;
+            instanceSteps.Add(new InstanceStep()
+            {
+                Step = StepName.Created.ToString()
+            });
+            instanceSteps.Add(new InstanceStep()
+            {
+                Id = Guid.NewGuid(),
+                InstanceId = instance.Id,
+                Step = StepName.CreateTask.ToString(),
+                Data = new[]
+                {
+                    new LogData(),
+                    new LogData() { Detail = new CreateTaskLog(){ TaskId = 123 }},
+                    new LogData()
+                },
+                IsComplete = false
+            });
+            instanceSteps.Add(new InstanceStep()
+            {
+                Id = stepOneGuid,
+                InstanceId = instance.Id,
+                Step = StepName.CreateTask.ToString(),
+                IsComplete = true
+            });
+            instanceSteps.Add(new InstanceStep()
+            {
+                Id = stepTwoGuid,
+                InstanceId = instance.Id,
+                Step = StepName.Delay.ToString(),
+                Data = new[]
+                {
+                    new LogData(),
+                    new LogData() { Detail = new DelayLog(){ DelayUntil = new DateTime(2015, 7, 7, 14, 22, 0, DateTimeKind.Utc)}}
+                }
+            });
+            
+            MigrateInstance();
+
+            instanceHistoryRepository.Verify(i => i.Save(It.Is<InstanceHistory>(h => h.StepId == stepOneGuid)), Times.Exactly(1));
+        }
+        
         private WorkflowContext MigrateInstance()
         {
             WorkflowContext context = null;
