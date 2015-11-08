@@ -19,7 +19,9 @@ namespace Microservice.Workflow.v1.Activities
             var body = Body.Get(context);
 
             var workflowContext = (WorkflowContext)context.Properties.Find(WorkflowConstants.WorkflowContextKey);
-            body = body.Replace("{EntityId}", workflowContext.EntityId.ToString());
+
+            if (!string.IsNullOrEmpty(body))
+                body = body.Replace("{EntityId}", workflowContext.EntityId.ToString());
 
             var content = new StringContent(body, Encoding.UTF8, "application/json");
             

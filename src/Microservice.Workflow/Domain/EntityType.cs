@@ -10,5 +10,6 @@
         ServiceCase = 5,
         Invoice = 6,
         Campaign = 7,
+        Author = 8
     }
 }
