@@ -8,3 +8,4 @@ packages/
 /*.suo
 *.lnk
 /teamcityLog.log
+.vs/

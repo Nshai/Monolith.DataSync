@@ -18,7 +18,6 @@ using Microservice.Workflow.Domain;
 using Microservice.Workflow.v1;
 using NHibernate;
 
-
 namespace Microservice.Workflow.Engine.Impl
 {
     public class WorkflowHost : IWorkflowHost
@@ -93,15 +92,8 @@ namespace Microservice.Workflow.Engine.Impl
             var sessionFactory = IoC.Resolve<ISessionFactory>(Constants.ContainerId);
             using (var session = sessionFactory.OpenSession())
             {
-                var instanceStepRepository = new NHibernateRepository<InstanceStep>(session);
-                var instanceRepository = new NHibernateRepository<Instance>(session);
-
-                var pausedInstanceIds = (from step in instanceStepRepository.Query()
-                    where step.IsComplete == false && step.Step == StepName.Delay.ToString()
-                    select step.InstanceId).ToList();
-
-                var templateGroups = instanceRepository.Query().Where(i => pausedInstanceIds.Contains(i.Id)).Select(i => i.Template);
-                return templateGroups.Where(t => t.Version >= TemplateDefinition.DefaultVersion).Select(t => t.Id).ToArray();
+                var templateRepository = new NHibernateRepository<TemplateDefinition>(session);
+                return templateRepository.ReportAll<TemplateDefinition>("GetDelayedTemplates", new Parameter("Version", TemplateDefinition.DefaultVersion)).Select(t => t.Id);                
             }
         }
 

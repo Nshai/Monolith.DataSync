@@ -22,6 +22,7 @@ using Microservice.Workflow.Modules;
 using Microservice.Workflow.v1.Activities;
 using NHibernate;
 using Constants = Microservice.Workflow.Engine.Constants;
+using Parameter = IntelliFlo.Platform.NHibernate.Repositories.Parameter;
 
 namespace Microservice.Workflow.Host
 {
@@ -60,18 +61,11 @@ namespace Microservice.Workflow.Host
             var sessionFactory = IoC.Resolve<ISessionFactory>(Constants.ContainerId);
             using (var session = sessionFactory.OpenSession())
             {
-                var instanceStepRepository = new NHibernateRepository<InstanceStep>(session);
-                var instanceRepository = new NHibernateRepository<Instance>(session);
+                var templateRepository = new NHibernateRepository<TemplateDefinition>(session);
+                var templates = templateRepository.ReportAll<TemplateDefinition>("GetDelayedTemplates", new Parameter("Version", TemplateDefinition.DefaultVersion));
 
-                var pausedInstanceIds = (from step in instanceStepRepository.Query()
-                    where step.IsComplete == false && step.Step == StepName.Delay.ToString()
-                    select step.InstanceId).ToList();
-
-                var templates = instanceRepository.Query().Where(i => pausedInstanceIds.Contains(i.Id)).Select(i => i.Template).ToList();
-                
-                foreach (var template in templates.Distinct())
+                foreach (var template in templates)
                 {
-                    if (template.Version < TemplateDefinition.DefaultVersion) continue;
                     log.InfoFormat("Initialising template {0}", template.Id);
                     try
                     {

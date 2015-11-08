@@ -36,5 +36,5 @@
       delete from workflow.dbo.TTemplate where TemplateId = ?
     </sql-delete>
   </class>
-  
+
 </hibernate-mapping>

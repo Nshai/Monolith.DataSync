@@ -19,4 +19,10 @@
     <property name="Version"/>
     
   </class>
+
+  <sql-query name="GetDelayedTemplates">
+    <return class="TemplateDefinition" />
+    exec workflow.dbo.[SpNGetDelayedTemplates] :Version
+  </sql-query>
+  
 </hibernate-mapping>
