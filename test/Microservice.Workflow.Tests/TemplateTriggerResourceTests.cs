@@ -65,6 +65,22 @@ namespace Microservice.Workflow.Tests
         }
 
         [Test]
+        public void WhenRetrievePlanStatusTriggerThenRetrievedSuccessfully()
+        {
+            SetupTemplate(TriggerType.OnPlanStatusUpdate, new PlanStatusTransitionTrigger()  { StatusTransition = new StatusTransition(1, 2), PlanProviders = new[] { 1, 2 }, PlanTypes = new[] { 3, 4 } }, WorkflowRelatedTo.Plan);
+
+            var triggerCollection = underTest.Get(1);
+
+            var trigger = triggerCollection.Items.First();
+
+            Assert.AreEqual("OnPlanStatusUpdate", trigger.TriggerType);
+            Assert.AreEqual(1, trigger.StatusTransition.FromStatusId);
+            Assert.AreEqual(2, trigger.StatusTransition.ToStatusId);
+            Assert.AreEqual(new[] { 1, 2 }, trigger.PlanProviders);
+            Assert.AreEqual(new[] { 3, 4 }, trigger.PlanTypes);
+        }
+
+        [Test]
         public void WhenRetrieveServiceCaseCreationTriggerThenRetrievedSuccessfully()
         {
             SetupTemplate(TriggerType.OnServiceCaseCreation, new ServiceCaseCreatedTrigger() { ServiceCaseCategories = new[] { 1, 2 }}, WorkflowRelatedTo.ServiceCase);

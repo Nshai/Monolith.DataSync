@@ -15,11 +15,15 @@ namespace Microservice.Workflow.Domain
 
         public override void PopulateFromRequest(CreateTemplateTrigger request)
         {
+            PlanTypes = request.PlanTypes;
+            PlanProviders = request.PlanProviders;
             StatusTransition = new StatusTransition(request.StatusTransition.FromStatusId.Value, request.StatusTransition.ToStatusId.Value);
         }
 
         public override void PopulateDocument(TemplateTrigger document)
         {
+            document.PlanTypes = PlanTypes;
+            document.PlanProviders = PlanProviders;
             document.StatusTransition = new TemplateTrigger.StatusTransitionDefinition(){ FromStatusId = StatusTransition.FromStatusId.Value, ToStatusId = StatusTransition.ToStatusId.Value};
         }
 
