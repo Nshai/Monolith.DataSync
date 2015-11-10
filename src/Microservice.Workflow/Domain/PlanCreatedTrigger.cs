@@ -52,7 +52,7 @@ namespace Microservice.Workflow.Domain
             {
                 yield return ODataBuilder.BuildFilterForProperty<PlanCreated, int>(x => x.ProductTypeId, id);
             }
-            if (IsPreExisting.HasValue)
+            if (IsPreExisting.HasValue && !IsPreExisting.Value)
                 yield return ODataBuilder.BuildFilterForProperty<PlanCreated, bool>(x => x.IsPreExisting, IsPreExisting.Value);
         }
     }

@@ -52,6 +52,29 @@ namespace Microservice.Workflow.Tests
             Assert.AreEqual("ServiceStatusId eq 1 and (CategoryId eq 2 or CategoryId eq 3 or CategoryId eq 4)", expression);
         }
 
+        /// <summary>
+        /// This highlights a issues with a poorly named property - IsPreExisting
+        /// In the UI, the selection is New Business Only.  We invert this selection and set as IsPreExisting.
+        /// However when we convert to the filter we apply it directly so we end up  filtering for either pre-existing or not pre-existing. 
+        /// But what we want  is to filter for not pre-existing or apply no filter.
+        /// </summary>
+        /// <param name="newBusinessOnly"></param>
+        /// <returns></returns>
+        [TestCase(true, ExpectedResult = "IsPreExisting eq false and (ProviderId eq 1 or ProviderId eq 2 or ProviderId eq 3) and (ProductTypeId eq 4 or ProductTypeId eq 5 or ProductTypeId eq 6)")]
+        [TestCase(false, ExpectedResult = "(ProviderId eq 1 or ProviderId eq 2 or ProviderId eq 3) and (ProductTypeId eq 4 or ProductTypeId eq 5 or ProductTypeId eq 6)")]
+        public string WhenSerializePlanCreationTriggerToODataThenFormattedCorrectly(bool newBusinessOnly)
+        {
+            var expression = BuildODataExpression(new CreateTemplateTrigger()
+            {
+                Type = TriggerType.OnPlanCreation.ToString(),
+                PlanProviders = new[] {1,2,3},
+                PlanTypes = new [] {4,5,6},
+                IsPreExisting = !newBusinessOnly
+            });
+
+            return expression;
+        }
+
 
         [Test]
         public void WhenSerializeClientCreationTriggerWithNoFiltersToODataThenFormattedCorrectly()
