@@ -20,3 +20,5 @@ ALTER TABLE [dbo].[WF_TInstance] ADD CONSTRAINT [PK_WF_TInstance] PRIMARY KEY CL
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_WF_TInstance] ON [dbo].[WF_TInstance] ([TemplateId], [EntityId], [RelatedEntityId], [UniqueId])
 GO
+CREATE NONCLUSTERED INDEX IX_WF_TInstance_Id_TemplateId on WF_TInstance (Id,TemplateId)
+GO

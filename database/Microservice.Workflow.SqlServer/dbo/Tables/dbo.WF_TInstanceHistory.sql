@@ -11,3 +11,7 @@ CREATE TABLE [dbo].[WF_TInstanceHistory]
 GO
 ALTER TABLE [dbo].[WF_TInstanceHistory] ADD CONSTRAINT [PK_TWorkflowState_1] PRIMARY KEY CLUSTERED  ([Id])
 GO
+CREATE NONCLUSTERED INDEX IX_WF_TInstanceHistory_InstanceId_StepId on WF_TInstanceHistory (InstanceId,StepId)
+GO
+CREATE NONCLUSTERED INDEX IX_WF_TInstanceHistory_InstanceId_StepId_Step_IsComplete on WF_TInstanceHistory (InstanceId,StepId,Step,IsComplete)
+GO
