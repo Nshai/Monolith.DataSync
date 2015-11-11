@@ -25,6 +25,7 @@ namespace Microservice.Workflow.Engine.Impl
         private readonly IWorkflowClientFactory workflowClientFactory;
         private readonly IDictionary<Guid, WorkflowServiceHost> services = new Dictionary<Guid, WorkflowServiceHost>();
         private readonly IDictionary<Guid, HashSet<Guid>> templateInstanceCount = new Dictionary<Guid, HashSet<Guid>>();
+        private readonly GenerationList<Guid> templatesToBePurged = new GenerationList<Guid>();
         private volatile object lockObj = new object();
         private readonly Binding binding;
         private readonly ILog logger = LogManager.GetLogger(typeof(WorkflowHost));
@@ -54,7 +55,9 @@ namespace Microservice.Workflow.Engine.Impl
                 {
                     if (shuttingDown) return;
 
-                    var templatesToPurge = templateInstanceCount.Where(k => !delayedTemplates.Contains(k.Key) && k.Value.Count == 0).Select(k => k.Key).ToList();
+                    templatesToBePurged.Promote(templateInstanceCount.Where(k => !delayedTemplates.Contains(k.Key) && k.Value.Count == 0).Select(k => k.Key));
+
+                    var templatesToPurge = templatesToBePurged.GetGeneration(templatesToBePurged.MaxGenerationIndex);
                     if (templatesToPurge.Any())
                     {
                         foreach (var templateId in templatesToPurge.Where(templateId => services.ContainsKey(templateId)))

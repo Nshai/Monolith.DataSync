@@ -356,6 +356,7 @@
     <Compile Include="Domain\EnumExtension.cs" />
     <Compile Include="Domain\TaskAssignee.cs" />
     <Compile Include="Engine\ExceptionLogger.cs" />
+    <Compile Include="Engine\GenerationList.cs" />
     <Compile Include="Engine\InstanceCountBehavior.cs" />
     <Compile Include="Engine\InstanceCountParticipant.cs" />
     <Compile Include="Engine\WorkflowHostConstants.cs" />
