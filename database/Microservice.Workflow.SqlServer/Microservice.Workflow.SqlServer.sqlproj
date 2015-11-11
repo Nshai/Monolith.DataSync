@@ -90,26 +90,26 @@
     <Build Include="dbo\Tables\dbo.WF_TInstanceHistory.sql" />
     <Build Include="dbo\Tables\dbo.WF_TTemplateDefinition.sql" />
     <Build Include="dbo\Views\dbo.vwInstanceStep.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.SpNAuditAssignedRole.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.SpNAuditClientCategoryTrigger.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.SpNAuditClientStatusTransitionTrigger.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.SpNAuditClientStatusTrigger.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.SpNAuditLeadInterestTrigger.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.SpNAuditLeadStatusTransitionTrigger.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.SpNAuditPlanProviderTrigger.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.SpNAuditPlanStatusTrigger.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.SpNAuditPlanTypeTrigger.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.SpNAuditServiceCaseCategoryTrigger.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.SpNAuditServiceCaseStatusTransitionTrigger.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.SpNAuditTemplate.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.SpNAuditTemplateCategory.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.SpNAuditTemplateTrigger.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.SpNAuditTemplateTriggerSet.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.SpNAuditTemplateVersion.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.SpNMigrationMergeInstances.sql" />
+    <None Include="dbo\Stored Procedures\dbo.SpNAuditAssignedRole.sql" />
+    <None Include="dbo\Stored Procedures\dbo.SpNAuditClientCategoryTrigger.sql" />
+    <None Include="dbo\Stored Procedures\dbo.SpNAuditClientStatusTransitionTrigger.sql" />
+    <None Include="dbo\Stored Procedures\dbo.SpNAuditClientStatusTrigger.sql" />
+    <None Include="dbo\Stored Procedures\dbo.SpNAuditLeadInterestTrigger.sql" />
+    <None Include="dbo\Stored Procedures\dbo.SpNAuditLeadStatusTransitionTrigger.sql" />
+    <None Include="dbo\Stored Procedures\dbo.SpNAuditPlanProviderTrigger.sql" />
+    <None Include="dbo\Stored Procedures\dbo.SpNAuditPlanStatusTrigger.sql" />
+    <None Include="dbo\Stored Procedures\dbo.SpNAuditPlanTypeTrigger.sql" />
+    <None Include="dbo\Stored Procedures\dbo.SpNAuditServiceCaseCategoryTrigger.sql" />
+    <None Include="dbo\Stored Procedures\dbo.SpNAuditServiceCaseStatusTransitionTrigger.sql" />
+    <None Include="dbo\Stored Procedures\dbo.SpNAuditTemplate.sql" />
+    <None Include="dbo\Stored Procedures\dbo.SpNAuditTemplateCategory.sql" />
+    <None Include="dbo\Stored Procedures\dbo.SpNAuditTemplateTrigger.sql" />
+    <None Include="dbo\Stored Procedures\dbo.SpNAuditTemplateTriggerSet.sql" />
+    <None Include="dbo\Stored Procedures\dbo.SpNAuditTemplateVersion.sql" />
+    <None Include="dbo\Stored Procedures\dbo.SpNMigrationMergeInstances.sql" />
     <Build Include="dbo\Views\dbo.vwTemplate.sql" />
     <Build Include="dbo\Tables\dbo._MetadataLog.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.SpNGetDelayedTemplates.sql" />
+    <None Include="dbo\Stored Procedures\dbo.SpNGetDelayedTemplates.sql" />
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>PowerShell -NoProfile -ExecutionPolicy Bypass -Command "&amp; '$(SolutionDir)packages\IntelliFlo.PowerShell.DevLib.0.0.3.0\content\zip-directory.ps1' -ZIPFILENAME '$(SolutionDir)dist\db-workflow.zip' -SOURCEDIR '$(ProjectDir)dbo\'
