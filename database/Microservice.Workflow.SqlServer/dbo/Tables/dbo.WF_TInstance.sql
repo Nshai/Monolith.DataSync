@@ -22,3 +22,5 @@ CREATE UNIQUE NONCLUSTERED INDEX [IX_WF_TInstance] ON [dbo].[WF_TInstance] ([Tem
 GO
 CREATE NONCLUSTERED INDEX IX_WF_TInstance_Id_TemplateId on WF_TInstance (Id,TemplateId)
 GO
+CREATE NONCLUSTERED INDEX IX_WF_TInstance_TenantId ON [dbo].[WF_TInstance] ([TenantId])
+GO
