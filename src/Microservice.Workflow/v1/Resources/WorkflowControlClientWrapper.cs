@@ -12,7 +12,17 @@ namespace Microservice.Workflow.v1.Resources
             this.client = client;
         }
 
-        public void Abort(Guid instanceId)
+        public void Abort()
+        {
+            client.Abort();
+        }
+
+        public void Close()
+        {
+            client.Close();
+        }
+
+        public void Terminate(Guid instanceId)
         {
             client.Terminate(instanceId);
         }

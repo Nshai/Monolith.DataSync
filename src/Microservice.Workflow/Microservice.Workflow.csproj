@@ -360,6 +360,7 @@
     <Compile Include="Engine\InstanceCountBehavior.cs" />
     <Compile Include="Engine\InstanceCountParticipant.cs" />
     <Compile Include="Engine\WorkflowHostConstants.cs" />
+    <Compile Include="Engine\WorkflowServiceHostExtensions.cs" />
     <Compile Include="Host\WorkflowStartup.cs" />
     <Compile Include="IoC.cs" />
     <Compile Include="GenericEnumMapper.cs" />

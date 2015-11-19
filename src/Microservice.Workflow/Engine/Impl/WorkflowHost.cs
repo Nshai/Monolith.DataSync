@@ -62,10 +62,8 @@ namespace Microservice.Workflow.Engine.Impl
                     {
                         foreach (var templateId in templatesToPurge.Where(templateId => services.ContainsKey(templateId)))
                         {
-                            services[templateId].Close();
-                            services.Remove(templateId);
+                            CloseService(templateId);
                         }
-                        templateInstanceCount.RemoveAll(k => templatesToPurge.Contains(k.Key));
                     }
                     LogResourceUsage();
                 }
@@ -77,6 +75,22 @@ namespace Microservice.Workflow.Engine.Impl
             catch (Exception ex)
             {
                 logger.Error("Purge failed", ex);
+            }
+        }
+
+        private void CloseService(Guid templateId)
+        {
+            lock (lockObj)
+            {
+                if (services.ContainsKey(templateId))
+                {
+                    var service = services[templateId];
+
+                    service.TryClose();
+                    services.Remove(templateId);
+                }
+
+                templateInstanceCount.Remove(templateId);
             }
         }
 
@@ -139,46 +153,84 @@ namespace Microservice.Workflow.Engine.Impl
             }
         }
 
-        public void Initialise(TemplateDefinition template)
+        public void Initialise(Guid templateId, WorkflowService serviceImpl)
         {
-            var hostUri = GetHostUri(template.Id);
-            if (services.ContainsKey(template.Id)) return;
+            var hostUri = GetHostUri(templateId);
+            if (services.ContainsKey(templateId))
+            {
+                var service = services[templateId];
+                if (service.State == CommunicationState.Faulted)
+                {
+                    CloseService(templateId);
+                }
+                else
+                {
+                    return;
+                }
+            }
 
             lock (lockObj)
             {
-                if (services.ContainsKey(template.Id)) return;
+                if (services.ContainsKey(templateId)) return;
+                
+                var host = new WorkflowServiceHost(serviceImpl, new Uri(hostUri));
+                host.Description.Behaviors.Add(new DatabaseTrackingBehavior());
+                host.Description.Behaviors.Add(new InstanceCountBehavior(this));
 
-                using (var reader = new StringReader(template.Definition))
-                using (var xamlReader = ActivityXamlServices.CreateBuilderReader(new XamlXmlReader(reader)))
-                {
-                    var workflow = XamlServices.Load(xamlReader) as WorkflowService;
-                    if (workflow == null)
-                        throw new Exception("Template definition was not a valid WorkflowService");
+                host.AddServiceEndpoint(XName.Get("IDynamicWorkflow", "http://intelliflo.com/dynamicworkflow/2014/06"), binding, hostUri);
+                host.AddServiceEndpoint(new WorkflowControlEndpoint(binding, new EndpointAddress(GetHostUri(templateId, "wce"))));
 
-                    workflow.DefinitionIdentity = new WorkflowIdentity() { Name = template.Id.ToString()};
+                host.Open();
 
-                    var host = new WorkflowServiceHost(workflow, new Uri(hostUri));
-                    host.Description.Behaviors.Add(new DatabaseTrackingBehavior());
-                    host.Description.Behaviors.Add(new InstanceCountBehavior(this));
+                services.Add(templateId, host);
+                logger.InfoFormat("TemplateInitialise Id={0}", templateId);
+            }
+        }
 
-                    host.AddServiceEndpoint(XName.Get("IDynamicWorkflow", "http://intelliflo.com/dynamicworkflow/2014/06"), binding, hostUri);
-                    host.AddServiceEndpoint(new WorkflowControlEndpoint(binding, new EndpointAddress(GetHostUri(template.Id, "wce"))));
-                    host.Open();
+        public void Initialise(TemplateDefinition template)
+        {
+            using (var reader = new StringReader(template.Definition))
+            using (var xamlReader = ActivityXamlServices.CreateBuilderReader(new XamlXmlReader(reader)))
+            {
+                var workflow = XamlServices.Load(xamlReader) as WorkflowService;
+                if (workflow == null)
+                    throw new Exception("Template definition was not a valid WorkflowService");
 
-                    services.Add(template.Id, host);
-                }
+                workflow.DefinitionIdentity = new WorkflowIdentity() { Name = template.Id.ToString() };
+
+                Initialise(template.Id, workflow);
             }
         }
 
         public Guid Create(TemplateDefinition template, WorkflowContext context)
         {
+            var instanceId = Guid.Empty;
+
             Initialise(template);
             var hostUri = GetHostUri(template.Id);
 
-            using (var client = workflowClientFactory.GetDynamicClient(binding, new EndpointAddress(hostUri)))
+            var client = workflowClientFactory.GetDynamicClient(binding, new EndpointAddress(hostUri));
+            try
             {
-                return client.Create(context);
+                instanceId = client.Create(context);
+                client.Close();
             }
+            catch (CommunicationException ex)
+            {
+                logger.Error("Service communication exception", ex);
+                client.Abort();
+            }
+            catch (TimeoutException ex)
+            {
+                logger.Error("Service timeout exception", ex);
+                client.Abort();
+            }
+            catch (Exception)
+            {
+                client.Abort();
+                throw;
+            }
+            return instanceId;
         }
 
         public void CreateAsync(TemplateDefinition template, WorkflowContext context)
@@ -186,9 +238,26 @@ namespace Microservice.Workflow.Engine.Impl
             Initialise(template);
             var hostUri = GetHostUri(template.Id);
 
-            using (var client = workflowClientFactory.GetDynamicClient(binding, new EndpointAddress(hostUri)))
+            var client = workflowClientFactory.GetDynamicClient(binding, new EndpointAddress(hostUri));
+            try
             {
                 client.CreateAsync(context);
+                client.Close();
+            }
+            catch (CommunicationException ex)
+            {
+                logger.Error("Service communication exception", ex);
+                client.Abort();
+            }
+            catch (TimeoutException ex)
+            {
+                logger.Error("Service timeout exception", ex);
+                client.Abort();
+            }
+            catch (Exception)
+            {
+                client.Abort();
+                throw;
             }
         }
 
@@ -197,9 +266,26 @@ namespace Microservice.Workflow.Engine.Impl
             Initialise(template);
             var hostUri = GetHostUri(template.Id);
 
-            using (var client = workflowClientFactory.GetDynamicClient(binding, new EndpointAddress(hostUri)))
+            var client = workflowClientFactory.GetDynamicClient(binding, new EndpointAddress(hostUri));
+            try
             {
                 client.Resume(context);
+                client.Close();
+            }
+            catch (CommunicationException ex)
+            {
+                logger.Error("Service communication exception", ex);
+                client.Abort();
+            }
+            catch (TimeoutException ex)
+            {
+                logger.Error("Service timeout exception", ex);
+                client.Abort();
+            }
+            catch (Exception)
+            {
+                client.Abort();
+                throw;
             }
         }
 
@@ -208,9 +294,26 @@ namespace Microservice.Workflow.Engine.Impl
             Initialise(template);
             var hostUri = GetHostUri(template.Id, "wce");
 
-            using (var client = workflowClientFactory.GetControlClient(binding, new EndpointAddress(hostUri)))
+            var client = workflowClientFactory.GetControlClient(binding, new EndpointAddress(hostUri));
+            try
             {
-                client.Abort(instanceId);
+                client.Terminate(instanceId);
+                client.Close();
+            }
+            catch (CommunicationException ex)
+            {
+                logger.Error("Service communication exception", ex);
+                client.Abort();
+            }
+            catch (TimeoutException ex)
+            {
+                logger.Error("Service timeout exception", ex);
+                client.Abort();
+            }
+            catch (Exception)
+            {
+                client.Abort();
+                throw;
             }
         }
 
@@ -219,9 +322,25 @@ namespace Microservice.Workflow.Engine.Impl
             Initialise(template);
             var hostUri = GetHostUri(template.Id, "wce");
 
-            using (var client = workflowClientFactory.GetControlClient(binding, new EndpointAddress(hostUri)))
+            var client = workflowClientFactory.GetControlClient(binding, new EndpointAddress(hostUri));
+            try
             {
                 client.Unsuspend(instanceId);
+            }
+            catch (CommunicationException ex)
+            {
+                logger.Error("Service communication exception", ex);
+                client.Abort();
+            }
+            catch (TimeoutException ex)
+            {
+                logger.Error("Service timeout exception", ex);
+                client.Abort();
+            }
+            catch (Exception)
+            {
+                client.Abort();
+                throw;
             }
         }
 
