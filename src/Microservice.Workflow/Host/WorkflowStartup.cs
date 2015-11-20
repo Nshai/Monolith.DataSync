@@ -86,7 +86,6 @@ namespace Microservice.Workflow.Host
             var builder = new ContainerBuilder();
             builder.RegisterModule(new ConfigurationSettingsReader());
             builder.RegisterModule(new WorkflowAutofacModule());
-            builder.RegisterModule(new AutofacSecurityModule());
 
             builder.RegisterType<EntityTaskBuilderFactory>().As<IEntityTaskBuilderFactory>();
 

@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
@@ -24,8 +23,6 @@ namespace Microservice.Workflow.v1.Activities
             var identity = new IntelliFloClaimsIdentity(userIdClaim.Value, "Trusted");
             identity.AddClaims(claims);
             var principal = new IntelliFloClaimsPrincipal(identity);
-            principal.AddIdentity(identity);
-
             Thread.CurrentPrincipal = principal;
 
             return new DisposableAction<IIntelliFloClaimsPrincipal>(ctx =>

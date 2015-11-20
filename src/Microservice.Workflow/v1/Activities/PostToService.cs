@@ -1,6 +1,7 @@
 ﻿using System.Activities;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 using IntelliFlo.Platform.Http.Client;
 using Constants = Microservice.Workflow.Engine.Constants;
 
@@ -20,21 +21,33 @@ namespace Microservice.Workflow.v1.Activities
 
             var workflowContext = (WorkflowContext)context.Properties.Find(WorkflowConstants.WorkflowContextKey);
 
+            StringContent bodyContent = null;
             if (!string.IsNullOrEmpty(body))
+            {
                 body = body.Replace("{EntityId}", workflowContext.EntityId.ToString());
+                bodyContent = new StringContent(body, Encoding.UTF8, "application/json");
+            }
 
-            var content = new StringContent(body, Encoding.UTF8, "application/json");
-            
             using (UserContextBuilder.FromBearerToken(workflowContext.BearerToken))
             {
                 var clientFactory = IoC.Resolve<IServiceHttpClientFactory>(Constants.ContainerId);
                 using (var client = clientFactory.Create(serviceName))
                 {
-                    var task = client.Post(uri, content).ContinueWith(t =>
+                    Task task;
+                    if (bodyContent != null)
                     {
-                        t.OnException(status => { throw new HttpClientException(status); });
-                    });
-
+                        task = client.Post(uri, bodyContent).ContinueWith(t =>
+                        {
+                            t.OnException(status => { throw new HttpClientException(status); });
+                        });
+                    }
+                    else
+                    {
+                        task = client.Post(uri).ContinueWith(t =>
+                        {
+                            t.OnException(status => { throw new HttpClientException(status); });
+                        });
+                    }
                     task.Wait();
                 }
             }
