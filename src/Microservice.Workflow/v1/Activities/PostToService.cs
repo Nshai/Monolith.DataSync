@@ -30,7 +30,7 @@ namespace Microservice.Workflow.v1.Activities
 
             using (UserContextBuilder.FromBearerToken(workflowContext.BearerToken))
             {
-                var clientFactory = IoC.Resolve<IServiceHttpClientFactory>(Constants.ContainerId);
+                var clientFactory = IoC.Resolve<IHttpClientFactory>(Constants.ContainerId);
                 using (var client = clientFactory.Create(serviceName))
                 {
                     Task task;

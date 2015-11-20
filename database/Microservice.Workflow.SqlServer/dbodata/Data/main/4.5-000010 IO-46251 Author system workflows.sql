@@ -1,4 +1,4 @@
-﻿USE [workflow]
+USE [workflow]
 GO
 
 DECLARE @ScriptGUID UNIQUEIDENTIFIER
@@ -10,7 +10,7 @@ DECLARE @ScriptGUID UNIQUEIDENTIFIER
 --SELECT NEWID()
 
 SELECT @ScriptGUID = '7A139DB0-1A7D-4CB0-A958-E1E6C58A854A'
-      , @Comments = '000001 IO-46251 Author system workflows'
+      , @Comments = '4.5-000010 IO-46251 Author system workflows'
       
 IF EXISTS (SELECT 1 FROM TExecutedDataScript WHERE ScriptGUID = @ScriptGUID)
 	RETURN; 
@@ -120,7 +120,7 @@ BEGIN TRANSACTION
 		if not exists(select 1 from WF_TTemplateDefinition where Id = '6e2b7947-adab-49b5-b45a-271cf15540e0')
 		begin
 			insert workflow..WF_TTemplateDefinition(Id, Name, TenantId, Definition, DateUtc, Version)
-			values ('6e2b7947-adab-49b5-b45a-271cf15540e0', 'Document Save To Client', 0, '<WorkflowService mc:Ignorable="sap sap2010 sads" ConfigurationName="DynamicWorkflow" sap2010:WorkflowViewState.IdRef="WorkflowService_1" Name="DocumentSaveToClient"
+			values ('6e2b7947-adab-49b5-b45a-271cf15540e0', 'Document Save To Entity', 0, '<WorkflowService mc:Ignorable="sap sap2010 sads" ConfigurationName="DynamicWorkflow" sap2010:WorkflowViewState.IdRef="WorkflowService_1" Name="DocumentSaveToEntity"
 			 xmlns="http://schemas.microsoft.com/netfx/2009/xaml/servicemodel"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:mwv="clr-namespace:Microservice.Workflow.v1;assembly=Microservice.Workflow"
@@ -211,7 +211,7 @@ BEGIN TRANSACTION
 			</WorkflowService>', getdate(), 1)
 
 			insert TTemplateRegistration(TenantId, Identifier, TemplateId, ConcurrencyId)
-			values (0, 'documentsavetoclient', '6e2b7947-adab-49b5-b45a-271cf15540e0', 1)
+			values (0, 'documentsavetoentity', '6e2b7947-adab-49b5-b45a-271cf15540e0', 1)
 
 		end
 

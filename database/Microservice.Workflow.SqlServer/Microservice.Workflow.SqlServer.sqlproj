@@ -112,7 +112,6 @@
     <Build Include="dbo\Tables\dbo._EventLog.sql" />
     <Build Include="dbo\Views\dbo.vwInstanceHistory.sql" />
     <Build Include="dbo\Tables\dbo.TTemplateRegistration.sql" />
-    <None Include="dbodata\Data\main\000001 IO-46251 Author system workflows.sql" />
     <None Include="dbodata\Data\main\4.3-000080 IO-39349 Fix workflow trigger types.sql" />
     <None Include="dbodata\Data\main\4.3-003000 IO-40998 Plan visibility update workflow event subscription.sql" />
     <None Include="dbodata\Data\main\4.3-003010 IO-40998 Change of status will change visibility settings for Plans.sql" />
@@ -123,6 +122,7 @@
     <None Include="dbodata\Data\main\4.4-000127 IO-42821 Alter instance history serialization to use names instead of full type name.sql" />
     <None Include="dbodata\Data\main\4.4-000129 IO-42821 Fix Update Plan Visibility workflow.sql" />
     <None Include="dbodata\Data\main\4.4-000130 IO-42821 Update old instances to reference active template version.sql" />
+    <None Include="dbodata\Data\main\4.5-000010 IO-46251 Author system workflows.sql" />
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>PowerShell -NoProfile -ExecutionPolicy Bypass -Command "&amp; '$(SolutionDir)packages\IntelliFlo.PowerShell.DevLib.0.0.3.0\content\zip-directory.ps1' -ZIPFILENAME '$(SolutionDir)dist\db-workflow.zip' -SOURCEDIR '$(ProjectDir)dbo\'
