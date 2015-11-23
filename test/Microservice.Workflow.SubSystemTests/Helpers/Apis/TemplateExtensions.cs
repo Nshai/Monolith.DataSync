@@ -4,6 +4,7 @@ using IdentityServer3.Core.Services.InMemory;
 using Microservice.Workflow.SubSystemTests.v1.Models;
 using Reassure;
 using Reassure.OAuth;
+using Reassure.Stubs;
 
 namespace Microservice.Workflow.SubSystemTests.Helpers.Apis
 {
@@ -27,24 +28,20 @@ namespace Microservice.Workflow.SubSystemTests.Helpers.Apis
             return (TemplateDocument)state.Response.Body;
         }
 
-        public static TemplateDocument CreateTemplateWithExistingCategoryAndMakeActive(this ApiTestBuilder builder, InMemoryUser user)
+        public static TemplateDocument CreateActiveTemplateWithExistingCategoryAndCreateTaskStep(this ApiTestBuilder builder, InMemoryUser user, int ownerPartyId)
         {
-            if (builder == null)
-                throw new ArgumentNullException("builder");
+            var template = Test.Api().CreateTemplateWithExistingCategory(Config.User1);
+            Test.Api().AddCreateTaskStep(Config.User1, template.Id, 3500000);
+            Test.Api().AssignTemplateRole(Config.User1, template.Id);
 
-            var state = builder
-                .Given()
-                .OAuth2BearerToken(user.GetAccessToken())
-                .Body(new CreateTemplateRequest { Name = Guid.NewGuid().ToString(), RelatedTo = "Client", TemplateCategoryId = Config.ExistingCategoryId, OwnerUserId = Config.User1Id })
-                .When()
-                .Post<TemplateDocument>("/v1/templates")
-                .Then()
-                .ExpectStatus(HttpStatusCode.Created)
-                .Run();
+            var partyIdStub = Stub.Api()
+                .Request().WithMethod("GET").WithUrl(url => url.Matching("/crm/v1/claims/user/.*"))
+                .Return().WithBody($"{{'party_id': {ownerPartyId}}}").WithHeader("Content-Type", "application/json");
 
-            var template = (TemplateDocument)state.Response.Body;
-            Test.Api().AssignTemplateRole(user, template.Id);
-            Test.Api().MakeTemplateActive(user, template.Id);
+            using (partyIdStub.Setup())
+            {
+                Test.Api().MakeTemplateActive(Config.User1, template.Id);
+            }
 
             return template;
         }
@@ -63,6 +60,23 @@ namespace Microservice.Workflow.SubSystemTests.Helpers.Apis
                 .Put<TemplateRoleDocument[]>($"/v1/templates/{templateId}/roles")
                 .Then()
                 .ExpectStatus(HttpStatusCode.OK)
+                .Run();
+        }
+
+        public static void AddCreateTaskStep(this ApiTestBuilder builder, InMemoryUser user, int templateId, int assignedToPartyId)
+        {
+            if (builder == null)
+                throw new ArgumentNullException("builder");
+
+            builder
+                .Given()
+                .OAuth2BearerToken(user.GetAccessToken())
+                .Header("Accept", "application/json")
+                .Body(new CreateTemplateStepRequest() { Type = "CreateTask", TaskTypeId = 123, Transition = "OnCompletion", AssignedTo = "User", AssignedToPartyId = assignedToPartyId })
+                .When()
+                .Post<TemplateStepDocument>($"/v1/templates/{templateId}/steps")
+                .Then()
+                .ExpectStatus(HttpStatusCode.Created)
                 .Run();
         }
 

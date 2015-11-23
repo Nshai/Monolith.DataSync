@@ -29,8 +29,8 @@ namespace Microservice.Workflow.SubSystemTests.v1.Template
         [Test]
         public void When_Create_Instance_For_Active_Template_Then_Should_Return_Http_200()
         {
-            var template = Test.Api().CreateTemplateWithExistingCategoryAndMakeActive(Config.User1);
-            
+            var template = Test.Api().CreateActiveTemplateWithExistingCategoryAndCreateTaskStep(Config.User1, 3500000);
+
             var claimsStub = Stub.Api()
                 .Request().WithMethod("GET").WithUrl(url => url.Matching("/crm/v1/claims/subject/.*"))
                 .Return().WithBody("{'party_id': 3500000, 'role_id': 10115, 'group_lineage': '3522' }").WithHeader("Content-Type", "application/json");

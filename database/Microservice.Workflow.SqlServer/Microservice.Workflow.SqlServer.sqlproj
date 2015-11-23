@@ -39,7 +39,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>bin\Debug\</OutputPath>
     <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <DebugSymbols>true</DebugSymbols>
@@ -114,5 +113,17 @@
   <PropertyGroup>
     <PostBuildEvent>PowerShell -NoProfile -ExecutionPolicy Bypass -Command "&amp; '$(SolutionDir)packages\IntelliFlo.PowerShell.DevLib.0.0.3.0\content\zip-directory.ps1' -ZIPFILENAME '$(SolutionDir)dist\db-workflow.zip' -SOURCEDIR '$(ProjectDir)dbo\'
 PowerShell -NoProfile -ExecutionPolicy Bypass -Command "&amp; '$(SolutionDir)packages\IntelliFlo.PowerShell.DevLib.0.0.3.0\content\zip-directory.ps1' -ZIPFILENAME '$(SolutionDir)dist\db-data.zip' -SOURCEDIR '$(ProjectDir)dbodata\'</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Subsys|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
 </Project>

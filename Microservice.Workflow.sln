@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microservice.Workflow", "src\Microservice.Workflow\Microservice.Workflow.csproj", "{4AE5B8A6-AC2A-43BB-8E00-9B969AF782FD}"
 EndProject
@@ -15,24 +15,34 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+		Subsys|Any CPU = Subsys|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{4AE5B8A6-AC2A-43BB-8E00-9B969AF782FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4AE5B8A6-AC2A-43BB-8E00-9B969AF782FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4AE5B8A6-AC2A-43BB-8E00-9B969AF782FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4AE5B8A6-AC2A-43BB-8E00-9B969AF782FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4AE5B8A6-AC2A-43BB-8E00-9B969AF782FD}.Subsys|Any CPU.ActiveCfg = Subsys|Any CPU
+		{4AE5B8A6-AC2A-43BB-8E00-9B969AF782FD}.Subsys|Any CPU.Build.0 = Subsys|Any CPU
 		{B0053E55-39A4-47A7-BDA9-803FE12786A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B0053E55-39A4-47A7-BDA9-803FE12786A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0053E55-39A4-47A7-BDA9-803FE12786A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B0053E55-39A4-47A7-BDA9-803FE12786A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0053E55-39A4-47A7-BDA9-803FE12786A5}.Subsys|Any CPU.ActiveCfg = Subsys|Any CPU
+		{B0053E55-39A4-47A7-BDA9-803FE12786A5}.Subsys|Any CPU.Build.0 = Subsys|Any CPU
 		{35282021-BE08-4728-A7F2-32CAEFE58190}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{35282021-BE08-4728-A7F2-32CAEFE58190}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{35282021-BE08-4728-A7F2-32CAEFE58190}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
 		{35282021-BE08-4728-A7F2-32CAEFE58190}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35282021-BE08-4728-A7F2-32CAEFE58190}.Subsys|Any CPU.ActiveCfg = Subsys|Any CPU
+		{35282021-BE08-4728-A7F2-32CAEFE58190}.Subsys|Any CPU.Build.0 = Subsys|Any CPU
+		{35282021-BE08-4728-A7F2-32CAEFE58190}.Subsys|Any CPU.Deploy.0 = Subsys|Any CPU
 		{5737C675-610B-4E00-86BB-57846C2BACA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5737C675-610B-4E00-86BB-57846C2BACA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5737C675-610B-4E00-86BB-57846C2BACA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5737C675-610B-4E00-86BB-57846C2BACA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5737C675-610B-4E00-86BB-57846C2BACA7}.Subsys|Any CPU.ActiveCfg = Subsys|Any CPU
+		{5737C675-610B-4E00-86BB-57846C2BACA7}.Subsys|Any CPU.Build.0 = Subsys|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

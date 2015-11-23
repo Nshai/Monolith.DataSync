@@ -1,4 +1,6 @@
-﻿namespace Microservice.Workflow.SubSystemTests.v1.Models
+﻿using IntelliFlo.Platform.NHibernate.Validation;
+
+namespace Microservice.Workflow.SubSystemTests.v1.Models
 {
     public class TemplateRoleDocument
     {
