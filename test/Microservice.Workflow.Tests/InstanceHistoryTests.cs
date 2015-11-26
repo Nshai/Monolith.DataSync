@@ -23,7 +23,15 @@ namespace Microservice.Workflow.Tests
             };
 
             var serialized = JsonConvert.SerializeObject(instanceHistory);
-            Assert.AreEqual("{\"InstanceId\":\"39dda9c4-67b7-4144-a554-29400606a408\",\"StepId\":\"b790dfcd-f3b6-4204-802d-d7c6e9eb398e\",\"Step\":\"Delay\",\"Data\":{\"Detail\":{\"DelayUntil\":\"2015-07-30T00:00:00\",\"$key\":\"DelayLog\"}},\"IsComplete\":false,\"TimestampUtc\":\"2015-07-23T00:00:00\",\"Id\":0}", serialized);
+            Assert.AreEqual("{\"InstanceId\":\"39dda9c4-67b7-4144-a554-29400606a408\",\"TenantId\":0,\"StepId\":\"b790dfcd-f3b6-4204-802d-d7c6e9eb398e\",\"Step\":\"Delay\",\"Data\":{\"Detail\":{\"DelayUntil\":\"2015-07-30T00:00:00\",\"$key\":\"DelayLog\"}},\"IsComplete\":false,\"TimestampUtc\":\"2015-07-23T00:00:00\",\"Id\":0}", serialized);
+        }
+
+        [Test]
+        public void WhenDeserializeThenSuccessful()
+        {
+            var serialized = "{\"InstanceId\":\"39dda9c4-67b7-4144-a554-29400606a408\",\"StepId\":\"b790dfcd-f3b6-4204-802d-d7c6e9eb398e\",\"Step\":\"Delay\",\"Data\":{\"Detail\":{\"DelayUntil\":\"2015-07-30T00:00:00\",\"$key\":\"DelayLog\"}},\"IsComplete\":false,\"TimestampUtc\":\"2015-07-23T00:00:00\",\"Id\":0}";
+            var deserialized = JsonConvert.DeserializeObject<InstanceHistory>(serialized);
+            Assert.AreEqual(new Guid("b790dfcd-f3b6-4204-802d-d7c6e9eb398e"), deserialized.StepId);
         }
     }
 }

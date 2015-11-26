@@ -62,6 +62,8 @@ namespace Microservice.Workflow.Tests
             templateCategoryRepository.Setup(t => t.Load(1)).Returns(category);
             templateCategoryRepository.Setup(t => t.Load(2)).Returns(altCategory);
 
+            templateRegistrationRepository = new Mock<IRepository<TemplateRegistration>>();
+
             tokenBuilder = new Mock<ITrustedClientAuthenticationTokenBuilder>();
             templateDefinitionRepository = new Mock<IRepository<TemplateDefinition>>();
             
