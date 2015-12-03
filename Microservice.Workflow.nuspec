@@ -13,7 +13,7 @@
     </releaseNotes>
   </metadata>
   <files>
-    <file src="src\Microservice.*\bin\Release\*.*" target="content/microservice" />    <
+    <file src="src\Microservice.*\bin\Release\*.*" target="content/microservice" />    
 	<file src="database\Microservice.*\dbo\Tables\*.sql" target="content/database/Tables" />
 	<file src="database\Microservice.*\dbo\Stored Procedures\*.sql" target="content/database/StoredProcedures" />
 	<file src="database\Microservice.*\dbo\Views\*.sql" target="content/database/Views" />
