@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>Microservice.Workflow</id>
+    <version>1.2.3</version>
+    <title>Microservice.Workflow</title>
+    <authors>IntelliFlo Ltd</authors>
+    <owners>IntelliFlo Ltd</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Description</description>
+    <copyright>Copyright ©2015 IntelliFlo Ltd</copyright>
+    <releaseNotes>
+    </releaseNotes>
+  </metadata>
+  <files>
+    <file src="src\Microservice.*\bin\Release\*.*" target="content/microservice" />    <
+	<file src="database\Microservice.*\dbo\Tables\*.sql" target="content/database/Tables" />
+	<file src="database\Microservice.*\dbo\Stored Procedures\*.sql" target="content/database/StoredProcedures" />
+	<file src="database\Microservice.*\dbo\Views\*.sql" target="content/database/Views" />
+	<file src="database\Microservice.*\dbodata\*\*\*.sql" target="content/database/Data" />
+  </files>
+</package>
