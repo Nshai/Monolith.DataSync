@@ -13,10 +13,11 @@
     </releaseNotes>
   </metadata>
   <files>
-    <file src="src\Microservice.Workflow\bin\Release\*.*" target="content/microservice" />    
-	  <file src="database\Microservice.*\dbo\Tables\*.sql" target="content/database/Tables" />
-	  <file src="database\Microservice.*\dbo\Stored Procedures\*.sql" target="content/database/StoredProcedures" />
-	  <file src="database\Microservice.*\dbo\Views\*.sql" target="content/database/Views" />
-	  <file src="database\Microservice.*\dbodata\*\*\*.sql" target="content/database/Data" />
+    <file src="src\Microservice.Workflow\bin\Release\*.*" target="content/microservice" />   
+    <file src="database\Microservice.*\dbo\*.*" target="content/database" />
+    <file src="database\Microservice.*\dbo\Tables\*.sql" target="content/database/Tables" />
+    <file src="database\Microservice.*\dbo\Stored Procedures\*.sql" target="content/database/StoredProcedures" />
+    <file src="database\Microservice.*\dbo\Views\*.sql" target="content/database/Views" />
+    <file src="database\Microservice.*\dbodata\*\*\*.sql" target="content/database/Data" />
   </files>
 </package>
