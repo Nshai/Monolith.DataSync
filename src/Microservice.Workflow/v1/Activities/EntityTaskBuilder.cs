@@ -102,6 +102,9 @@ namespace Microservice.Workflow.v1.Activities
         {
             using (var crmClient = ClientFactory.Create("crm"))
             {
+                // Override the default 5 second timeout
+                crmClient.Timeout = TimeSpan.FromMinutes(2);
+
                 var taskResponse = await crmClient.Post<TaskDocument, CreateTaskRequest>(Uris.Crm.CreateTask, request);
                 taskResponse.OnException(s => { throw new HttpClientException(s); });
                 return taskResponse.Resource;
