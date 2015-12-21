@@ -153,26 +153,25 @@ namespace Microservice.Workflow.Engine.Impl
             }
         }
 
-        public void Initialise(Guid templateId, WorkflowService serviceImpl)
+        public void Initialise(TemplateDefinition template)
         {
+            var templateId = template.Id;
             var hostUri = GetHostUri(templateId);
             if (services.ContainsKey(templateId))
             {
-                var service = services[templateId];
-                if (service.State == CommunicationState.Faulted)
-                {
-                    CloseService(templateId);
-                }
-                else
-                {
+                if (IsServiceRunning(templateId))
                     return;
-                }
             }
 
             lock (lockObj)
             {
-                if (services.ContainsKey(templateId)) return;
-                
+                if (services.ContainsKey(templateId))
+                {
+                    if (IsServiceRunning(templateId))
+                        return;
+                }
+
+                var serviceImpl = GetWorkflowService(template);
                 var host = new WorkflowServiceHost(serviceImpl, new Uri(hostUri));
                 host.Description.Behaviors.Add(new DatabaseTrackingBehavior());
                 host.Description.Behaviors.Add(new InstanceCountBehavior(this));
@@ -187,7 +186,18 @@ namespace Microservice.Workflow.Engine.Impl
             }
         }
 
-        public void Initialise(TemplateDefinition template)
+        private bool IsServiceRunning(Guid templateId)
+        {
+            var service = services[templateId];
+            if (service.State == CommunicationState.Faulted)
+            {
+                CloseService(templateId);
+                return false;
+            }
+            return true;
+        }
+
+        private static WorkflowService GetWorkflowService(TemplateDefinition template)
         {
             using (var reader = new StringReader(template.Definition))
             using (var xamlReader = ActivityXamlServices.CreateBuilderReader(new XamlXmlReader(reader)))
@@ -198,7 +208,7 @@ namespace Microservice.Workflow.Engine.Impl
 
                 workflow.DefinitionIdentity = new WorkflowIdentity() { Name = template.Id.ToString() };
 
-                Initialise(template.Id, workflow);
+                return workflow;
             }
         }
 
