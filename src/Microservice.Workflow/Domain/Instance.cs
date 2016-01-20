@@ -8,6 +8,7 @@ namespace Microservice.Workflow.Domain
         public virtual int UserId { get; set; }
         public virtual int TenantId { get; set; }
         public virtual TemplateDefinition Template { get; set; }
+        protected virtual int TemplateTenantId { get; set; }
         public virtual string EntityType { get; set; }
         public virtual int EntityId { get; set; }
         public virtual string ParentEntityType { get; set; }

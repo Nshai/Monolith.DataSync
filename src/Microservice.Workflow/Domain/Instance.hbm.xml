@@ -6,13 +6,14 @@
 									 default-access="property"
                    schema="workflow.dbo">
 
-  <class name="Instance" table="WF_TInstance">
+  <class name="Instance" table="vwInstance">
 
     <id name="Id">
       <generator class="assigned"/>
     </id>
     
     <many-to-one name="Template" class="TemplateDefinition" column="TemplateId" not-null="true" lazy="false" not-found="ignore"/>
+    <property name="TemplateTenantId" insert="false" update="false"/>
     <property name="CorrelationId"/>
     <property name="UserId" />
     <property name="TenantId" />

@@ -54,11 +54,11 @@ namespace Microservice.Workflow.v1.Resources
             var tenantId = Thread.CurrentPrincipal.AsIFloPrincipal().TenantId;
             ICriterion[] additionalCriteria =
             {
-                Restrictions.And(Restrictions.Eq("TenantId", tenantId), Restrictions.Eq("t.TenantId", tenantId))
+                Restrictions.And(Restrictions.Eq("TenantId", tenantId), Restrictions.Eq("TemplateTenantId", tenantId))
             };
 
             int count;
-            var instances = instanceRepository.ODataQueryWithInlineCount(query, out count, new Dictionary<string, string>() {{"Template", "t"}}, additionalCriteria);
+            var instances = instanceRepository.ODataQueryWithInlineCount(query, out count, additionalCriteria);
 
             return new PagedResult<InstanceDocument>
             {
