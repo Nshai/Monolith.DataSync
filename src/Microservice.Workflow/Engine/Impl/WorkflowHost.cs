@@ -12,6 +12,7 @@ using System.Threading;
 using System.Xaml;
 using System.Xml.Linq;
 using IntelliFlo.Platform;
+using IntelliFlo.Platform.NHibernate;
 using IntelliFlo.Platform.NHibernate.Repositories;
 using log4net;
 using Microservice.Workflow.Domain;
@@ -106,7 +107,7 @@ namespace Microservice.Workflow.Engine.Impl
 
         private static IEnumerable<Guid> GetDelayedTemplates()
         {
-            var sessionFactory = IoC.Resolve<ISessionFactory>(Constants.ContainerId);
+            var sessionFactory = IoC.Resolve<IReadOnlySessionFactoryProvider>(Constants.ContainerId).SessionFactory;
             using (var session = sessionFactory.OpenSession())
             {
                 var templateRepository = new NHibernateRepository<TemplateDefinition>(session);
