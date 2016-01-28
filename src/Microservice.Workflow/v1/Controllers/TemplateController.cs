@@ -117,6 +117,10 @@ namespace Microservice.Workflow.v1.Controllers
             {
                 return Request.CreateNoContentResult(HttpStatusCode.BadRequest, "Template not active");
             }
+            catch (TemplatePermissionsException)
+            {
+                return Request.CreateNoContentResult(HttpStatusCode.Forbidden, "Not permitted to create this instance");
+            }
             catch (DuplicateInstanceException)
             {
                 return Request.CreateNoContentResult(HttpStatusCode.BadRequest, "Not permitted to create a duplicate instance");
