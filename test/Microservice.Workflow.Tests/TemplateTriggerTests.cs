@@ -112,11 +112,11 @@ namespace Microservice.Workflow.Tests
             Assert.AreEqual("(InterestAreas/any(InterestArea: InterestArea/InterestAreaId eq 1) or InterestAreas/any(InterestArea: InterestArea/InterestAreaId eq 2) or InterestAreas/any(InterestArea: InterestArea/InterestAreaId eq 3) or InterestAreas/any(InterestArea: InterestArea/InterestAreaId eq 4) or InterestAreas/any(InterestArea: InterestArea/InterestAreaId eq 5))", expression);
         }
         
-        [TestCase(TriggerType.OnPlanAddedToScheme, "<TriggerList xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><Triggers><GroupSchemePlanAddedTrigger><TriggerForNewMembersOnly>true</TriggerForNewMembersOnly><TriggerForRejoin>true</TriggerForRejoin></GroupSchemePlanAddedTrigger></Triggers></TriggerList>")]
-        [TestCase(TriggerType.OnClientStatusUpdate, "<TriggerList xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><Triggers><ClientStatusTransitionTrigger><StatusFromId>12665</StatusFromId><StatusToId>13073</StatusToId></ClientStatusTransitionTrigger></Triggers></TriggerList>")]
-        [TestCase(TriggerType.OnClientCreation, "<TriggerList xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><Triggers><ClientStatusTrigger><StatusId>1680</StatusId></ClientStatusTrigger><ClientCategoryTrigger><CategoryId>1</CategoryId></ClientCategoryTrigger></Triggers></TriggerList>")]
-        [TestCase(TriggerType.OnPlanCreation, "<TriggerList xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><Triggers><PlanTypeTrigger><ProductTypeId>15</ProductTypeId></PlanTypeTrigger><PlanProviderTrigger><ProviderId>4</ProviderId></PlanProviderTrigger><PlanNewBusinessTrigger><IsPreExisting>false</IsPreExisting></PlanNewBusinessTrigger></Triggers></TriggerList>")]
-        [TestCase(TriggerType.OnPlanStatusUpdate, "<TriggerList xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><Triggers><PlanStatusTransitionTrigger><StatusFromId>12665</StatusFromId><StatusToId>13073</StatusToId></PlanStatusTransitionTrigger></Triggers></TriggerList>")]
+        [TestCase(TriggerType.OnPlanAddedToScheme, "<TriggerList><Triggers><GroupSchemePlanAddedTrigger><TriggerForNewMembersOnly>true</TriggerForNewMembersOnly><TriggerForRejoin>true</TriggerForRejoin></GroupSchemePlanAddedTrigger></Triggers></TriggerList>")]
+        [TestCase(TriggerType.OnClientStatusUpdate, "<TriggerList><Triggers><ClientStatusTransitionTrigger><StatusFromId>12665</StatusFromId><StatusToId>13073</StatusToId></ClientStatusTransitionTrigger></Triggers></TriggerList>")]
+        [TestCase(TriggerType.OnClientCreation, "<TriggerList><Triggers><ClientStatusTrigger><StatusId>1680</StatusId></ClientStatusTrigger><ClientCategoryTrigger><CategoryId>1</CategoryId></ClientCategoryTrigger></Triggers></TriggerList>")]
+        [TestCase(TriggerType.OnPlanCreation, "<TriggerList><Triggers><PlanTypeTrigger><ProductTypeId>15</ProductTypeId></PlanTypeTrigger><PlanProviderTrigger><ProviderId>4</ProviderId></PlanProviderTrigger><PlanNewBusinessTrigger><IsPreExisting>false</IsPreExisting></PlanNewBusinessTrigger></Triggers></TriggerList>")]
+        [TestCase(TriggerType.OnPlanStatusUpdate, "<TriggerList><Triggers><PlanStatusTransitionTrigger><StatusFromId>12665</StatusFromId><StatusToId>13073</StatusToId></PlanStatusTransitionTrigger></Triggers></TriggerList>")]
         public void WhenDeserializeTriggerThenFormattedCorrectly(TriggerType type, string serialization)
         {
             var deserializedProperties = Deserialize<TriggerPropertyList>(serialization);
@@ -132,6 +132,9 @@ namespace Microservice.Workflow.Tests
             };
             
             var reserialized = Serialize(clonedTriggerSet.PropertyList);
+            reserialized = reserialized.Replace(" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"", "");
+            reserialized = reserialized.Replace(" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"", "");
+
             Assert.AreEqual(serialization, reserialized);
         }
 
