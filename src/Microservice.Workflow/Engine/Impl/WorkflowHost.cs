@@ -8,6 +8,7 @@ using System.Linq;
 using System.ServiceModel;
 using System.ServiceModel.Activities;
 using System.ServiceModel.Channels;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xaml;
 using System.Xml.Linq;
@@ -16,6 +17,7 @@ using IntelliFlo.Platform.NHibernate;
 using IntelliFlo.Platform.NHibernate.Repositories;
 using log4net;
 using Microservice.Workflow.Domain;
+using Microservice.Workflow.Properties;
 using Microservice.Workflow.v1;
 using NHibernate;
 
@@ -38,7 +40,7 @@ namespace Microservice.Workflow.Engine.Impl
         public WorkflowHost(IWorkflowClientFactory workflowClientFactory)
         {
             this.workflowClientFactory = workflowClientFactory;
-            binding = new NetNamedPipeBinding(NetNamedPipeSecurityMode.None);
+            binding = new BasicHttpBinding(BasicHttpSecurityMode.None);
 
             var interval = Convert.ToInt32(ConfigurationManager.AppSettings["templatePurgeIntervalSeconds"]);
             timer = new Timer(Purge, null, TimeSpan.FromSeconds(interval), TimeSpan.FromSeconds(interval));
@@ -383,7 +385,11 @@ namespace Microservice.Workflow.Engine.Impl
         private static string GetHostUri(Guid templateId, string suffix = null)
         {
             var preparedSuffix = string.IsNullOrEmpty(suffix) ? "" : string.Format("/{0}", suffix);
-            return string.Format("net.pipe://localhost/{0}{1}", templateId, preparedSuffix);
+
+            var baseAddress = Settings.Default.BaseAddress;
+            var localAddress = baseAddress.Replace("*", "localhost").TrimEnd('/');
+
+            return string.Format("{0}/services/{1}{2}", localAddress, templateId, preparedSuffix);
         }
     }
 }
