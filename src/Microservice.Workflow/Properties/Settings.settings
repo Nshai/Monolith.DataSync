@@ -17,14 +17,14 @@
     <Setting Name="AltBaseAddress" Type="System.String" Scope="Application">
       <Value Profile="(Default)">http://localhost:10111</Value>
     </Setting>
-    <Setting Name="ConnectionStringName" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">master</Value>
-    </Setting>
     <Setting Name="DatabaseObjectsFolder" Type="System.String" Scope="Application">
       <Value Profile="(Default)">../../../../database/Microservice.Workflow.SqlServer/dbo</Value>
     </Setting>
     <Setting Name="DataScriptFolder" Type="System.String" Scope="Application">
       <Value Profile="(Default)">../../../../database/Microservice.Workflow.SqlServer/dbodata/data</Value>
+    </Setting>
+    <Setting Name="ConnectionStringName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">write</Value>
     </Setting>
   </Settings>
 </SettingsFile>
