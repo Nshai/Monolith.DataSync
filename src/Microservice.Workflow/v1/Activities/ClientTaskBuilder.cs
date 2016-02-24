@@ -1,6 +1,7 @@
 ﻿using System.Activities;
 using System.Threading.Tasks;
 using IntelliFlo.Platform.Http.Client;
+using IntelliFlo.Platform.Http.Client.Policy;
 using Microservice.Workflow.Collaborators.v1;
 
 namespace Microservice.Workflow.v1.Activities
@@ -16,7 +17,7 @@ namespace Microservice.Workflow.v1.Activities
 
             using (var crmClient = ClientFactory.Create("crm"))
             {
-                var clientResponse = await crmClient.Get<ClientDocument>(string.Format(Uris.Crm.GetClient, context.EntityId));
+                var clientResponse = await crmClient.UsingPolicy(HttpClientPolicy.Retry).SendAsync(c => c.Get<ClientDocument>(string.Format(Uris.Crm.GetClient, context.EntityId)));
                 clientResponse.OnException(s => { throw new HttpClientException(s); });
                 var client = clientResponse.Resource;
 

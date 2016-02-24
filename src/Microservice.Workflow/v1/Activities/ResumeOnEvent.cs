@@ -1,5 +1,6 @@
 ﻿using System.Activities;
 using IntelliFlo.Platform.Http.Client;
+using IntelliFlo.Platform.Http.Client.Policy;
 using Microservice.Workflow.Collaborators.v1;
 using Constants = Microservice.Workflow.Engine.Constants;
 
@@ -32,14 +33,14 @@ namespace Microservice.Workflow.v1.Activities
                 var clientFactory = IoC.Resolve<IHttpClientFactory>(Constants.ContainerId);
                 using (var workflowClient = clientFactory.Create("eventmanagement"))
                 {
-                    var subscribeTask = workflowClient.Post<EventSubscriptionDocument, SubscribeRequest>(Uris.EventManagement.Post, new SubscribeRequest()
+                    var subscribeTask = workflowClient.UsingPolicy(HttpClientPolicy.Retry).SendAsync(c => c.Post<EventSubscriptionDocument, SubscribeRequest>(Uris.EventManagement.Post, new SubscribeRequest()
                     {
                         EventType = eventType,
                         EntityId = entityId,
                         Filter = filter,
                         CallbackUrl = resumeUri,
                         IsPersistent = false
-                    }).ContinueWith(t =>
+                    })).ContinueWith(t =>
                     {
                         t.OnException(s => { throw new HttpClientException(s); });
                     });

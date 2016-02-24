@@ -2,6 +2,7 @@
 using System.Net;
 using System.Threading.Tasks;
 using IntelliFlo.Platform.Http.Client;
+using IntelliFlo.Platform.Http.Client.Policy;
 using Microservice.Workflow.Collaborators.v1;
 
 namespace Microservice.Workflow.v1.Activities
@@ -18,7 +19,7 @@ namespace Microservice.Workflow.v1.Activities
             using (var crmClient = ClientFactory.Create("crm"))
             {
                 var adviserId = PartyNotFound;
-                var leadResponse = await crmClient.Get<LeadDocument>(string.Format(Uris.Crm.GetLead, context.EntityId));
+                var leadResponse = await crmClient.UsingPolicy(HttpClientPolicy.Retry).SendAsync(c => c.Get<LeadDocument>(string.Format(Uris.Crm.GetLead, context.EntityId)));
                 await leadResponse.OnNotFound(async () =>
                 {
                     var clientResponse = await crmClient.Get<ClientDocument>(string.Format(Uris.Crm.GetClient, context.EntityId));

@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using IntelliFlo.Platform.Http.Client;
+using IntelliFlo.Platform.Http.Client.Policy;
 using Constants = Microservice.Workflow.Engine.Constants;
 
 namespace Microservice.Workflow.v1.Activities
@@ -36,14 +37,14 @@ namespace Microservice.Workflow.v1.Activities
                     Task task;
                     if (bodyContent != null)
                     {
-                        task = client.Post(uri, bodyContent).ContinueWith(t =>
+                        task = client.UsingPolicy(HttpClientPolicy.Retry).SendAsync(c => c.Post(uri, bodyContent)).ContinueWith(t =>
                         {
                             t.OnException(status => { throw new HttpClientException(status); });
                         });
                     }
                     else
                     {
-                        task = client.Post(uri).ContinueWith(t =>
+                        task = client.UsingPolicy(HttpClientPolicy.Retry).SendAsync(c => c.Post(uri)).ContinueWith(t =>
                         {
                             t.OnException(status => { throw new HttpClientException(status); });
                         });

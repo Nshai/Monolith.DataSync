@@ -5,6 +5,7 @@ using System.ServiceModel;
 using System.Threading;
 using System.Threading.Tasks;
 using IntelliFlo.Platform.Http.Client;
+using IntelliFlo.Platform.Http.Client.Policy;
 using IntelliFlo.Platform.Principal;
 using Microservice.Workflow.Collaborators.v1;
 using Microservice.Workflow.Domain;
@@ -105,7 +106,7 @@ namespace Microservice.Workflow.v1.Activities
                 // Override the default 5 second timeout
                 crmClient.Timeout = TimeSpan.FromMinutes(2);
 
-                var taskResponse = await crmClient.Post<TaskDocument, CreateTaskRequest>(Uris.Crm.CreateTask, request);
+                var taskResponse = await crmClient.UsingPolicy(HttpClientPolicy.Retry).SendAsync(c => c.Post<TaskDocument, CreateTaskRequest>(Uris.Crm.CreateTask, request));
                 taskResponse.OnException(s => { throw new HttpClientException(s); });
                 return taskResponse.Resource;
             }
@@ -117,7 +118,7 @@ namespace Microservice.Workflow.v1.Activities
             {
                 var subject = Thread.CurrentPrincipal.AsIFloPrincipal().Subject;
                 HttpResponse<Dictionary<string, object>> userInfoResponse = null;
-                var userInfoTask = crmClient.Get<Dictionary<string, object>>(string.Format(Uris.Crm.GetUserInfoBySubject, subject))
+                var userInfoTask = crmClient.UsingPolicy(HttpClientPolicy.Retry).SendAsync(c => c.Get<Dictionary<string, object>>(string.Format(Uris.Crm.GetUserInfoBySubject, subject)))
                     .ContinueWith(t =>
                     {
                         t.OnException(status => { throw new HttpClientException(status); });

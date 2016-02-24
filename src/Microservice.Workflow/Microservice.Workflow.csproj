@@ -388,6 +388,7 @@
     <Compile Include="Engine\WorkflowHostConstants.cs" />
     <Compile Include="Engine\WorkflowServiceHostExtensions.cs" />
     <Compile Include="Host\WorkflowStartup.cs" />
+    <Compile Include="HttpClientPolicy.cs" />
     <Compile Include="IoC.cs" />
     <Compile Include="GenericEnumMapper.cs" />
     <Compile Include="IDomainObject.cs" />

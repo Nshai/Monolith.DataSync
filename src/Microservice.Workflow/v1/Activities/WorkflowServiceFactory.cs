@@ -11,6 +11,7 @@ using System.Xaml;
 using System.Xml;
 using System.Xml.Linq;
 using IntelliFlo.Platform.Http.Client;
+using IntelliFlo.Platform.Http.Client.Policy;
 using Microservice.Workflow.Collaborators.v1;
 using Microservice.Workflow.Domain;
 using Check = IntelliFlo.Platform.Check;
@@ -133,7 +134,7 @@ namespace Microservice.Workflow.v1.Activities
             using (var crmClient = clientFactory.Create("crm"))
             {
                 HttpResponse<Dictionary<string, object>> userInfoResponse = null;
-                var userInfoTask = crmClient.Get<Dictionary<string, object>>(string.Format(Uris.Crm.GetUserInfoByUserId, userId))
+                var userInfoTask = crmClient.UsingPolicy(HttpClientPolicy.Retry).SendAsync(c => c.Get<Dictionary<string, object>>(string.Format(Uris.Crm.GetUserInfoByUserId, userId)))
                     .ContinueWith(t =>
                     {
                         t.OnException(status => { throw new HttpClientException(status); });

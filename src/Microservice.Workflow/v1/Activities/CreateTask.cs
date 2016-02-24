@@ -3,6 +3,7 @@ using System.Activities;
 using System.Collections.Generic;
 using System.Linq;
 using IntelliFlo.Platform.Http.Client;
+using IntelliFlo.Platform.Http.Client.Policy;
 using Microservice.Workflow.Collaborators.v1;
 using Microservice.Workflow.Domain;
 using Constants = Microservice.Workflow.Engine.Constants;
@@ -42,7 +43,7 @@ namespace Microservice.Workflow.v1.Activities
                     var dueDate = DateCalculator.AddDays(DateTime.UtcNow, TimeSpan.FromDays(dueDelay), dueDelayBusinessDays, (s, e) =>
                     {
                         HttpResponse<IEnumerable<HolidayDocument>> holidayResponse = null;
-                        var holidayTask = crmClient.Get<IEnumerable<HolidayDocument>>(string.Format(Uris.Holidays.Get, s.ToString("s"), e.ToString("s")))
+                        var holidayTask = crmClient.UsingPolicy(HttpClientPolicy.Retry).SendAsync(c => c.Get<IEnumerable<HolidayDocument>>(string.Format(Uris.Holidays.Get, s.ToString("s"), e.ToString("s"))))
                             .ContinueWith(t =>
                             {
                                 t.OnException(status => { throw new HttpClientException(status); });

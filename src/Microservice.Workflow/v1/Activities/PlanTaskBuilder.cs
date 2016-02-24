@@ -2,6 +2,7 @@ using System.Activities;
 using System.Linq;
 using System.Threading.Tasks;
 using IntelliFlo.Platform.Http.Client;
+using IntelliFlo.Platform.Http.Client.Policy;
 using Microservice.Workflow.Collaborators.v1;
 
 namespace Microservice.Workflow.v1.Activities
@@ -45,7 +46,7 @@ namespace Microservice.Workflow.v1.Activities
         {
             using (var portfolioClient = ClientFactory.Create("portfolio"))
             {
-                var planResponse = await portfolioClient.Get<PlanDocument>(string.Format(Uris.Portfolio.GetPlan, clientId, planId));
+                var planResponse = await portfolioClient.UsingPolicy(HttpClientPolicy.Retry).SendAsync(c => c.Get<PlanDocument>(string.Format(Uris.Portfolio.GetPlan, clientId, planId)));
                 planResponse.OnException(s => { throw new HttpClientException(s); });
                 return planResponse.Resource;
             }
