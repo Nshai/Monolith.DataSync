@@ -1,8 +1,9 @@
 ﻿using System;
+using System.ServiceModel;
 
 namespace Microservice.Workflow.v1
 {
-    public interface IWorkflowControlClient : IDisposable
+    public interface IWorkflowControlClient : ICommunicationObject, IDisposable
     {
         void Abort();
         void Close();

@@ -196,33 +196,16 @@ namespace Microservice.Workflow.Engine.Impl
 
         public Guid Create(TemplateDefinition template, WorkflowContext context)
         {
-            var instanceId = Guid.Empty;
-
             Initialise(template);
             var hostUri = GetHostUri(template.Id);
 
             var client = workflowClientFactory.GetDynamicClient(binding, new EndpointAddress(hostUri));
-            try
+            var result = client.Call(c => c.Create(context));
+            if(!result.Success)
             {
-                instanceId = client.Create(context);
-                client.Close();
+                throw new ServiceClientException("Failed to create instance");
             }
-            catch (CommunicationException ex)
-            {
-                logger.Error("Service communication exception", ex);
-                client.Abort();
-            }
-            catch (TimeoutException ex)
-            {
-                logger.Error("Service timeout exception", ex);
-                client.Abort();
-            }
-            catch (Exception)
-            {
-                client.Abort();
-                throw;
-            }
-            return instanceId;
+            return result.Result;
         }
 
         public void CreateAsync(TemplateDefinition template, WorkflowContext context)
@@ -231,25 +214,9 @@ namespace Microservice.Workflow.Engine.Impl
             var hostUri = GetHostUri(template.Id);
 
             var client = workflowClientFactory.GetDynamicClient(binding, new EndpointAddress(hostUri));
-            try
+            if (!client.Call(c => c.CreateAsync(context)).Success)
             {
-                client.CreateAsync(context);
-                client.Close();
-            }
-            catch (CommunicationException ex)
-            {
-                logger.Error("Service communication exception", ex);
-                client.Abort();
-            }
-            catch (TimeoutException ex)
-            {
-                logger.Error("Service timeout exception", ex);
-                client.Abort();
-            }
-            catch (Exception)
-            {
-                client.Abort();
-                throw;
+                throw new ServiceClientException("Failed to create instance");
             }
         }
 
@@ -259,25 +226,9 @@ namespace Microservice.Workflow.Engine.Impl
             var hostUri = GetHostUri(template.Id);
 
             var client = workflowClientFactory.GetDynamicClient(binding, new EndpointAddress(hostUri));
-            try
+            if (!client.Call(c => c.Resume(context)).Success)
             {
-                client.Resume(context);
-                client.Close();
-            }
-            catch (CommunicationException ex)
-            {
-                logger.Error("Service communication exception", ex);
-                client.Abort();
-            }
-            catch (TimeoutException ex)
-            {
-                logger.Error("Service timeout exception", ex);
-                client.Abort();
-            }
-            catch (Exception)
-            {
-                client.Abort();
-                throw;
+                throw new ServiceClientException("Failed to resume instance");
             }
         }
 
@@ -287,25 +238,9 @@ namespace Microservice.Workflow.Engine.Impl
             var hostUri = GetHostUri(template.Id, "wce");
 
             var client = workflowClientFactory.GetControlClient(binding, new EndpointAddress(hostUri));
-            try
+            if (!client.Call(c => c.Terminate(instanceId)).Success)
             {
-                client.Terminate(instanceId);
-                client.Close();
-            }
-            catch (CommunicationException ex)
-            {
-                logger.Error("Service communication exception", ex);
-                client.Abort();
-            }
-            catch (TimeoutException ex)
-            {
-                logger.Error("Service timeout exception", ex);
-                client.Abort();
-            }
-            catch (Exception)
-            {
-                client.Abort();
-                throw;
+                throw new ServiceClientException("Failed to abort instance");
             }
         }
 
@@ -315,24 +250,9 @@ namespace Microservice.Workflow.Engine.Impl
             var hostUri = GetHostUri(template.Id, "wce");
 
             var client = workflowClientFactory.GetControlClient(binding, new EndpointAddress(hostUri));
-            try
+            if (!client.Call(c => c.Unsuspend(instanceId)).Success)
             {
-                client.Unsuspend(instanceId);
-            }
-            catch (CommunicationException ex)
-            {
-                logger.Error("Service communication exception", ex);
-                client.Abort();
-            }
-            catch (TimeoutException ex)
-            {
-                logger.Error("Service timeout exception", ex);
-                client.Abort();
-            }
-            catch (Exception)
-            {
-                client.Abort();
-                throw;
+                throw new ServiceClientException("Failed to unsuspend instance");
             }
         }
 

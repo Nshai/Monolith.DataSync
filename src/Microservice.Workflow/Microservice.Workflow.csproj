@@ -383,6 +383,8 @@
     <Compile Include="Engine\GenerationList.cs" />
     <Compile Include="Engine\InstanceCountBehavior.cs" />
     <Compile Include="Engine\InstanceCountParticipant.cs" />
+    <Compile Include="Engine\ServiceClient.cs" />
+    <Compile Include="Engine\ServiceResult.cs" />
     <Compile Include="Engine\WorkflowHostConstants.cs" />
     <Compile Include="Engine\WorkflowServiceHostExtensions.cs" />
     <Compile Include="Host\WorkflowStartup.cs" />
@@ -394,6 +396,7 @@
     <Compile Include="Properties\GlobalAssemblyInfo.cs" />
     <Compile Include="RepositoryExtensions.cs" />
     <Compile Include="LogLevel.cs" />
+    <Compile Include="ServiceClientException.cs" />
     <Compile Include="v1\Activities\PostToService.cs" />
     <Compile Include="v1\Contracts\RegisterTemplateRequest.cs" />
     <Compile Include="v1\Contracts\TemplateRegistrationDocument.cs" />
