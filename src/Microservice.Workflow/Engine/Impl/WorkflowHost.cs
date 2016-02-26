@@ -27,7 +27,7 @@ namespace Microservice.Workflow.Engine.Impl
     {
         private readonly IWorkflowClientFactory workflowClientFactory;
         private readonly IDictionary<Guid, WorkflowServiceHost> services = new Dictionary<Guid, WorkflowServiceHost>();
-        private readonly IDictionary<Guid, HashSet<Guid>> templateInstanceCount = new Dictionary<Guid, HashSet<Guid>>();
+        private readonly IDictionary<Guid, Counter> templateInstanceCount = new Dictionary<Guid, Counter>();
         private readonly GenerationList<Guid> templatesToBePurged = new GenerationList<Guid>();
         private volatile object lockObj = new object();
         private readonly Binding binding;
@@ -58,7 +58,7 @@ namespace Microservice.Workflow.Engine.Impl
                 {
                     if (shuttingDown) return;
 
-                    templatesToBePurged.Promote(templateInstanceCount.Where(k => !delayedTemplates.Contains(k.Key) && k.Value.Count == 0).Select(k => k.Key));
+                    templatesToBePurged.Promote(templateInstanceCount.Where(k => !delayedTemplates.Contains(k.Key) && k.Value.Value == 0).Select(k => k.Key));
 
                     var templatesToPurge = templatesToBePurged.GetGeneration(templatesToBePurged.MaxGenerationIndex);
                     if (templatesToPurge.Any())
@@ -85,7 +85,7 @@ namespace Microservice.Workflow.Engine.Impl
         {
             lock (lockObj)
             {
-                if (services.ContainsKey(templateId))
+                if (services.ContainsKey(templateId) && templateInstanceCount[templateId].Value == 0)
                 {
                     var service = services[templateId];
 
@@ -100,7 +100,7 @@ namespace Microservice.Workflow.Engine.Impl
         private void LogResourceUsage()
         {
             var serviceCount = services.Count;
-            var instanceCount = templateInstanceCount.Sum(t => t.Value.Count);
+            var instanceCount = templateInstanceCount.Sum(t => t.Value.Value);
             if (lastServiceCount == serviceCount && lastInstanceCount == instanceCount) return;
             logger.InfoFormat("loadedTemplates={0} totalInstances={1}", serviceCount, instanceCount);
             lastServiceCount = serviceCount;
@@ -120,40 +120,17 @@ namespace Microservice.Workflow.Engine.Impl
         public void IncrementInstanceCount(Guid templateId, Guid instanceId)
         {
             if (shuttingDown) return;
-            lock (lockObj)
-            {
-                if (shuttingDown) return;
-
-                if (!templateInstanceCount.ContainsKey(templateId))
-                {
-                    var instanceList = new HashSet<Guid>() { instanceId };
-                    templateInstanceCount.Add(templateId, instanceList);
-                }
-                else
-                {
-                    var instanceList = templateInstanceCount[templateId];
-                    if (!instanceList.Contains(instanceId))
-                    {
-                        instanceList.Add(instanceId);
-                    }
-                }
-                LogResourceUsage();
-            }
+            templateInstanceCount[templateId].Increment();
+            
+            LogResourceUsage();
         }
 
         public void DecrementInstanceCount(Guid templateId, Guid instanceId)
         {
             if (shuttingDown) return;
-            lock (lockObj)
-            {
-                if (shuttingDown) return;
-                var instanceList = templateInstanceCount[templateId];
-                if (instanceList.Contains(instanceId))
-                {
-                    instanceList.Remove(instanceId);
-                }
-                LogResourceUsage();
-            }
+            
+            templateInstanceCount[templateId].Decrement();
+            LogResourceUsage();
         }
 
         public void Initialise(TemplateDefinition template)
@@ -186,6 +163,8 @@ namespace Microservice.Workflow.Engine.Impl
 
                 services.Add(templateId, host);
                 logger.InfoFormat("TemplateInitialise Id={0}", templateId);
+
+                templateInstanceCount.Add(templateId, new Counter());
             }
         }
 

@@ -378,6 +378,7 @@
     <Compile Include="DataProfiles\SeedWithTestData.cs" />
     <Compile Include="Domain\TaskAssignee.cs" />
     <Compile Include="Domain\TemplateRegistration.cs" />
+    <Compile Include="Engine\Counter.cs" />
     <Compile Include="Engine\ExceptionLogger.cs" />
     <Compile Include="Engine\GenerationList.cs" />
     <Compile Include="Engine\InstanceCountBehavior.cs" />

@@ -385,6 +385,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="CounterTests.cs" />
     <Compile Include="EnumExtensionTests.cs" />
     <Compile Include="GenerationTests.cs" />
     <Compile Include="InstanceHistoryTests.cs" />
