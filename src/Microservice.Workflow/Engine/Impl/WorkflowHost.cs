@@ -159,12 +159,12 @@ namespace Microservice.Workflow.Engine.Impl
                 host.AddServiceEndpoint(XName.Get("IDynamicWorkflow", "http://intelliflo.com/dynamicworkflow/2014/06"), binding, hostUri);
                 host.AddServiceEndpoint(new WorkflowControlEndpoint(binding, new EndpointAddress(GetHostUri(templateId, "wce"))));
 
+                templateInstanceCount.Add(templateId, new Counter());
+
                 host.Open();
 
                 services.Add(templateId, host);
                 logger.InfoFormat("TemplateInitialise Id={0}", templateId);
-
-                templateInstanceCount.Add(templateId, new Counter());
             }
         }
 
