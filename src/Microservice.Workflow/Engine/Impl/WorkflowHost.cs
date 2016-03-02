@@ -120,7 +120,9 @@ namespace Microservice.Workflow.Engine.Impl
         public void IncrementInstanceCount(Guid templateId, Guid instanceId)
         {
             if (shuttingDown) return;
-            templateInstanceCount[templateId].Increment();
+
+            if(templateInstanceCount.ContainsKey(templateId))
+                templateInstanceCount[templateId].Increment();
             
             LogResourceUsage();
         }
@@ -128,8 +130,10 @@ namespace Microservice.Workflow.Engine.Impl
         public void DecrementInstanceCount(Guid templateId, Guid instanceId)
         {
             if (shuttingDown) return;
-            
-            templateInstanceCount[templateId].Decrement();
+
+            if (templateInstanceCount.ContainsKey(templateId))
+                templateInstanceCount[templateId].Decrement();
+
             LogResourceUsage();
         }
 
