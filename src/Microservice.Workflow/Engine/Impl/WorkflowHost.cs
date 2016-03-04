@@ -85,7 +85,7 @@ namespace Microservice.Workflow.Engine.Impl
         {
             lock (lockObj)
             {
-                if (services.ContainsKey(templateId) && templateInstanceCount[templateId].Value == 0)
+                if (services.ContainsKey(templateId))
                 {
                     var service = services[templateId];
 
