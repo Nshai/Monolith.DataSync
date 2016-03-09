@@ -165,9 +165,15 @@ namespace Microservice.Workflow.Engine.Impl
 
                 templateInstanceCount.Add(templateId, new Counter());
 
-                host.Open();
-
-                services.Add(templateId, host);
+                try
+                {
+                    host.Open();
+                }
+                finally
+                {
+                    services.Add(templateId, host);
+                }
+                
                 logger.InfoFormat("TemplateInitialise Id={0}", templateId);
             }
         }
