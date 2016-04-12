@@ -99,12 +99,19 @@ namespace Microservice.Workflow.Engine.Impl
 
         private void LogResourceUsage()
         {
-            var serviceCount = services.Count;
-            var instanceCount = templateInstanceCount.Sum(t => t.Value.Value);
-            if (lastServiceCount == serviceCount && lastInstanceCount == instanceCount) return;
-            logger.InfoFormat("loadedTemplates={0} totalInstances={1}", serviceCount, instanceCount);
-            lastServiceCount = serviceCount;
-            lastInstanceCount = instanceCount;
+            try
+            {
+                var serviceCount = services.Count;
+                var instanceCount = templateInstanceCount.ToList().Sum(t => t.Value.Value);
+                if (lastServiceCount == serviceCount && lastInstanceCount == instanceCount) return;
+                logger.InfoFormat("loadedTemplates={0} totalInstances={1}", serviceCount, instanceCount);
+                lastServiceCount = serviceCount;
+                lastInstanceCount = instanceCount;
+            }
+            catch (Exception ex)
+            {
+                logger.Error("Failed to log resource usage", ex);
+            }
         }
 
         private static IEnumerable<Guid> GetDelayedTemplates()
