@@ -116,7 +116,7 @@ namespace Microservice.Workflow.Engine.Impl
 
         private static IEnumerable<Guid> GetDelayedTemplates()
         {
-            var sessionFactory = IoC.Resolve<IReadOnlySessionFactoryProvider>(Constants.ContainerId).SessionFactory;
+            var sessionFactory = IoC.Resolve<IHostSessionFactoryProvider>(Constants.ContainerId).SessionFactory;
             using (var session = sessionFactory.OpenSession())
             {
                 var templateRepository = new NHibernateRepository<TemplateDefinition>(session);

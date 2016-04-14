@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Net.Http;
@@ -140,6 +141,15 @@ namespace Microservice.Workflow.Host
                 .Where(t => t.Name.EndsWith("AutoMapperModule"))
                 .As<IModule>()
                 .SingleInstance();
+
+
+            var hostConfiguration = new ConfigureNHibernateForMsSql2005("host", new AssemblyScanner().AssembliesToScan());
+
+            builder.Register(c => new NHibernateSessionFactoryProvider(
+                                   hostConfiguration,
+                                   c.Resolve<IEnumerable<INHibernateInitializationAware>>()))
+               .As<IHostSessionFactoryProvider>()
+               .SingleInstance();
 
             builder.Register(c =>
             {
