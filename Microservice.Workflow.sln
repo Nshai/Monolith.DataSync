@@ -11,15 +11,6 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Microservice.Workflow.SqlSe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microservice.Workflow.Tests", "test\Microservice.Workflow.Tests\Microservice.Workflow.Tests.csproj", "{5737C675-610B-4E00-86BB-57846C2BACA7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microservice.Workflow.Artifactory", "src\Microservice.Workflow.Artifactory\Microservice.Workflow.Artifactory.csproj", "{9CAD74E7-637B-43DA-90FD-B9A61939043E}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".artifactory", ".artifactory", "{067F71F8-B919-413E-8F9C-5E05097C216D}"
-	ProjectSection(SolutionItems) = preProject
-		.artifactory\Artifactory.build = .artifactory\Artifactory.build
-		.artifactory\Deploy.targets = .artifactory\Deploy.targets
-		.artifactory\Resolve.targets = .artifactory\Resolve.targets
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,10 +43,6 @@ Global
 		{5737C675-610B-4E00-86BB-57846C2BACA7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5737C675-610B-4E00-86BB-57846C2BACA7}.Subsys|Any CPU.ActiveCfg = Subsys|Any CPU
 		{5737C675-610B-4E00-86BB-57846C2BACA7}.Subsys|Any CPU.Build.0 = Subsys|Any CPU
-		{9CAD74E7-637B-43DA-90FD-B9A61939043E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9CAD74E7-637B-43DA-90FD-B9A61939043E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9CAD74E7-637B-43DA-90FD-B9A61939043E}.Subsys|Any CPU.ActiveCfg = Release|Any CPU
-		{9CAD74E7-637B-43DA-90FD-B9A61939043E}.Subsys|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

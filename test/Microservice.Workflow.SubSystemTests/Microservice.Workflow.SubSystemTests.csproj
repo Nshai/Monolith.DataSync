@@ -69,17 +69,21 @@
     <Reference Include="Iesi.Collections">
       <HintPath>..\..\packages\Iesi.Collections.3.2.0.4000\lib\Net35\Iesi.Collections.dll</HintPath>
     </Reference>
-    <Reference Include="IntelliFlo.Platform">
-      <HintPath>..\..\packages\IntelliFlo.Platform.0.2.212\lib\net451\IntelliFlo.Platform.dll</HintPath>
+    <Reference Include="IntelliFlo.Platform, Version=0.2.260.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\IntelliFlo.Platform.0.2.260\lib\net451\IntelliFlo.Platform.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.Client">
-      <HintPath>..\..\packages\IntelliFlo.Platform.Client.0.2.100\lib\net451\IntelliFlo.Platform.Client.dll</HintPath>
+    <Reference Include="IntelliFlo.Platform.Client, Version=0.2.104.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\IntelliFlo.Platform.Client.0.2.104\lib\net451\IntelliFlo.Platform.Client.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.NHibernate">
-      <HintPath>..\..\packages\IntelliFlo.Platform.NHibernate.0.2.212\lib\net451\IntelliFlo.Platform.NHibernate.dll</HintPath>
+    <Reference Include="IntelliFlo.Platform.NHibernate, Version=0.2.260.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\IntelliFlo.Platform.NHibernate.0.2.260\lib\net451\IntelliFlo.Platform.NHibernate.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.Security">
-      <HintPath>..\..\packages\IntelliFlo.Platform.Security.0.2.201\lib\net451\IntelliFlo.Platform.Security.dll</HintPath>
+    <Reference Include="IntelliFlo.Platform.Security, Version=0.2.260.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\IntelliFlo.Platform.Security.0.2.260\lib\net451\IntelliFlo.Platform.Security.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="log4net">
       <HintPath>..\..\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
@@ -130,20 +134,20 @@
     <Reference Include="Owin">
       <HintPath>..\..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
-    <Reference Include="Reassure, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Reassure.0.2.58\lib\net451\Reassure.dll</HintPath>
+    <Reference Include="Reassure, Version=1.2.115.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Reassure.1.2.115\lib\net451\Reassure.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Reassure.IntellifloExtensions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Reassure.IntellifloExtensions.0.2.58\lib\net451\Reassure.IntellifloExtensions.dll</HintPath>
+      <HintPath>..\..\packages\Reassure.IntellifloExtensions.1.0.4\lib\net451\Reassure.IntellifloExtensions.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Reassure.OAuth, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Reassure.OAuth.0.2.58\lib\net451\Reassure.OAuth.dll</HintPath>
+      <HintPath>..\..\packages\Reassure.OAuth.1.0.11\lib\net451\Reassure.OAuth.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Reassure.WireMock, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Reassure.WireMock.0.2.58\lib\net451\Reassure.WireMock.dll</HintPath>
+      <HintPath>..\..\packages\Reassure.WireMock.1.2.9\lib\net451\Reassure.WireMock.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -185,9 +189,14 @@
     <Reference Include="Thinktecture.IdentityModel.Owin.ResourceAuthorization.WebApi">
       <HintPath>..\..\packages\Thinktecture.IdentityModel.Owin.ResourceAuthorization.WebApi.3.0.0\lib\net45\Thinktecture.IdentityModel.Owin.ResourceAuthorization.WebApi.dll</HintPath>
     </Reference>
+    <Reference Include="YamlDotNet, Version=3.8.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\YamlDotNet.3.8.0\lib\net35\YamlDotNet.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config.cs" />
+    <Compile Include="CoverageSetUp.cs" />
     <Compile Include="Helpers\Apis\TemplateCategoryExtensions.cs" />
     <Compile Include="Helpers\Apis\TemplateExtensions.cs" />
     <Compile Include="Helpers\InMemoryUserExtensions.cs" />
@@ -208,6 +217,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="app.subsysaws.config">
+      <DependentUpon>app.config</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />

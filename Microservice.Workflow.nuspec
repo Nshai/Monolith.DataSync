@@ -14,10 +14,13 @@
   </metadata>
   <files>
     <file src="src\Microservice.Workflow\bin\Release\*.*" target="content/microservice" />   
-    <file src="database\Microservice.*\dbo\*.*" target="content/database" />
-    <file src="database\Microservice.*\dbo\Tables\*.sql" target="content/database/Tables" />
-    <file src="database\Microservice.*\dbo\Stored Procedures\*.sql" target="content/database/StoredProcedures" />
-    <file src="database\Microservice.*\dbo\Views\*.sql" target="content/database/Views" />
-    <file src="database\Microservice.*\dbodata\*\*\*.sql" target="content/database/Data" />
+    <file src="database\Microservice.Workflow.SqlServer\dbo\**" target="content\database" />
+    <file src="database\Microservice.Workflow.SqlServer\dbodata\data\**" target="content\database\data" /> 
+    <file src="test\Microservice.Workflow.SubsystemTests\bin\Release\**" target="content\tests\SubsystemTests" />
+  	<file src="subsys.json" target="content\scripts" />
+  	<file src="packages\SubsystemTests.Microservice.*\tools\microservice\appspec.yml" target="" />
+  	<file src="packages\SubsystemTests.Microservice.*\tools\microservice\aws\*.*" target="content\scripts"  exclude="**\*.cer;**\*.pfx" />
+    <file src="packages\SubsystemTests.Microservice.*\tools\microservice\aws\*.cer" target="content\certificates" />
+    <file src="packages\SubsystemTests.Microservice.*\tools\microservice\teamcity\*.*" target="content\scripts\teamcity" />
   </files>
 </package>

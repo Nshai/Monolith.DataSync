@@ -661,11 +661,18 @@
     <Compile Include="v1\WorkflowContext.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\service_dependencies.json">
+      <Link>service_dependencies.json</Link>
+    </None>
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
     <None Include="App.Subsys.config">
       <DependentUpon>App.Config</DependentUpon>
+    </None>
+    <None Include="App.SubsysAws.config">
+      <DependentUpon>App.Config</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="GUIDANCE.md" />
     <None Include="packages.config">

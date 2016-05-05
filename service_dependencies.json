@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Microservice.Author",
+    "version": "1.0.0"
+  },
+  {
+    "name": "Microservice.Workflow",
+    "version": "1.0.0"
+  },
+  {
+    "name": "Monolith.Crm",
+    "version": "1.0.0"
+  },
+  {
+    "name": "Monolith.Portfolio",
+    "version": "1.0.0"
+  },
+  {
+    "name": "Monolith.WebHooks",
+    "version": "1.0.0"
+  },
+  {
+    "name": "IntelligentOffice",
+    "version": "1.0.0"
+  }
+]

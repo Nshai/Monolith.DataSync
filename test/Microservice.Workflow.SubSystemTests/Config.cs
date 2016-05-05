@@ -14,7 +14,7 @@ using Reassure.Stubs.Providers;
 namespace Microservice.Workflow.SubSystemTests
 {
     [SetUpFixture]
-    public class Config
+    public class Config : CoverageSetUp
     {
         public static readonly int ExistingCategoryId = 1;
         public static readonly int MasterTenantId = 10155;
