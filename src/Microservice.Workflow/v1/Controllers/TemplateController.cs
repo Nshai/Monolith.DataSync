@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.ServiceModel;
 using System.Web.Http;
 using System.Web.Http.Description;
 using System.Web.Http.OData.Query;
@@ -73,6 +74,10 @@ namespace Microservice.Workflow.v1.Controllers
                 templateResource.CreateInstance(templateId, request);
                 return Request.CreateNoContentResult(HttpStatusCode.NoContent);
             }
+            catch (ServerTooBusyException)
+            {
+                return Request.CreateNoContentResult(HttpStatusCode.ServiceUnavailable, "Server too busy");
+            }
             catch (TemplateNotFoundException)
             {
                 return Request.CreateNoContentResult(HttpStatusCode.NotFound, "Template not found");
@@ -108,6 +113,10 @@ namespace Microservice.Workflow.v1.Controllers
             {
                 templateResource.CreateInstance(templateId, request, true);
                 return Request.CreateNoContentResult(HttpStatusCode.NoContent);
+            }
+            catch (ServerTooBusyException)
+            {
+                return Request.CreateNoContentResult(HttpStatusCode.ServiceUnavailable, "Server too busy");
             }
             catch (TemplateNotFoundException)
             {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ServiceModel;
-using IntelliFlo.Platform.Caching;
 using log4net;
 
 namespace Microservice.Workflow.Engine
@@ -16,6 +15,11 @@ namespace Microservice.Workflow.Engine
             {
                 action(client);
                 result.Success = true;
+            }
+            catch (ServerTooBusyException ex)
+            {
+                logger.Error("Service too busy exception", ex);
+                throw;
             }
             catch (CommunicationException ex)
             {
@@ -48,6 +52,11 @@ namespace Microservice.Workflow.Engine
                 var result = action(client);
                 serviceResult.Result = result;
                 serviceResult.Success = true;
+            }
+            catch (ServerTooBusyException ex)
+            {
+                logger.Error("Service too busy exception", ex);
+                throw;
             }
             catch (CommunicationException ex)
             {

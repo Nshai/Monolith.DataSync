@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.ServiceModel;
 using System.Web.Http;
 using System.Web.Http.OData.Query;
 using IntelliFlo.Platform;
@@ -35,6 +36,10 @@ namespace Microservice.Workflow.v1.Controllers
                 var instance = instanceResource.Resume(instanceId, bookmarkName);
                 return Request.CreateTypedResult(HttpStatusCode.Accepted, instance);
             }
+            catch (ServerTooBusyException)
+            {
+                return Request.CreateTypedResult<InstanceDocument>(HttpStatusCode.ServiceUnavailable, "Server too busy");
+            }
             catch (InstanceNotFoundException)
             {
                 throw new EntityNotFoundException("Instance not found");
@@ -52,6 +57,10 @@ namespace Microservice.Workflow.v1.Controllers
             try
             {
                 instanceResource.Abort(instanceId);
+            }
+            catch (ServerTooBusyException)
+            {
+                return Request.CreateNoContentResult(HttpStatusCode.ServiceUnavailable, "Server too busy");
             }
             catch (InstanceNotFoundException)
             {
@@ -75,6 +84,10 @@ namespace Microservice.Workflow.v1.Controllers
             try
             {
                 instanceResource.Unsuspend(instanceId);
+            }
+            catch (ServerTooBusyException)
+            {
+                return Request.CreateNoContentResult(HttpStatusCode.ServiceUnavailable, "Server too busy");
             }
             catch (InstanceNotFoundException)
             {
