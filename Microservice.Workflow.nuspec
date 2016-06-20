@@ -13,14 +13,12 @@
     </releaseNotes>
   </metadata>
   <files>
-    <file src="src\Microservice.Workflow\bin\Release\*.*" target="content/microservice" />   
+    <file src="src\Microservice.Workflow\bin\Release\*.*" target="content/microservice" />
     <file src="database\Microservice.Workflow.SqlServer\dbo\**" target="content\database" />
     <file src="database\Microservice.Workflow.SqlServer\dbodata\data\**" target="content\database\data" /> 
-    <file src="test\Microservice.Workflow.SubsystemTests\bin\Release\**" target="content\tests\SubsystemTests" />
-  	<file src="subsys.json" target="content\scripts" />
-  	<file src="packages\SubsystemTests.Microservice.*\tools\microservice\appspec.yml" target="" />
-  	<file src="packages\SubsystemTests.Microservice.*\tools\microservice\aws\*.*" target="content\scripts"  exclude="**\*.cer;**\*.pfx" />
-    <file src="packages\SubsystemTests.Microservice.*\tools\microservice\aws\*.cer" target="content\certificates" />
-    <file src="packages\SubsystemTests.Microservice.*\tools\microservice\teamcity\*.*" target="content\scripts\teamcity" />
+    <file src="subsys.json" target="content\scripts" />
+    <file src="pipeline\aws\appspec.yml" target="" />
+    <file src="pipeline\aws\*.*" target="content\scripts" exclude="**\*.yml;**\*.cer;**\*.pfx" />
+    <file src="pipeline\aws\*.cer" target="content\certificates" />
   </files>
 </package>
