@@ -15,7 +15,7 @@
   <files>
     <file src="src\Microservice.Workflow\bin\Release\*.*" target="content/microservice" />
     <file src="database\Microservice.Workflow.SqlServer\dbo\**" target="content\database" />
-    <file src="database\Microservice.Workflow.SqlServer\dbodata\data\**" target="content\database\data" /> 
+    <file src="database\Microservice.Workflow.SqlServer\dbodata\data\**" target="content\database\data" />
     <file src="subsys.json" target="content\scripts" />
     <file src="pipeline\aws\appspec.yml" target="" />
     <file src="pipeline\aws\*.*" target="content\scripts" exclude="**\*.yml;**\*.cer;**\*.pfx" />
