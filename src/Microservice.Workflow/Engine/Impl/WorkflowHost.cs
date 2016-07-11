@@ -39,11 +39,15 @@ namespace Microservice.Workflow.Engine.Impl
 
         public WorkflowHost(IWorkflowClientFactory workflowClientFactory)
         {
+            logger.Info("Action=WorkflowHostStarting");
+
             this.workflowClientFactory = workflowClientFactory;
             binding = new BasicHttpBinding(BasicHttpSecurityMode.None);
 
             var interval = Convert.ToInt32(ConfigurationManager.AppSettings["templatePurgeIntervalSeconds"]);
             timer = new Timer(Purge, null, TimeSpan.FromSeconds(interval), TimeSpan.FromSeconds(interval));
+
+            logger.Info("Action=WorkflowHostStarted");
         }
 
         private void Purge(object state)
@@ -91,6 +95,8 @@ namespace Microservice.Workflow.Engine.Impl
 
                     service.TryClose();
                     services.Remove(templateId);
+
+                    logger.Info($"Action=TemplateUnloaded TemplateId={templateId}");
                 }
 
                 templateInstanceCount.Remove(templateId);
@@ -146,6 +152,9 @@ namespace Microservice.Workflow.Engine.Impl
 
         public void Initialise(TemplateDefinition template)
         {
+            if(shuttingDown)
+                throw new ServerTooBusyException("Service shutting down");
+
             var templateId = template.Id;
             var hostUri = GetHostUri(templateId);
             if (services.ContainsKey(templateId))
@@ -180,8 +189,8 @@ namespace Microservice.Workflow.Engine.Impl
                 {
                     services.Add(templateId, host);
                 }
-                
-                logger.InfoFormat("TemplateInitialise Id={0}", templateId);
+
+                logger.InfoFormat($"Action=TemplateInitialise TemplateId={templateId}");
             }
         }
 
@@ -288,9 +297,17 @@ namespace Microservice.Workflow.Engine.Impl
 
             lock (lockObj)
             {
-                foreach (var service in services.Values)
+                var templateIds = services.Keys.ToList();
+                foreach (var templateId in templateIds)
                 {
-                    service.Close();
+                    try
+                    {
+                        CloseService(templateId);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Error($"Failed to shutdown service {templateId}", ex);
+                    }
                 }
 
                 services.Clear();
