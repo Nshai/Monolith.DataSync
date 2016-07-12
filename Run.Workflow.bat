@@ -1,5 +1,8 @@
 TITLE Workflow
 
-msbuild %~dp0src\Microservice.Workflow\Microservice.Workflow.csproj /p:PostBuildEvent=
+set microservice=Microservice.Workflow
 
-Call %~dp0src\Microservice.Workflow\bin\Debug\Microservice.Workflow.exe -dbprofile:dev
+nuget restore %microservice%.sln
+msbuild %~dp0src\%microservice%\%microservice%.csproj /p:PostBuildEvent=
+
+Call %~dp0src\%microservice%\bin\Debug\%microservice%.exe -dbprofile:dev

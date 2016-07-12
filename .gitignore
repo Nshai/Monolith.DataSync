@@ -9,3 +9,7 @@ packages/
 *.lnk
 /teamcityLog.log
 .vs/
+
+node_modules
+*ncrunchsolution
+*ncrunchproject
