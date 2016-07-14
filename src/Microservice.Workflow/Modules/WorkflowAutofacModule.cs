@@ -53,20 +53,6 @@ namespace Microservice.Workflow.Modules
                 .SingleInstance();
 
             builder.RegisterType<EventDispatcher>().AsImplementedInterfaces().InstancePerMatchingLifetimeScope(lifeTimeScopeTags);
-
-
-
-
-            // TODO remove once scheduler is instroduced
-            var hostConfiguration = new ConfigureNHibernateForMsSql2005("host", new AssemblyScanner().AssembliesToScan());
-
-            builder.Register(c => new NHibernateSessionFactoryProvider(
-                                   hostConfiguration,
-                                   c.Resolve<IEnumerable<INHibernateInitializationAware>>()))
-               .As<IHostSessionFactoryProvider>()
-               .SingleInstance();
-
-
             builder.RegisterType<EntityTaskBuilderFactory>().As<IEntityTaskBuilderFactory>();
 
             // Register auto-mappers

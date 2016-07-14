@@ -67,6 +67,9 @@ namespace Microservice.Workflow.Migrator
                 Render("Templates", () => Execute(new TemplateMigrator(configuration)));
             if (configuration.MigrateInstances)
                 Render("Instances", () => Execute(new InstanceMigrator(configuration)));
+            if(configuration.MigrateInstanceDelays)
+                Render("InstanceDelays", () => Execute(new InstanceDelayMigrator(configuration)));
+
         }
 
         private static void Execute(IMigrator impl)

@@ -15,6 +15,11 @@ namespace Microservice.Workflow.Migrator
             get { return Type == MigrationType.Both || Type == MigrationType.Instance; }
         }
 
+        public bool MigrateInstanceDelays
+        {
+            get { return Type == MigrationType.InstanceDelay; }
+        }
+
         public Guid? InstanceId { get; set; }
         public int? TemplateId { get; set; }
         public int BatchSize { get { return 100; } }

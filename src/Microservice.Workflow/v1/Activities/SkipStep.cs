@@ -23,7 +23,7 @@ namespace Microservice.Workflow.v1.Activities
 
             var additionalContext = JsonConvert.DeserializeObject<AdditionalContext>(workflowContext.AdditionalContext);
             var runToContext = additionalContext.RunTo;
-            if (runToContext == null)
+            if (runToContext == null || runToContext.StepIndex < 0)
             {
                 Skip.Set(context, SkipState.Continue);
                 return;

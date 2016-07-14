@@ -118,7 +118,7 @@ namespace Microservice.Workflow.v1.Activities
 
         public Activity Map(Domain.DelayStep step, Template template, int stepIndex)
         {
-            var activity = new DelayStep
+            var activity = new ScheduleDelayStep()
             {
                 StepId = step.Id,
                 StepIndex = stepIndex,

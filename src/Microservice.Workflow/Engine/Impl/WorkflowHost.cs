@@ -8,20 +8,13 @@ using System.Linq;
 using System.ServiceModel;
 using System.ServiceModel.Activities;
 using System.ServiceModel.Channels;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xaml;
 using System.Xml.Linq;
-using Autofac;
-using IntelliFlo.Platform;
-using IntelliFlo.Platform.NHibernate;
-using IntelliFlo.Platform.NHibernate.Repositories;
 using log4net;
 using Microservice.Workflow.Domain;
-using Microservice.Workflow.Host;
 using Microservice.Workflow.Properties;
 using Microservice.Workflow.v1;
-using NHibernate;
 
 namespace Microservice.Workflow.Engine.Impl
 {
@@ -54,25 +47,16 @@ namespace Microservice.Workflow.Engine.Impl
 
         private void Purge(object state)
         {
-            using (var lifetimeScope = IoC.Container.BeginLifetimeScope(WorkflowScopes.Scope))
-            {
-                PurgeInternal(lifetimeScope);
-            }
-        }
-
-        private void PurgeInternal(ILifetimeScope lifetimeScope)
-        {
             try
             {
                 if (shuttingDown) return;
-                var delayedTemplates = GetDelayedTemplates(lifetimeScope);
 
                 if (!Monitor.TryEnter(lockObj)) return;
                 try
                 {
                     if (shuttingDown) return;
 
-                    templatesToBePurged.Promote(templateInstanceCount.Where(k => !delayedTemplates.Contains(k.Key) && k.Value.Value == 0).Select(k => k.Key));
+                    templatesToBePurged.Promote(templateInstanceCount.Where(k => k.Value.Value == 0).Select(k => k.Key));
 
                     var templatesToPurge = templatesToBePurged.GetGeneration(templatesToBePurged.MaxGenerationIndex);
                     if (templatesToPurge.Any())
@@ -127,16 +111,6 @@ namespace Microservice.Workflow.Engine.Impl
             catch (Exception ex)
             {
                 logger.Error("Failed to log resource usage", ex);
-            }
-        }
-
-        private static IEnumerable<Guid> GetDelayedTemplates(ILifetimeScope lifetimeScope)
-        {
-            var sessionFactory = lifetimeScope.Resolve<IHostSessionFactoryProvider>().SessionFactory;
-            using (var session = sessionFactory.OpenSession())
-            {
-                var templateRepository = new NHibernateRepository<TemplateDefinition>(session);
-                return templateRepository.ReportAll<TemplateDefinition>("GetDelayedTemplates", new Parameter("Version", TemplateDefinition.DefaultVersion)).Select(t => t.Id);                
             }
         }
 

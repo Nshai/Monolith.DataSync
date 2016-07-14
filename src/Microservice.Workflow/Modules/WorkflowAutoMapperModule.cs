@@ -21,7 +21,7 @@ namespace Microservice.Workflow.Modules
                 .ForMember(dest => dest.TimeStamp, opt => opt.MapFrom(src => src.TimestampUtc));
 
             Mapper.CreateMap<InstanceStep, InstanceStepDocument>()
-                .ForMember(dest => dest.InstanceStepId, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.InstanceStepId, opt => opt.MapFrom(src => src.StepId))
                 .ForMember(dest => dest.TimeStamp, opt => opt.MapFrom(src => src.TimestampUtc));
 
             Mapper.CreateMap<Template, TemplateDocument>()

@@ -13,7 +13,7 @@ namespace Microservice.Workflow.Domain
 {
     public class TemplateDefinition : EqualityAndHashCodeProvider<TemplateDefinition, Guid>
     {
-        public const int DefaultVersion = 1;
+        public const int DefaultVersion = 2;
         private readonly ILog logger = LogManager.GetLogger(typeof(TemplateDefinition));
 
         public virtual int TenantId { get; set; }

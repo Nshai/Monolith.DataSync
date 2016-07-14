@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using IntelliFlo.Platform.Bus;
 using IntelliFlo.Platform.Http.Client;
 using IntelliFlo.Platform.Identity;
 using IntelliFlo.Platform.NHibernate.Repositories;
@@ -88,7 +89,7 @@ namespace Microservice.Workflow.Tests
 
             instanceRepository.Setup(i => i.Get(It.IsAny<Guid>())).Returns(instance);
             instanceStepRepository.Setup(i => i.Query()).Returns(instanceSteps.AsQueryable);
-            instanceHistoryRepository.Setup(i => i.Query()).Returns(instanceSteps.Select(s => new InstanceHistory(instance.Id, s.Id, "CreateTask", DateTime.UtcNow)).AsQueryable());
+            instanceHistoryRepository.Setup(i => i.Query()).Returns(instanceSteps.Select(s => new InstanceHistory(instance.Id, s.StepId, "CreateTask", DateTime.UtcNow)).AsQueryable());
 
             templateRepository.Setup(t => t.Get(TemplateId)).Returns(template);
             templateRepository.Setup(t => t.Query()).Returns(new[] { template }.AsQueryable());
@@ -200,7 +201,8 @@ namespace Microservice.Workflow.Tests
             });
             instanceSteps.Add(new InstanceStep()
             {
-                Id = Guid.NewGuid(),
+                Id = Guid.NewGuid().ToString(),
+                StepId = Guid.NewGuid(),
                 InstanceId = instance.Id,
                 Step = StepName.CreateTask.ToString(),
                 Data = new[]
@@ -213,7 +215,8 @@ namespace Microservice.Workflow.Tests
             });
             instanceSteps.Add(new InstanceStep()
             {
-                Id = Guid.NewGuid(),
+                Id = Guid.NewGuid().ToString(),
+                StepId = Guid.NewGuid(),
                 InstanceId = instance.Id,
                 Step = StepName.Delay.ToString(),
                 Data = new[]
@@ -240,7 +243,8 @@ namespace Microservice.Workflow.Tests
             });
             instanceSteps.Add(new InstanceStep()
             {
-                Id = Guid.NewGuid(),
+                Id = Guid.NewGuid().ToString(),
+                StepId =  Guid.NewGuid(),
                 InstanceId = instance.Id,
                 Step = StepName.CreateTask.ToString(),
                 Data = new[]
@@ -253,14 +257,16 @@ namespace Microservice.Workflow.Tests
             });
             instanceSteps.Add(new InstanceStep()
             {
-                Id = stepOneGuid,
+                Id = stepOneGuid.ToString(),
+                StepId = stepOneGuid,
                 InstanceId = instance.Id,
                 Step = StepName.CreateTask.ToString(),
                 IsComplete = true
             });
             instanceSteps.Add(new InstanceStep()
             {
-                Id = stepTwoGuid,
+                Id = stepTwoGuid.ToString(),
+                StepId = stepTwoGuid,
                 InstanceId = instance.Id,
                 Step = StepName.Delay.ToString(),
                 Data = new[]

@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Autofac;
 using Common.Logging;
 using IntelliFlo.Platform;
@@ -14,7 +10,6 @@ using IntelliFlo.Platform.Bus.Serialization;
 using JustSaying;
 using JustSaying.Messaging.MessageSerialisation;
 using Microservice.Workflow.Messaging.Messages;
-using Microservice.Workflow.Properties;
 
 namespace Microservice.Workflow.Host
 {
@@ -22,9 +17,7 @@ namespace Microservice.Workflow.Host
     public class BusStartup : DefaultBusStartup<BusConfigurator>
     {
         public BusStartup(IMicroServiceSettings microServiceSettings)
-            : base(microServiceSettings)
-        {
-        }
+            : base(microServiceSettings) {}
 
         public override void SetupContainer(ContainerBuilder builder)
         {
@@ -59,11 +52,10 @@ namespace Microservice.Workflow.Host
             justSaying
                 .WithSqsTopicSubscriber()
                 .IntoQueue(busNamingConvention.QueueName())
-                .WithMessageHandler<CheckForNewCalls>(handlerResolver)
-                .WithSqsMessagePublisher<ScheduleSystemTimeout>(config => config.QueueName = busNamingConvention.QueueName(SchedulerQueueName))
-                .WithSqsMessagePublisher<UnscheduleSystemTimeout>(config => config.QueueName = busNamingConvention.QueueName(SchedulerQueueName))
-                .WithSqsMessagePublisher<CheckForNewCalls>(config => config.QueueName = busNamingConvention.QueueName());
-
+                .WithMessageHandler<ResumeInstance>(handlerResolver)
+                .WithSqsMessagePublisher<ScheduleTimeout>(c => c.QueueName = busNamingConvention.QueueName(SchedulerQueueName))
+                .WithSqsMessagePublisher<UnscheduleTimeout>(c => c.QueueName = busNamingConvention.QueueName(SchedulerQueueName))
+                .WithSqsMessagePublisher<ResumeInstance>(config => config.QueueName = busNamingConvention.QueueName());
         }
     }
 }

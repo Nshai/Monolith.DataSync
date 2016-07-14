@@ -397,8 +397,8 @@
   <ItemGroup>
     <Compile Include="Host\BusStartup.cs" />
     <Compile Include="Host\WorkflowScopes.cs" />
-    <Compile Include="Messaging\MessageHandlers\CheckForNewCallsHandler.cs" />
-    <Compile Include="Messaging\Messages\CheckForNewCalls.cs" />
+    <Compile Include="Messaging\MessageHandlers\ResumeInstanceMessageHandler.cs" />
+    <Compile Include="Messaging\Messages\ResumeInstanceMessage.cs" />
     <Compile Include="NHibernateSessionFactoryProvider.cs" />
     <Compile Include="Collaborators\v1\GenericResponse.cs" />
     <Compile Include="Domain\EnumExtension.cs" />
@@ -415,7 +415,6 @@
     <Compile Include="Engine\ServiceResult.cs" />
     <Compile Include="Engine\WorkflowServiceHostExtensions.cs" />
     <Compile Include="HttpClientPolicy.cs" />
-    <Compile Include="IHostSessionFactoryProvider.cs" />
     <Compile Include="GenericEnumMapper.cs" />
     <Compile Include="IDomainObject.cs" />
     <Compile Include="JsonMappedToTypeNameTypeListConverter.cs" />
@@ -423,6 +422,7 @@
     <Compile Include="RepositoryExtensions.cs" />
     <Compile Include="LogLevel.cs" />
     <Compile Include="ServiceClientException.cs" />
+    <Compile Include="v1\Activities\ResumeOnDelay.cs" />
     <Compile Include="v1\Activities\PostToService.cs" />
     <Compile Include="v1\Contracts\RegisterTemplateRequest.cs" />
     <Compile Include="v1\Contracts\TemplateRegistrationDocument.cs" />
@@ -714,10 +714,10 @@
     <XamlAppDef Include="v1\Activities\CreateTaskStep.xaml">
       <Generator>MSBuild:Compile</Generator>
     </XamlAppDef>
-    <XamlAppDef Include="v1\Activities\DelayStep.xaml">
+    <XamlAppDef Include="v1\Activities\ScheduleDelayStep.xaml">
       <Generator>MSBuild:Compile</Generator>
     </XamlAppDef>
-    <XamlAppDef Include="v1\Activities\DelayUntilStep.xaml">
+    <XamlAppDef Include="v1\Activities\ScheduleDelayUntilStep.xaml">
       <Generator>MSBuild:Compile</Generator>
     </XamlAppDef>
     <XamlAppDef Include="v1\Activities\Resume.xaml">
@@ -728,6 +728,14 @@
     </XamlAppDef>
     <XamlAppDef Include="v1\Activities\WaitForEvent.xaml">
       <Generator>MSBuild:Compile</Generator>
+    </XamlAppDef>
+    <XamlAppDef Include="v1\Activities\DelayStep.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </XamlAppDef>
+    <XamlAppDef Include="v1\Activities\DelayUntilStep.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </XamlAppDef>
     <Page Include="v1\Activities\WorkflowStepDesigner.xaml">
       <Generator>MSBuild:Compile</Generator>
