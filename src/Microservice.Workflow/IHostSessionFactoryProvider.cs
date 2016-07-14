@@ -7,6 +7,7 @@ using IntelliFlo.Platform.NHibernate;
 
 namespace Microservice.Workflow
 {
+    [Obsolete("Will be removed once scheduler is introduced")]
     public interface IHostSessionFactoryProvider : ISessionFactoryProvider
     {
     }

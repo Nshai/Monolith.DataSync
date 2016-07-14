@@ -12,11 +12,13 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xaml;
 using System.Xml.Linq;
+using Autofac;
 using IntelliFlo.Platform;
 using IntelliFlo.Platform.NHibernate;
 using IntelliFlo.Platform.NHibernate.Repositories;
 using log4net;
 using Microservice.Workflow.Domain;
+using Microservice.Workflow.Host;
 using Microservice.Workflow.Properties;
 using Microservice.Workflow.v1;
 using NHibernate;
@@ -52,10 +54,18 @@ namespace Microservice.Workflow.Engine.Impl
 
         private void Purge(object state)
         {
+            using (var lifetimeScope = IoC.Container.BeginLifetimeScope(WorkflowScopes.Scope))
+            {
+                PurgeInternal(lifetimeScope);
+            }
+        }
+
+        private void PurgeInternal(ILifetimeScope lifetimeScope)
+        {
             try
             {
                 if (shuttingDown) return;
-                var delayedTemplates = GetDelayedTemplates();
+                var delayedTemplates = GetDelayedTemplates(lifetimeScope);
 
                 if (!Monitor.TryEnter(lockObj)) return;
                 try
@@ -120,9 +130,9 @@ namespace Microservice.Workflow.Engine.Impl
             }
         }
 
-        private static IEnumerable<Guid> GetDelayedTemplates()
+        private static IEnumerable<Guid> GetDelayedTemplates(ILifetimeScope lifetimeScope)
         {
-            var sessionFactory = IoC.Resolve<IHostSessionFactoryProvider>(Constants.ContainerId).SessionFactory;
+            var sessionFactory = lifetimeScope.Resolve<IHostSessionFactoryProvider>().SessionFactory;
             using (var session = sessionFactory.OpenSession())
             {
                 var templateRepository = new NHibernateRepository<TemplateDefinition>(session);

@@ -2,9 +2,11 @@
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Autofac;
+using IntelliFlo.Platform;
 using IntelliFlo.Platform.Http.Client;
 using IntelliFlo.Platform.Http.Client.Policy;
-using Constants = Microservice.Workflow.Engine.Constants;
+using Microservice.Workflow.Host;
 
 namespace Microservice.Workflow.v1.Activities
 {
@@ -29,28 +31,34 @@ namespace Microservice.Workflow.v1.Activities
                 bodyContent = new StringContent(body, Encoding.UTF8, "application/json");
             }
 
-            using (UserContextBuilder.FromBearerToken(workflowContext.BearerToken))
+            using (var lifetimeScope = IoC.Container.BeginLifetimeScope(WorkflowScopes.Scope))
+            using (UserContextBuilder.FromBearerToken(workflowContext.BearerToken, lifetimeScope))
             {
-                var clientFactory = IoC.Resolve<IHttpClientFactory>(Constants.ContainerId);
-                using (var client = clientFactory.Create(serviceName))
+                PostInternal(serviceName, bodyContent, uri, lifetimeScope);
+            }
+        }
+
+        private static void PostInternal(string serviceName, StringContent bodyContent, string uri, ILifetimeScope lifetimeScope)
+        {
+            var clientFactory = lifetimeScope.Resolve<IHttpClientFactory>();
+            using (var client = clientFactory.Create(serviceName))
+            {
+                Task task;
+                if (bodyContent != null)
                 {
-                    Task task;
-                    if (bodyContent != null)
-                    {
-                        task = client.UsingPolicy(HttpClientPolicy.Retry).SendAsync(c => c.Post(uri, bodyContent)).ContinueWith(t =>
-                        {
-                            t.OnException(status => { throw new HttpClientException(status); });
-                        });
-                    }
-                    else
-                    {
-                        task = client.UsingPolicy(HttpClientPolicy.Retry).SendAsync(c => c.Post(uri)).ContinueWith(t =>
-                        {
-                            t.OnException(status => { throw new HttpClientException(status); });
-                        });
-                    }
-                    task.Wait();
+                    task =
+                        client.UsingPolicy(HttpClientPolicy.Retry)
+                            .SendAsync(c => c.Post(uri, bodyContent))
+                            .ContinueWith(t => { t.OnException(status => { throw new HttpClientException(status); }); });
                 }
+                else
+                {
+                    task =
+                        client.UsingPolicy(HttpClientPolicy.Retry)
+                            .SendAsync(c => c.Post(uri))
+                            .ContinueWith(t => { t.OnException(status => { throw new HttpClientException(status); }); });
+                }
+                task.Wait();
             }
         }
     }

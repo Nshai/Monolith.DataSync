@@ -6,6 +6,9 @@ using Microservice.Workflow.v1.Contracts;
 
 namespace Microservice.Workflow.Modules
 {
+    /// <summary>
+    /// DefaultContainerStartup is invoking this during initialisation
+    /// </summary>
     public class WorkflowAutoMapperModule : IModule
     {
         public void Load()

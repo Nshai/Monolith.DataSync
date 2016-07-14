@@ -1,8 +1,10 @@
 ﻿using System.Activities;
+using IntelliFlo.Platform;
 using IntelliFlo.Platform.Http.Client;
 using IntelliFlo.Platform.Http.Client.Policy;
 using Microservice.Workflow.Collaborators.v1;
-using Constants = Microservice.Workflow.Engine.Constants;
+using Microservice.Workflow.Host;
+using Autofac;
 
 namespace Microservice.Workflow.v1.Activities
 {
@@ -20,17 +22,18 @@ namespace Microservice.Workflow.v1.Activities
             var entityId = EntityId.Get(context);
             var filter = Filter.Get(context);
 
-            using (UserContextBuilder.FromBearerToken(workflowContext.BearerToken))
+            using (var lifetimeScope = IoC.Container.BeginLifetimeScope(WorkflowScopes.Scope))
+            using (UserContextBuilder.FromBearerToken(workflowContext.BearerToken, lifetimeScope))
             {
-                var serviceRegistry = IoC.Resolve<IServiceAddressRegistry>(Constants.ContainerId); 
+                var serviceRegistry = lifetimeScope.Resolve<IServiceAddressRegistry>();
                 var clientConfiguration = serviceRegistry.GetServiceEndpoint("workflow");
 
                 this.LogMessage(context, LogLevel.Info, "Subscribe to event {0} for entity {1}", eventType, entityId);
-                
+
                 var bookmark = string.Format("{0}:{1}", eventType, entityId);
                 var resumeUri = string.Format("{0}/{1}", clientConfiguration.BaseAddress.TrimEnd('/'), string.Format(Uris.Self.ResumeInstance, context.WorkflowInstanceId, bookmark));
 
-                var clientFactory = IoC.Resolve<IHttpClientFactory>(Constants.ContainerId);
+                var clientFactory = lifetimeScope.Resolve<IHttpClientFactory>();
                 using (var workflowClient = clientFactory.Create("eventmanagement"))
                 {
                     var subscribeTask = workflowClient.UsingPolicy(HttpClientPolicy.Retry).SendAsync(c => c.Post<EventSubscriptionDocument, SubscribeRequest>(Uris.EventManagement.Post, new SubscribeRequest()

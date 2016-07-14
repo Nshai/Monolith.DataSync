@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using Autofac;
+using IntelliFlo.Platform;
 using IntelliFlo.Platform.Http.Client;
 using IntelliFlo.Platform.Identity;
 using IntelliFlo.Platform.NHibernate.Repositories;
@@ -82,7 +83,7 @@ namespace Microservice.Workflow.Tests
             builder.RegisterInstance(underTest).AsImplementedInterfaces();
             var container = builder.Build();
 
-            Microservice.Workflow.IoC.Initialize(container);
+            IoC.Initialize(container);
 
             var identity = new IntelliFloClaimsIdentity("Bob", "Basic");
             identity.AddClaim(new Claim(IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.UserId, OwnerUserId.ToString(CultureInfo.InvariantCulture)));

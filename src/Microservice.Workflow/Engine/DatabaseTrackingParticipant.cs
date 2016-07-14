@@ -2,6 +2,7 @@
 using System.Activities.Tracking;
 using System.Threading;
 using IntelliFlo.Platform;
+using IntelliFlo.Platform.NHibernate;
 using IntelliFlo.Platform.NHibernate.Repositories;
 using IntelliFlo.Platform.Principal;
 using log4net;
@@ -12,21 +13,21 @@ namespace Microservice.Workflow.Engine
 {
     public class DatabaseTrackingParticipant : TrackingParticipant
     {
-        private readonly ISessionFactory sessionFactory;
+        private readonly IReadWriteSessionFactoryProvider sessionFactory;
         private readonly ILog logger = LogManager.GetLogger(typeof(DatabaseTrackingParticipant));
 
         /// <summary>
         /// Updates instance history
         /// </summary>
         /// <param name="sessionFactory"></param>
-        public DatabaseTrackingParticipant(ISessionFactory sessionFactory)
+        public DatabaseTrackingParticipant(IReadWriteSessionFactoryProvider sessionFactory)
         {
             this.sessionFactory = sessionFactory;
         }
 
         protected override void Track(TrackingRecord record, TimeSpan timeout)
         {
-            using (var session = sessionFactory.OpenSession())
+            using (var session = sessionFactory.SessionFactory.OpenSession())
             {
                 var instanceRepository = new NHibernateRepository<Instance>(session);
                 var instanceHistoryRepository = new NHibernateRepository<InstanceHistory>(session);

@@ -6,7 +6,9 @@ using IntelliFlo.Platform.Http.Client;
 using IntelliFlo.Platform.Http.Client.Policy;
 using Microservice.Workflow.Collaborators.v1;
 using Microservice.Workflow.Domain;
-using Constants = Microservice.Workflow.Engine.Constants;
+using Autofac;
+using IntelliFlo.Platform;
+using Microservice.Workflow.Host;
 
 namespace Microservice.Workflow.v1.Activities
 {
@@ -26,7 +28,8 @@ namespace Microservice.Workflow.v1.Activities
         {
             var workflowContext = (WorkflowContext) context.Properties.Find(WorkflowConstants.WorkflowContextKey);
 
-            using (UserContextBuilder.FromBearerToken(workflowContext.BearerToken))
+            using (var lifetimeScope = IoC.Container.BeginLifetimeScope(WorkflowScopes.Scope))
+            using (UserContextBuilder.FromBearerToken(workflowContext.BearerToken, lifetimeScope))
             {
                 var taskTypeId = TaskTypeId.Get(context);
                 var dueDelay = DueDelay.Get(context);
@@ -37,7 +40,7 @@ namespace Microservice.Workflow.v1.Activities
                 var templateOwnerPartyId = TemplateOwnerPartyId.Get(context);
                 var assignedTo = AssignedTo.Get(context);
 
-                var clientFactory = IoC.Resolve<IHttpClientFactory>(Constants.ContainerId);
+                var clientFactory = lifetimeScope.Resolve<IHttpClientFactory>();
                 using (var crmClient = clientFactory.Create("crm"))
                 {
                     var dueDate = DateCalculator.AddDays(DateTime.UtcNow, TimeSpan.FromDays(dueDelay), dueDelayBusinessDays, (s, e) =>
@@ -55,7 +58,7 @@ namespace Microservice.Workflow.v1.Activities
                         return holidayResponse.Resource.Select(h => h.Date);
                     });
 
-                    var taskBuilderFactory = IoC.Resolve<IEntityTaskBuilderFactory>(Constants.ContainerId);
+                    var taskBuilderFactory = lifetimeScope.Resolve<IEntityTaskBuilderFactory>();
                     var taskBuilder = taskBuilderFactory.Get(workflowContext.EntityType, this, context);
                     var taskResult = taskBuilder.Create(taskTypeId, dueDate, templateOwnerPartyId, assignedTo, ownerPartyId, ownerRoleId, ownerContextRole, workflowContext).ConfigureAwait(false);
                     var task = taskResult.GetAwaiter().GetResult();

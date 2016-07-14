@@ -122,8 +122,8 @@
     <None Include="dbodata\Data\main\4.4-000129 IO-42821 Fix Update Plan Visibility workflow.sql" />
     <None Include="dbodata\Data\main\4.4-000130 IO-42821 Update old instances to reference active template version.sql" />
     <None Include="dbodata\Data\main\4.5-000010 IO-46251 Author system workflows.sql" />
-    <Build Include="dbo\Tables\dbo._EventLog.sql" />
     <Build Include="dbo\Views\dbo.vwInstance.sql" />
+    <Build Include="dbo\Tables\dbo._EventLog.sql" />
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>PowerShell -NoProfile -ExecutionPolicy Bypass -Command "&amp; '$(SolutionDir)packages\IntelliFlo.PowerShell.DevLib.0.0.3.0\content\zip-directory.ps1' -ZIPFILENAME '$(SolutionDir)dist\db-workflow.zip' -SOURCEDIR '$(ProjectDir)dbo\'

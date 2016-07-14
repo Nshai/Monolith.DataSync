@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using Autofac;
+using IntelliFlo.Platform;
 using IntelliFlo.Platform.Principal;
 using Microservice.Workflow.Domain;
 using NUnit.Framework;
