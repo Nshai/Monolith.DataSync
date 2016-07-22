@@ -36,9 +36,9 @@ namespace Microservice.Workflow.v1.Controllers
                 var instance = instanceResource.Resume(instanceId, bookmarkName);
                 return Request.CreateTypedResult(HttpStatusCode.Accepted, instance);
             }
-            catch (ServerTooBusyException)
+            catch (ServerTooBusyException ex)
             {
-                return Request.CreateTypedResult<InstanceDocument>(HttpStatusCode.ServiceUnavailable, "Server too busy");
+                return Request.CreateTypedResult<InstanceDocument>(HttpStatusCode.ServiceUnavailable, ex.Message);
             }
             catch (InstanceNotFoundException)
             {
@@ -58,9 +58,9 @@ namespace Microservice.Workflow.v1.Controllers
             {
                 instanceResource.Abort(instanceId);
             }
-            catch (ServerTooBusyException)
+            catch (ServerTooBusyException ex)
             {
-                return Request.CreateNoContentResult(HttpStatusCode.ServiceUnavailable, "Server too busy");
+                return Request.CreateNoContentResult(HttpStatusCode.ServiceUnavailable, ex.Message);
             }
             catch (InstanceNotFoundException)
             {
@@ -85,9 +85,9 @@ namespace Microservice.Workflow.v1.Controllers
             {
                 instanceResource.Unsuspend(instanceId);
             }
-            catch (ServerTooBusyException)
+            catch (ServerTooBusyException ex)
             {
-                return Request.CreateNoContentResult(HttpStatusCode.ServiceUnavailable, "Server too busy");
+                return Request.CreateNoContentResult(HttpStatusCode.ServiceUnavailable, ex.Message);
             }
             catch (InstanceNotFoundException)
             {

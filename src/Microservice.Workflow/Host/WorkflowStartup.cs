@@ -8,7 +8,6 @@ using System.Reflection;
 using Autofac;
 using Autofac.Configuration;
 using Autofac.Core;
-using Common.Logging;
 using IntelliFlo.Platform;
 using IntelliFlo.Platform.Caching;
 using IntelliFlo.Platform.Client;
@@ -19,6 +18,7 @@ using IntelliFlo.Platform.Identity.Impl;
 using IntelliFlo.Platform.NHibernate;
 using IntelliFlo.Platform.NHibernate.Repositories;
 using IntelliFlo.Platform.Security;
+using log4net;
 using Microservice.Workflow.Domain;
 using Microservice.Workflow.Engine;
 using Microservice.Workflow.Modules;
@@ -46,13 +46,20 @@ namespace Microservice.Workflow.Host
 
         public override void Dispose()
         {
-            IWorkflowHost host;
-            if (!IntelliFlo.Platform.IoC.Container.TryResolve(out host))
-                return;
+            try
+            {
+                IWorkflowHost host;
+                if (!IntelliFlo.Platform.IoC.Container.TryResolve(out host))
+                    return;
 
-            host.Dispose();
+                host.Dispose();
 
-            IoC.Reset(Constants.ContainerId);
+                IoC.Reset(Constants.ContainerId);
+            }
+            catch (Exception ex)
+            {
+                log.Error("Exception occurred whilst shutting down workflow host", ex);
+            }
         }
 
         private static void InitialiseWorkflows()
@@ -76,7 +83,7 @@ namespace Microservice.Workflow.Host
                     }
                     catch (Exception ex)
                     {
-                        log.WarnFormat("Failed to initialise template {0}", ex, template.Id);
+                        log.Warn($"Failed to initialise template {template.Id}", ex);
                     }
                 }
             }

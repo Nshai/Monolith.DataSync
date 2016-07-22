@@ -74,9 +74,9 @@ namespace Microservice.Workflow.v1.Controllers
                 templateResource.CreateInstance(templateId, request);
                 return Request.CreateNoContentResult(HttpStatusCode.NoContent);
             }
-            catch (ServerTooBusyException)
+            catch (ServerTooBusyException ex)
             {
-                return Request.CreateNoContentResult(HttpStatusCode.ServiceUnavailable, "Server too busy");
+                return Request.CreateNoContentResult(HttpStatusCode.ServiceUnavailable, ex.Message);
             }
             catch (TemplateNotFoundException)
             {
