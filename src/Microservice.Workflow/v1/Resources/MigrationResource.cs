@@ -184,7 +184,6 @@ namespace Microservice.Workflow.v1.Resources
             if (instance == null)
                 throw new InstanceNotFoundException();
             
-            FixInstanceHistoryStepIds(instance);
 
             if ((instance.Status != "In Progress" && instance.Status != "Processing") || instance.Version >= TemplateDefinition.DefaultVersion)
                 return new InstanceMigrationResponse() {Id = instanceId, Status = MigrationStatus.Skipped.ToString(), Description = "Instance already migrated"};
