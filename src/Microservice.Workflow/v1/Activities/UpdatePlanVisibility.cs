@@ -5,6 +5,7 @@ using IntelliFlo.Platform;
 using IntelliFlo.Platform.Http.Client;
 using IntelliFlo.Platform.Http.Client.Policy;
 using Microservice.Workflow.Collaborators.v1;
+using Microservice.Workflow.Host;
 
 namespace Microservice.Workflow.v1.Activities
 {
@@ -35,7 +36,7 @@ namespace Microservice.Workflow.v1.Activities
         {
             var workflowContext = (WorkflowContext)context.Properties.Find(WorkflowConstants.WorkflowContextKey);
 
-            using (var lifeTimeScope = IoC.Container.BeginLifetimeScope(LifeTimeScopes.All))
+            using (var lifeTimeScope = IoC.Container.BeginLifetimeScope(WorkflowScopes.Scope))
             using (UserContextBuilder.FromBearerToken(workflowContext.BearerToken, lifeTimeScope))
             {
                 DoWork(context, lifeTimeScope);
