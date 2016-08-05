@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Autofac;
+using IntelliFlo.Platform;
 using IntelliFlo.Platform.Http.Client;
 using IntelliFlo.Platform.NHibernate.Repositories;
 using Microservice.Workflow.Domain;
@@ -28,7 +29,7 @@ namespace Microservice.Workflow.Tests
         public void SetUp()
         {
             var builder = new ContainerBuilder();
-            Microservice.Workflow.IoC.Initialize(builder.Build());
+            IoC.Initialize(builder.Build());
             
             underTest = new TemplateTriggerResource(templateRepository.Object, templateResource.Object, clientFactory.Object, addressRegistry.Object);
             

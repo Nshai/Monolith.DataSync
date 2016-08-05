@@ -7,19 +7,25 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
 using AutoMapper;
+using IntelliFlo.Platform;
+using IntelliFlo.Platform.Bus;
+using IntelliFlo.Platform.Bus.Scheduler;
 using IntelliFlo.Platform.Http;
 using IntelliFlo.Platform.Http.Client;
 using IntelliFlo.Platform.Identity;
 using IntelliFlo.Platform.NHibernate.Repositories;
+using IntelliFlo.Platform.Principal;
 using IntelliFlo.Platform.Transactions;
 using Microservice.Workflow.Collaborators.v1;
 using Microservice.Workflow.Domain;
 using Microservice.Workflow.Engine;
+using Microservice.Workflow.Messaging.Messages;
 using Microservice.Workflow.v1.Activities;
 using Microservice.Workflow.v1.Contracts;
 using Newtonsoft.Json;
 using NHibernate.Criterion;
 using Check = IntelliFlo.Platform.Check;
+using Constants = IntelliFlo.Platform.Http.Client.Constants;
 using DelayStep = Microservice.Workflow.Domain.DelayStep;
 using Instance = Microservice.Workflow.Domain.Instance;
 using InstanceStatus = Microservice.Workflow.Domain.InstanceStatus;
@@ -84,6 +90,18 @@ namespace Microservice.Workflow.v1.Resources
             };
         }
 
+        public PagedResult<InstanceStepDocument> GetInstanceSteps(string query, IDictionary<string, object> routeValues)
+        {
+            int count;
+            var steps = instanceStepRepository.ODataQueryWithInlineCount(query, out count);
+
+            return new PagedResult<InstanceStepDocument>
+            {
+                Result = Mapper.Map<IEnumerable<InstanceStepDocument>>(steps),
+                Count = count
+            };
+        }
+
         [Transaction]
         public async Task<TemplateMigrationResponse> MigrateTemplate(int templateId)
         {
@@ -100,7 +118,7 @@ namespace Microservice.Workflow.v1.Resources
             if(templateDefinition.Version >= TemplateDefinition.DefaultVersion)
                 return new TemplateMigrationResponse() { Id = templateId, Status = MigrationStatus.Skipped.ToString(), Description = "Template already migrated"};
 
-            var userSubject = await GetSubject(template.OwnerUserId);
+            var userSubject = await GetSubject(template.OwnerUserId, template.TenantId);
 
             var claimsIdentity = new ClaimsIdentity();
             claimsIdentity.AddClaim(new Claim(IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.UserId, template.OwnerUserId.ToString(CultureInfo.InvariantCulture)));
@@ -145,11 +163,11 @@ namespace Microservice.Workflow.v1.Resources
                 if (!new[] { StepName.CreateTask.ToString(), StepName.Delay.ToString() }.Contains(instanceStep.Step))
                     continue;
 
-                if (templateStepIds.Contains(instanceStep.Id))
+                if (templateStepIds.Contains(instanceStep.StepId))
                     continue;
 
                 var newStepId = template.Steps.ElementAt(stepIndex).Id;
-                foreach (var instanceHistoryRecord in instanceHistory.Where(i => i.StepId == instanceStep.Id))
+                foreach (var instanceHistoryRecord in instanceHistory.Where(i => i.StepId == instanceStep.StepId))
                 {
                     instanceHistoryRecord.StepId = newStepId;
                     instanceHistoryRepository.Save(instanceHistoryRecord);
@@ -166,7 +184,6 @@ namespace Microservice.Workflow.v1.Resources
             if (instance == null)
                 throw new InstanceNotFoundException();
             
-            FixInstanceHistoryStepIds(instance);
 
             if ((instance.Status != "In Progress" && instance.Status != "Processing") || instance.Version >= TemplateDefinition.DefaultVersion)
                 return new InstanceMigrationResponse() {Id = instanceId, Status = MigrationStatus.Skipped.ToString(), Description = "Instance already migrated"};
@@ -175,7 +192,7 @@ namespace Microservice.Workflow.v1.Resources
             if(templateDefinition.Version < TemplateDefinition.DefaultVersion)
                 return new InstanceMigrationResponse() { Id = instanceId, Status = MigrationStatus.Skipped.ToString(), Description = "Instance template was not migrated"};
 
-            var userSubject = await GetSubject(instance.UserId);
+            var userSubject = await GetSubject(instance.UserId, instance.TenantId);
             var identity = new ClaimsIdentity(new[]
             {
                 new Claim(IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.UserId, instance.UserId.ToString(CultureInfo.InvariantCulture)),
@@ -232,8 +249,18 @@ namespace Microservice.Workflow.v1.Resources
                         RunTo = new RunToAdditionalContext
                         {
                             StepIndex = stepIndex,
-                            TaskId = taskDetail != null ? taskDetail.TaskId : (int?) null,
-                            DelayTime = delayDetail != null ? delayDetail.DelayUntil : (DateTime?) null
+                            TaskId = taskDetail?.TaskId,
+                            DelayTime = delayDetail?.DelayUntil
+                        }
+                    });
+                }
+                else
+                {
+                    additionalContext = JsonConvert.SerializeObject(new AdditionalContext
+                    {
+                        RunTo = new RunToAdditionalContext
+                        {
+                            StepIndex = -1
                         }
                     });
                 }
@@ -257,9 +284,17 @@ namespace Microservice.Workflow.v1.Resources
                 return new InstanceMigrationResponse() {Id = instanceId, Status = MigrationStatus.Success.ToString()};
             }
         }
-
-        private async Task<Guid> GetSubject(int userId)
+        
+        private async Task<Guid> GetSubject(int userId, int tenantId)
         {
+            var identity = new ClaimsIdentity(new[]
+            {
+                new Claim(IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.UserId, userId.ToString(CultureInfo.InvariantCulture)),
+                new Claim(IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.TenantId, tenantId.ToString(CultureInfo.InvariantCulture)),
+            });
+
+            var principal = new ClaimsPrincipal(identity);
+            using (Thread.CurrentPrincipal.AsDelegate(() => principal))
             using (var crmClient = clientFactory.Create("crm"))
             {
                 var userInfoResponse = await crmClient.Get<Dictionary<string, object>>(string.Format(Uris.Crm.GetUserInfoByUserId, userId));

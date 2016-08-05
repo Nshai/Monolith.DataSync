@@ -2,12 +2,16 @@
 using System.Activities;
 using System.Data.SqlClient;
 using System.ServiceModel;
+using IntelliFlo.Platform;
 using IntelliFlo.Platform.NHibernate.Repositories;
 using Microservice.Workflow.Domain;
 using Microservice.Workflow.Engine;
+using Microservice.Workflow.Host;
 using Newtonsoft.Json;
 using NHibernate;
 using NHibernate.Exceptions;
+using Autofac;
+using IntelliFlo.Platform.NHibernate;
 
 namespace Microservice.Workflow.v1.Activities
 {
@@ -26,14 +30,15 @@ namespace Microservice.Workflow.v1.Activities
             var entityType = EntityType.Get(context);
             var instanceId = context.WorkflowInstanceId;
 
-            using (var userContext = UserContextBuilder.FromBearerToken(ctx.BearerToken))
+            using (var lifetimeScope = IoC.Container.BeginLifetimeScope(WorkflowScopes.Scope))
+            using (var userContext = UserContextBuilder.FromBearerToken(ctx.BearerToken, lifetimeScope))
             {
                 this.LogMessage(context, LogLevel.Info, "Registering instance {0}", instanceId);
                 var checkForDuplicates = ctx.PreventDuplicates;
 
                 try
                 {
-                    var sessionFactory = IoC.Resolve<ISessionFactory>(Constants.ContainerId);
+                    var sessionFactory = lifetimeScope.Resolve<IReadWriteSessionFactoryProvider>().SessionFactory;
                     using (var session = sessionFactory.OpenSession())
                     {
                         var templateDefinitionRepository = new NHibernateRepository<TemplateDefinition>(session);

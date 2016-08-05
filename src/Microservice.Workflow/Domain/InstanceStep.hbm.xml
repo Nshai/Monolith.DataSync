@@ -8,12 +8,13 @@
 
   <class name="InstanceStep" table="vwInstanceStep" mutable="false">
 
-    <id name="Id" column="StepId">
-      <generator class="identity"/>
+    <id name="Id" column="Id">
+      <generator class="assigned"/>
     </id>
 
     <property name="InstanceId" />
     <property name="TenantId" />
+    <property name="StepId" />
     <property name="StepIndex" />
     <property name="Step" />
     <property name="Data" type="IntelliFlo.Platform.NHibernate.Types.DocumentUserType`1[[Microservice.Workflow.Domain.LogData[], Microservice.Workflow]], IntelliFlo.Platform.NHibernate" not-null="false" />

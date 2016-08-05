@@ -1,8 +1,10 @@
 ﻿using System;
 using IntelliFlo.Platform.Http;
+using IntelliFlo.Platform.Http.Documentation.Annotations;
 
 namespace Microservice.Workflow.v1.Contracts
 {
+    [SwaggerDefinition("InstanceMigration")]
     public class InstanceMigrationResponse : Representation
     {
         public Guid Id { get; set; }

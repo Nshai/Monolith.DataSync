@@ -6,6 +6,9 @@ using Microservice.Workflow.v1.Contracts;
 
 namespace Microservice.Workflow.Modules
 {
+    /// <summary>
+    /// DefaultContainerStartup is invoking this during initialisation
+    /// </summary>
     public class WorkflowAutoMapperModule : IModule
     {
         public void Load()
@@ -18,7 +21,7 @@ namespace Microservice.Workflow.Modules
                 .ForMember(dest => dest.TimeStamp, opt => opt.MapFrom(src => src.TimestampUtc));
 
             Mapper.CreateMap<InstanceStep, InstanceStepDocument>()
-                .ForMember(dest => dest.InstanceStepId, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.InstanceStepId, opt => opt.MapFrom(src => src.StepId))
                 .ForMember(dest => dest.TimeStamp, opt => opt.MapFrom(src => src.TimestampUtc));
 
             Mapper.CreateMap<Template, TemplateDocument>()

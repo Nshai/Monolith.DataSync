@@ -7,5 +7,5 @@
     [Request] NVARCHAR(MAX) NULL, 
     [Response] NVARCHAR(MAX) NULL, 
     [EventDate] DATETIME NOT NULL, 
-    [UserSubject] UNIQUEIDENTIFIER NOT NULL
+    [UserSubject] UNIQUEIDENTIFIER NULL
 )

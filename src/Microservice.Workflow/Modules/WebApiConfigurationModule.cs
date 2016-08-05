@@ -14,9 +14,6 @@ namespace Microservice.Workflow.Modules
 
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<PdfDocumentGeneratorResolver>()
-               .As<IPdfDocumentGeneratorResolver>()
-               .SingleInstance();
         }
     }
 }

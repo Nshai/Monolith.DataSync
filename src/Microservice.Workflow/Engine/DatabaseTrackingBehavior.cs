@@ -4,6 +4,10 @@ using System.ServiceModel;
 using System.ServiceModel.Activities;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
+using Autofac;
+using IntelliFlo.Platform;
+using IntelliFlo.Platform.NHibernate;
+using Microservice.Workflow.Host;
 using NHibernate;
 
 namespace Microservice.Workflow.Engine
@@ -17,8 +21,11 @@ namespace Microservice.Workflow.Engine
 
             var trackingProfile = GetProfile();
 
-            var sessionFactory = IoC.Resolve<ISessionFactory>(Constants.ContainerId);
-            workflowServiceHost.WorkflowExtensions.Add(() => new DatabaseTrackingParticipant(sessionFactory) { TrackingProfile = trackingProfile });
+            using (var lifetimeScope = IoC.Container.BeginLifetimeScope(WorkflowScopes.Scope))
+            {
+                var sessionFactory = lifetimeScope.Resolve<IReadWriteSessionFactoryProvider>();
+                workflowServiceHost.WorkflowExtensions.Add(() => new DatabaseTrackingParticipant(sessionFactory) {TrackingProfile = trackingProfile});
+            }
         }
 
         public virtual void AddBindingParameters(ServiceDescription serviceDescription, ServiceHostBase serviceHostBase, Collection<ServiceEndpoint> endpoints, BindingParameterCollection bindingParameters) {}

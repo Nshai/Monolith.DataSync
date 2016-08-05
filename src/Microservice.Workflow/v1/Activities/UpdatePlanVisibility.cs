@@ -1,9 +1,11 @@
 ﻿using System.Activities;
 using System.Linq;
+using Autofac;
+using IntelliFlo.Platform;
 using IntelliFlo.Platform.Http.Client;
 using IntelliFlo.Platform.Http.Client.Policy;
 using Microservice.Workflow.Collaborators.v1;
-using Constants = Microservice.Workflow.Engine.Constants;
+using Microservice.Workflow.Host;
 
 namespace Microservice.Workflow.v1.Activities
 {
@@ -32,49 +34,62 @@ namespace Microservice.Workflow.v1.Activities
 
         protected override void Execute(NativeActivityContext context)
         {
-            var workflowContext = (WorkflowContext) context.Properties.Find(WorkflowConstants.WorkflowContextKey);
+            var workflowContext = (WorkflowContext)context.Properties.Find(WorkflowConstants.WorkflowContextKey);
 
-            using (UserContextBuilder.FromBearerToken(workflowContext.BearerToken))
+            using (var lifeTimeScope = IoC.Container.BeginLifetimeScope(WorkflowScopes.Scope))
+            using (UserContextBuilder.FromBearerToken(workflowContext.BearerToken, lifeTimeScope))
             {
-                var clientFactory = IoC.Resolve<IHttpClientFactory>(Constants.ContainerId);
+                DoWork(context, lifeTimeScope);
+            }
+        }
 
-                using (var portfolioClient = clientFactory.Create("portfolio"))
+        private void DoWork(NativeActivityContext context, ILifetimeScope lifeTimeScope)
+        {
+            var workflowContext = (WorkflowContext)context.Properties.Find(WorkflowConstants.WorkflowContextKey);
+            var clientFactory = lifeTimeScope.Resolve<IHttpClientFactory>();
+
+            using (var portfolioClient = clientFactory.Create("portfolio"))
+            {
+                HttpResponse<PlanDocument> planResponse = null;
+                var planTask = portfolioClient.UsingPolicy(HttpClientPolicy.Retry)
+                    .SendAsync(
+                        c =>
+                            c.Get<PlanDocument>(string.Format(Uris.Portfolio.GetPlan, workflowContext.ClientId,
+                                workflowContext.EntityId)))
+                    .ContinueWith(t =>
+                    {
+                        t.OnException(s => { throw new HttpClientException(s); });
+                        planResponse = t.Result;
+                    });
+
+                planTask.Wait();
+                var plan = planResponse.Resource;
+                var isExcludedType = PlanTypes.NotVisibleToClient.Contains(plan.PlanTypeId);
+
+                // Switch off flags for new plans (when excluded type)
+                if (plan.CurrentStatus == PlanStatus.Draft && isExcludedType)
                 {
-                    HttpResponse<PlanDocument> planResponse = null;
-                    var planTask = portfolioClient.UsingPolicy(HttpClientPolicy.Retry).SendAsync(c => c.Get<PlanDocument>(string.Format(Uris.Portfolio.GetPlan, workflowContext.ClientId, workflowContext.EntityId)))
-                        .ContinueWith(t =>
-                        {
-                            t.OnException(s => { throw new HttpClientException(s); });
-                            planResponse = t.Result;
-                        });
-
-                    planTask.Wait();
-                    var plan = planResponse.Resource;
-                    var isExcludedType = PlanTypes.NotVisibleToClient.Contains(plan.PlanTypeId);
-
-                    // Switch off flags for new plans (when excluded type)
-                    if (plan.CurrentStatus == PlanStatus.Draft && isExcludedType)
+                    this.LogMessage(context, LogLevel.Info, "Clear plan visibility for plan (id: {0}) as type is excluded",
+                        workflowContext.EntityId);
+                    PatchPlan(portfolioClient, workflowContext.ClientId, workflowContext.EntityId, new PlanPatchRequest()
                     {
-                        this.LogMessage(context, LogLevel.Info, "Clear plan visibility for plan (id: {0}) as type is excluded", workflowContext.EntityId);
-                        PatchPlan(portfolioClient, workflowContext.ClientId, workflowContext.EntityId, new PlanPatchRequest()
-                        {
-                            IsVisibilityUpdatedByStatusChange = false,
-                            IsVisibleToClient = false
-                        });
-                        return;
-                    }
+                        IsVisibilityUpdatedByStatusChange = false,
+                        IsVisibleToClient = false
+                    });
+                    return;
+                }
 
-                    // Set plan visibility
-                    var setVisible = PlanStatus.VisibleStatus.Contains(plan.CurrentStatus) && !isExcludedType;
-                    if (plan.IsVisibilityUpdatedByStatusChange)
+                // Set plan visibility
+                var setVisible = PlanStatus.VisibleStatus.Contains(plan.CurrentStatus) && !isExcludedType;
+                if (plan.IsVisibilityUpdatedByStatusChange)
+                {
+                    this.LogMessage(context, LogLevel.Info, "Set plan visibility {0} for plan (id: {1})",
+                        setVisible ? "on" : "off", workflowContext.EntityId);
+                    PatchPlan(portfolioClient, workflowContext.ClientId, workflowContext.EntityId, new PlanPatchRequest()
                     {
-                        this.LogMessage(context, LogLevel.Info, "Set plan visibility {0} for plan (id: {1})", setVisible ? "on" : "off", workflowContext.EntityId);
-                        PatchPlan(portfolioClient, workflowContext.ClientId, workflowContext.EntityId, new PlanPatchRequest()
-                        {
-                            IsVisibleToClient = setVisible,
-                            IsVisibilityUpdatedByStatusChange = !isExcludedType
-                        });
-                    }
+                        IsVisibleToClient = setVisible,
+                        IsVisibilityUpdatedByStatusChange = !isExcludedType
+                    });
                 }
             }
         }

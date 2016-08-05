@@ -14,9 +14,11 @@ using System.Threading.Tasks;
 using System.Xaml;
 using System.Xml.Linq;
 using Autofac;
+using IntelliFlo.Platform;
 using IntelliFlo.Platform.Http.Client;
 using IntelliFlo.Platform.Http.Client.Impl;
 using IntelliFlo.Platform.Identity;
+using IntelliFlo.Platform.NHibernate;
 using log4net.Config;
 using Microservice.Workflow.Collaborators.v1;
 using Microservice.Workflow.Domain;
@@ -41,6 +43,7 @@ namespace Microservice.Workflow.Tests
         private Mock<ISignAuthenticationMessageBuilder> messageBuilder;
         private Mock<IServiceAddressRegistry> addressRegistry;
         private IWorkflowServiceFactory serviceFactory;
+        private Mock<IReadWriteSessionFactoryProvider> sessionFactoryProvider;
         private Mock<ISessionFactory> sessionFactory;
         private Mock<ISession> session;
         private Mock<ITransaction> transaction;
@@ -92,10 +95,13 @@ namespace Microservice.Workflow.Tests
             serviceCaseTemplate = new Template("Test", TenantId, category, WorkflowRelatedTo.ServiceCase, OwnerUserId);
             planTemplate = new Template("Test", TenantId, category, WorkflowRelatedTo.Plan, OwnerUserId);
 
-            sessionFactory = new Mock<ISessionFactory>();
+            sessionFactoryProvider = new Mock<IReadWriteSessionFactoryProvider>();
             
             session = new Mock<ISession>();
             transaction = new Mock<ITransaction>();
+            sessionFactory = new Mock<ISessionFactory>();
+
+            sessionFactoryProvider.SetupGet(s => s.SessionFactory).Returns(sessionFactory.Object);
             sessionFactory.Setup(s => s.OpenSession()).Returns(session.Object);
             session.Setup(s => s.BeginTransaction()).Returns(transaction.Object);
 
@@ -107,8 +113,8 @@ namespace Microservice.Workflow.Tests
             builder.RegisterInstance(serviceClientFactory.Object).As<IHttpClientFactory>();
             builder.RegisterInstance(entityTaskFactory).As<IEntityTaskBuilderFactory>();
             builder.RegisterInstance(addressRegistry.Object).As<IServiceAddressRegistry>();
-            builder.RegisterInstance(sessionFactory.Object).As<ISessionFactory>();
-            IoC.Initialize(Engine.Constants.ContainerId, builder.Build());
+            builder.RegisterInstance(sessionFactoryProvider.Object).As<IReadWriteSessionFactoryProvider>();
+            IoC.Initialize(builder.Build());
         }
 
         [Test]

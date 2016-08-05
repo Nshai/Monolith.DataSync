@@ -13,3 +13,4 @@ packages/
 node_modules
 *ncrunchsolution
 *ncrunchproject
+_NCrunch_*

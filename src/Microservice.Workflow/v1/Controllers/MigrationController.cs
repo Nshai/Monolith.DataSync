@@ -47,7 +47,18 @@ namespace Microservice.Workflow.v1.Controllers
                 (query, routeValues) => migrationResource.GetInstances(query, routeValues),
                 ODataDescriptor.GetODataDescriptor<MigrationController>(a => a.GetInstances()));
         }
-        
+
+        [Route("instancesteps")]
+        [ODataTop, ODataSkip]
+        [ODataFilter("InstanceId", "Step", "IsComplete", Operators = AllowedLogicalOperators.All)]
+        [ODataOrderBy]
+        public IHttpActionResult<PagedRepresentationCollection<InstanceStepDocument>> GetInstanceSteps()
+        {
+            return Request.CreatePagedTypedResultWithFilter<InstanceStep, InstanceStepDocument>(HttpStatusCode.OK,
+                (query, routeValues) => migrationResource.GetInstanceSteps(query, routeValues),
+                ODataDescriptor.GetODataDescriptor<MigrationController>(a => a.GetInstanceSteps()));
+        }
+
         [HttpPost]
         [Route("templates/{templateId}")]
         [ValidateModel]

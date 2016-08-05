@@ -12,5 +12,6 @@ namespace Microservice.Workflow.v1
         Task<TemplateMigrationResponse> MigrateTemplate(int templateId);
         Task<InstanceMigrationResponse> MigrateInstance(Guid instanceId);
         PagedResult<InstanceDocument> GetInstances(string query, IDictionary<string, object> routeValues);
+        PagedResult<InstanceStepDocument> GetInstanceSteps(string query, IDictionary<string, object> routeValues);
     }
 }

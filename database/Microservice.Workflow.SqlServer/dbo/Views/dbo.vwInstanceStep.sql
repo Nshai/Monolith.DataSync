@@ -1,8 +1,9 @@
 CREATE view [dbo].[vwInstanceStep]
   as
   SELECT
+    concat(hist.[InstanceId], '.', hist.[StepId]) as Id,
 	  hist.[StepId],
-      hist.[InstanceId],
+    hist.[InstanceId],
 	  instance.TenantId,
 	  max(hist.Id) as StepIndex,
 	  max(hist.[Step]) as Step,      

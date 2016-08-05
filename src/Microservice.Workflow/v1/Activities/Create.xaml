@@ -1,6 +1,8 @@
 ﻿<Activity mc:Ignorable="sap sap2010 sads" x:Class="Microservice.Workflow.v1.Activities.Create"
  xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
-          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:local="clr-namespace:Microservice.Workflow.v1"
+ xmlns:local1="clr-namespace:Microservice.Workflow.v1.Activities"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
  xmlns:mca="clr-namespace:Microsoft.CSharp.Activities;assembly=System.Activities"
  xmlns:p="http://intelliflo.com/dynamicworkflow/2014/06"
  xmlns:p1="http://schemas.microsoft.com/netfx/2009/xaml/servicemodel"
@@ -10,9 +12,7 @@
  xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
  xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
  xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
- xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
- xmlns:activities="clr-namespace:Microservice.Workflow.v1.Activities"
- xmlns:v1="clr-namespace:Microservice.Workflow.v1">
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <x:Members>
     <x:Property Name="InstanceId" Type="OutArgument(s:Guid)" />
     <x:Property Name="TemplateId" Type="InArgument(s:Guid)">
@@ -21,7 +21,7 @@
       </x:Property.Attributes>
     </x:Property>
     <x:Property Name="TemplateType" Type="InArgument(x:String)" />
-    <x:Property Name="Context" Type="OutArgument(v1:WorkflowContext)" />
+    <x:Property Name="Context" Type="OutArgument(local:WorkflowContext)" />
   </x:Members>
   <sap2010:ExpressionActivityEditor.ExpressionActivityEditor>C#</sap2010:ExpressionActivityEditor.ExpressionActivityEditor>
   <sap2010:WorkflowViewState.IdRef>IntelliFlo.IO.Workflow.Activities.Activity1_1</sap2010:WorkflowViewState.IdRef>
@@ -39,43 +39,111 @@
   <TextExpression.ReferencesForImplementation>
     <sco:Collection x:TypeArguments="AssemblyReference">
       <AssemblyReference>Autofac</AssemblyReference>
-      <AssemblyReference>AutofacContrib.DynamicProxy2</AssemblyReference>
+      <AssemblyReference>Autofac.Extras.DynamicProxy2</AssemblyReference>
+      <AssemblyReference>Autofac.Integration.Mef</AssemblyReference>
       <AssemblyReference>AutoMapper</AssemblyReference>
+      <AssemblyReference>AutoMapper.Net4</AssemblyReference>
+      <AssemblyReference>Autofac.Configuration</AssemblyReference>
+      <AssemblyReference>Autofac.Integration.Owin</AssemblyReference>
+      <AssemblyReference>Autofac.Integration.WebApi</AssemblyReference>
+      <AssemblyReference>Autofac.Integration.WebApi.Owin</AssemblyReference>
+      <AssemblyReference>AWSSDK</AssemblyReference>
       <AssemblyReference>Castle.Core</AssemblyReference>
+      <AssemblyReference>Common.Logging</AssemblyReference>
+      <AssemblyReference>Common.Logging.Core</AssemblyReference>
+      <AssemblyReference>Common.Logging.Log4Net1211</AssemblyReference>
+      <AssemblyReference>Enyim.Caching</AssemblyReference>
+      <AssemblyReference>HibernatingRhinos.Profiler.Appender</AssemblyReference>
+      <AssemblyReference>Humanizer</AssemblyReference>
+      <AssemblyReference>Iesi.Collections</AssemblyReference>
+      <AssemblyReference>IntelliFlo.Platform</AssemblyReference>
+      <AssemblyReference>IntelliFlo.Platform.AutoMapper</AssemblyReference>
+      <AssemblyReference>IntelliFlo.Platform.Bus</AssemblyReference>
+      <AssemblyReference>IntelliFlo.Platform.Caching</AssemblyReference>
+      <AssemblyReference>IntelliFlo.Platform.Client</AssemblyReference>
+      <AssemblyReference>IntelliFlo.Platform.Client.OData</AssemblyReference>
+      <AssemblyReference>IntelliFlo.Platform.Database</AssemblyReference>
+      <AssemblyReference>IntelliFlo.Platform.Events</AssemblyReference>
+      <AssemblyReference>IntelliFlo.Platform.Http</AssemblyReference>
+      <AssemblyReference>IntelliFlo.Platform.Http.Documentation</AssemblyReference>
+      <AssemblyReference>IntelliFlo.Platform.Http.Documentation.Public</AssemblyReference>
+      <AssemblyReference>IntelliFlo.Platform.Logging</AssemblyReference>
+      <AssemblyReference>IntelliFlo.Platform.MicroService</AssemblyReference>
+      <AssemblyReference>IntelliFlo.Platform.NHibernate</AssemblyReference>
+      <AssemblyReference>IntelliFlo.Platform.Security</AssemblyReference>
+      <AssemblyReference>IntelliFlo.PowerShell.DevLib</AssemblyReference>
+      <AssemblyReference>JustSaying</AssemblyReference>
+      <AssemblyReference>JustSaying.AwsTools</AssemblyReference>
+      <AssemblyReference>JustSaying.Messaging</AssemblyReference>
+      <AssemblyReference>JustSaying.Models</AssemblyReference>
       <AssemblyReference>log4net</AssemblyReference>
+      <AssemblyReference>Metrics</AssemblyReference>
+      <AssemblyReference>Microsoft.Owin</AssemblyReference>
+      <AssemblyReference>Microsoft.Owin.Hosting</AssemblyReference>
+      <AssemblyReference>Microsoft.VisualStudio.CoreUtility</AssemblyReference>
+      <AssemblyReference>Microsoft.Data.Edm</AssemblyReference>
+      <AssemblyReference>Microsoft.Data.OData</AssemblyReference>
+      <AssemblyReference>Microsoft.Owin.Host.HttpListener</AssemblyReference>
+      <AssemblyReference>Microsoft.Owin.Security</AssemblyReference>
+      <AssemblyReference>Microsoft.Owin.Security.Jwt</AssemblyReference>
+      <AssemblyReference>Microsoft.Owin.Security.OAuth</AssemblyReference>
+      <AssemblyReference>Microsoft.Web.Infrastructure</AssemblyReference>
+      <AssemblyReference>Minion</AssemblyReference>
+      <AssemblyReference>Moq</AssemblyReference>
       <AssemblyReference>Newtonsoft.Json</AssemblyReference>
       <AssemblyReference>NHibernate</AssemblyReference>
+      <AssemblyReference>NHibernate.OData</AssemblyReference>
+      <AssemblyReference>NLog</AssemblyReference>
+      <AssemblyReference>nunit.framework</AssemblyReference>
+      <AssemblyReference>Owin</AssemblyReference>
+      <AssemblyReference>Owin.Metrics</AssemblyReference>
+      <AssemblyReference>Polly</AssemblyReference>
       <AssemblyReference>PresentationCore</AssemblyReference>
       <AssemblyReference>PresentationFramework</AssemblyReference>
-      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>Swashbuckle.Core</AssemblyReference>
       <AssemblyReference>System.Activities</AssemblyReference>
       <AssemblyReference>System.Activities.Presentation</AssemblyReference>
-      <AssemblyReference>System.ComponentModel.DataAnnotations</AssemblyReference>
-      <AssemblyReference>System.Configuration</AssemblyReference>
-      <AssemblyReference>System.Core</AssemblyReference>
       <AssemblyReference>System.Drawing</AssemblyReference>
+      <AssemblyReference>System.IdentityModel</AssemblyReference>
+      <AssemblyReference>System.IdentityModel.Tokens.Jwt</AssemblyReference>
       <AssemblyReference>System.Net.Http</AssemblyReference>
       <AssemblyReference>System.Net.Http.Formatting</AssemblyReference>
       <AssemblyReference>System.Runtime.Serialization</AssemblyReference>
       <AssemblyReference>System.ServiceModel</AssemblyReference>
       <AssemblyReference>System.ServiceModel.Activities</AssemblyReference>
+      <AssemblyReference>System.ServiceModel.Channels</AssemblyReference>
+      <AssemblyReference>System.Spatial</AssemblyReference>
       <AssemblyReference>System.Web</AssemblyReference>
+      <AssemblyReference>System.Web.Extensions</AssemblyReference>
+      <AssemblyReference>System.Web.Helpers</AssemblyReference>
       <AssemblyReference>System.Web.Http</AssemblyReference>
       <AssemblyReference>System.Web.Http.OData</AssemblyReference>
+      <AssemblyReference>System.Web.Http.Owin</AssemblyReference>
+      <AssemblyReference>System.Web.Http.WebHost</AssemblyReference>
+      <AssemblyReference>System.Web.Mvc</AssemblyReference>
+      <AssemblyReference>System.Web.Razor</AssemblyReference>
+      <AssemblyReference>System.Web.WebPages</AssemblyReference>
+      <AssemblyReference>System.Web.WebPages.Deployment</AssemblyReference>
+      <AssemblyReference>System.Web.WebPages.Razor</AssemblyReference>
       <AssemblyReference>System.Xaml</AssemblyReference>
       <AssemblyReference>System.Xml.Linq</AssemblyReference>
       <AssemblyReference>System.Data.DataSetExtensions</AssemblyReference>
       <AssemblyReference>Microsoft.CSharp</AssemblyReference>
       <AssemblyReference>System.Data</AssemblyReference>
       <AssemblyReference>System.Xml</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>System.ComponentModel.DataAnnotations</AssemblyReference>
+      <AssemblyReference>System.Configuration</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>Thinktecture.IdentityModel.Core</AssemblyReference>
+      <AssemblyReference>Thinktecture.IdentityModel.Owin.BasicAuthentication</AssemblyReference>
+      <AssemblyReference>Thinktecture.IdentityModel.Owin.ClaimsTransformation</AssemblyReference>
+      <AssemblyReference>Thinktecture.IdentityModel.Owin.ResourceAuthorization</AssemblyReference>
+      <AssemblyReference>Thinktecture.IdentityModel.Owin.ResourceAuthorization.WebApi</AssemblyReference>
+      <AssemblyReference>Topshelf</AssemblyReference>
+      <AssemblyReference>Topshelf.Log4Net</AssemblyReference>
+      <AssemblyReference>WebActivatorEx</AssemblyReference>
       <AssemblyReference>WindowsBase</AssemblyReference>
-      <AssemblyReference>IntelliFlo.Commons</AssemblyReference>
-      <AssemblyReference>IntelliFlo.Commons.NHibernate</AssemblyReference>
-      <AssemblyReference>IntelliFlo.Platform.Services.Client</AssemblyReference>
-      <AssemblyReference>IntelliFlo.Platform.Services.Commons</AssemblyReference>
-      <AssemblyReference>IntelliFlo.Platform.Services.Http.Documentation</AssemblyReference>
-      <AssemblyReference>IntelliFlo.Platform.Services.Http</AssemblyReference>
-      <AssemblyReference>IntelliFlo.Platform.Services.Tbf</AssemblyReference>
       <AssemblyReference>mscorlib</AssemblyReference>
       <AssemblyReference>Microservice.Workflow</AssemblyReference>
     </sco:Collection>
@@ -90,39 +158,34 @@
         <PickBranch.Trigger>
           <p1:Receive Action="http://intelliflo.com/dynamicworkflow/2014/06/IDynamicWorkflow/CreateAsync" CanCreateInstance="True" DisplayName="CreateAsync" sap2010:WorkflowViewState.IdRef="Receive_3" OperationName="CreateAsync" ServiceContractName="p:IDynamicWorkflow">
             <p1:ReceiveParametersContent>
-              <OutArgument x:TypeArguments="v1:WorkflowContext" x:Key="context">
-                <mca:CSharpReference x:TypeArguments="v1:WorkflowContext">Context</mca:CSharpReference>
+              <OutArgument x:TypeArguments="local:WorkflowContext" x:Key="context">
+                <mca:CSharpReference x:TypeArguments="local:WorkflowContext">Context</mca:CSharpReference>
               </OutArgument>
             </p1:ReceiveParametersContent>
           </p1:Receive>
         </PickBranch.Trigger>
         <Sequence sap2010:WorkflowViewState.IdRef="Sequence_2">
-          <Delay sap2010:WorkflowViewState.IdRef="Delay_1">
-            <InArgument x:TypeArguments="x:TimeSpan">
-              <mca:CSharpValue x:TypeArguments="x:TimeSpan">TimeSpan.FromMilliseconds(1)</mca:CSharpValue>
-            </InArgument>
-          </Delay>
-          <activities:ValidateInstance sap2010:ExpressionActivityEditor.ExpressionActivityEditor="C#" sap2010:WorkflowViewState.IdRef="IntelliFlo.Workflow.Activities.v1.ValidateCreate_1">
-            <activities:ValidateInstance.Context>
-              <InArgument x:TypeArguments="v1:WorkflowContext">
-                <mca:CSharpValue x:TypeArguments="v1:WorkflowContext">Context</mca:CSharpValue>
+          <local1:ValidateInstance sap2010:ExpressionActivityEditor.ExpressionActivityEditor="C#" sap2010:WorkflowViewState.IdRef="IntelliFlo.Workflow.Activities.v1.ValidateCreate_1">
+            <local1:ValidateInstance.Context>
+              <InArgument x:TypeArguments="local:WorkflowContext">
+                <mca:CSharpValue x:TypeArguments="local:WorkflowContext">Context</mca:CSharpValue>
               </InArgument>
-            </activities:ValidateInstance.Context>
-            <activities:ValidateInstance.InstanceId>
+            </local1:ValidateInstance.Context>
+            <local1:ValidateInstance.InstanceId>
               <OutArgument x:TypeArguments="s:Guid">
                 <mca:CSharpReference x:TypeArguments="s:Guid">InstanceId</mca:CSharpReference>
               </OutArgument>
-            </activities:ValidateInstance.InstanceId>
-            <activities:ValidateInstance.TemplateId>
+            </local1:ValidateInstance.InstanceId>
+            <local1:ValidateInstance.TemplateId>
               <InArgument x:TypeArguments="s:Guid">
                 <mca:CSharpValue x:TypeArguments="s:Guid">TemplateId</mca:CSharpValue>
               </InArgument>
-            </activities:ValidateInstance.TemplateId>
-            <activities:ValidateInstance.TemplateType>
+            </local1:ValidateInstance.TemplateId>
+            <local1:ValidateInstance.TemplateType>
               <InArgument x:TypeArguments="x:String">
                 <mca:CSharpValue x:TypeArguments="x:String">TemplateType</mca:CSharpValue>
               </InArgument>
-            </activities:ValidateInstance.TemplateType>
+            </local1:ValidateInstance.TemplateType>
             <sap2010:WorkflowViewState.ViewStateManager>
               <sap2010:ViewStateManager>
                 <sap2010:ViewStateData Id="CheckContext_1" sap2010:WorkflowViewState.IdRef="ViewStateData_1" />
@@ -137,7 +200,7 @@
                 <sap2010:ViewStateData Id="IntelliFlo.Platform.Services.Workflow.v1.Activities.ValidateInstance_1" sap2010:WorkflowViewState.IdRef="ViewStateData_10" />
               </sap2010:ViewStateManager>
             </sap2010:WorkflowViewState.ViewStateManager>
-          </activities:ValidateInstance>
+          </local1:ValidateInstance>
         </Sequence>
       </PickBranch>
       <PickBranch DisplayName="Create" sap2010:WorkflowViewState.IdRef="PickBranch_2">
@@ -153,34 +216,34 @@
               </p1:RequestReplyCorrelationInitializer>
             </p1:Receive.CorrelationInitializers>
             <p1:ReceiveParametersContent>
-              <OutArgument x:TypeArguments="v1:WorkflowContext" x:Key="context">
-                <mca:CSharpReference x:TypeArguments="v1:WorkflowContext">Context</mca:CSharpReference>
+              <OutArgument x:TypeArguments="local:WorkflowContext" x:Key="context">
+                <mca:CSharpReference x:TypeArguments="local:WorkflowContext">Context</mca:CSharpReference>
               </OutArgument>
             </p1:ReceiveParametersContent>
           </p1:Receive>
         </PickBranch.Trigger>
         <Sequence sap2010:WorkflowViewState.IdRef="Sequence_4">
-          <activities:ValidateInstance sap2010:ExpressionActivityEditor.ExpressionActivityEditor="C#" sap2010:WorkflowViewState.IdRef="IntelliFlo.Platform.Services.Workflow.v1.Activities.ValidateInstance_1">
-            <activities:ValidateInstance.Context>
-              <InArgument x:TypeArguments="v1:WorkflowContext">
-                <mca:CSharpValue x:TypeArguments="v1:WorkflowContext">Context</mca:CSharpValue>
+          <local1:ValidateInstance sap2010:ExpressionActivityEditor.ExpressionActivityEditor="C#" sap2010:WorkflowViewState.IdRef="IntelliFlo.Platform.Services.Workflow.v1.Activities.ValidateInstance_1">
+            <local1:ValidateInstance.Context>
+              <InArgument x:TypeArguments="local:WorkflowContext">
+                <mca:CSharpValue x:TypeArguments="local:WorkflowContext">Context</mca:CSharpValue>
               </InArgument>
-            </activities:ValidateInstance.Context>
-            <activities:ValidateInstance.InstanceId>
+            </local1:ValidateInstance.Context>
+            <local1:ValidateInstance.InstanceId>
               <OutArgument x:TypeArguments="s:Guid">
                 <mca:CSharpReference x:TypeArguments="s:Guid">InstanceId</mca:CSharpReference>
               </OutArgument>
-            </activities:ValidateInstance.InstanceId>
-            <activities:ValidateInstance.TemplateId>
+            </local1:ValidateInstance.InstanceId>
+            <local1:ValidateInstance.TemplateId>
               <InArgument x:TypeArguments="s:Guid">
                 <mca:CSharpValue x:TypeArguments="s:Guid">TemplateId</mca:CSharpValue>
               </InArgument>
-            </activities:ValidateInstance.TemplateId>
-            <activities:ValidateInstance.TemplateType>
+            </local1:ValidateInstance.TemplateId>
+            <local1:ValidateInstance.TemplateType>
               <InArgument x:TypeArguments="x:String">
                 <mca:CSharpValue x:TypeArguments="x:String">TemplateType</mca:CSharpValue>
               </InArgument>
-            </activities:ValidateInstance.TemplateType>
+            </local1:ValidateInstance.TemplateType>
             <sap2010:WorkflowViewState.ViewStateManager>
               <sap2010:ViewStateManager>
                 <sap2010:ViewStateData Id="CheckContext_1" sap2010:WorkflowViewState.IdRef="ViewStateData_11" />
@@ -195,7 +258,7 @@
                 <sap2010:ViewStateData Id="IntelliFlo.Platform.Services.Workflow.v1.Activities.ValidateInstance_1" sap2010:WorkflowViewState.IdRef="ViewStateData_20" />
               </sap2010:ViewStateManager>
             </sap2010:WorkflowViewState.ViewStateManager>
-          </activities:ValidateInstance>
+          </local1:ValidateInstance>
           <p1:SendReply Request="{x:Reference __ReferenceID0}" Action="http://intelliflo.com/dynamicworkflow/2014/06/IDynamicWorkflow/CreateResponse" DisplayName="CreateResponse" sap2010:WorkflowViewState.IdRef="SendReply_2">
             <p1:SendParametersContent>
               <InArgument x:TypeArguments="s:Guid" x:Key="CreateResult">
@@ -213,30 +276,50 @@
         </InArgument>
       </If.Condition>
       <If.Then>
-        <activities:DelayUntilStep StepId="{x:Null}" StepIndex="{x:Null}" sap2010:ExpressionActivityEditor.ExpressionActivityEditor="C#" sap2010:WorkflowViewState.IdRef="IntelliFlo.IO.Workflow.Activities.DelayStep_1">
-          <activities:DelayUntilStep.ExpiryDateUtc>
-            <InArgument x:TypeArguments="s:DateTime">
-              <mca:CSharpValue x:TypeArguments="s:DateTime">Context.Start</mca:CSharpValue>
-            </InArgument>
-          </activities:DelayUntilStep.ExpiryDateUtc>
-          <sap2010:WorkflowViewState.ViewStateManager>
-            <sap2010:ViewStateManager>
-              <sap2010:ViewStateData Id="Assign_1" sap2010:WorkflowViewState.IdRef="ViewStateData_21" />
-              <sap2010:ViewStateData Id="Delay_1" sap2010:WorkflowViewState.IdRef="ViewStateData_22" />
-              <sap2010:ViewStateData Id="If_1" sap2010:WorkflowViewState.IdRef="ViewStateData_23" />
-              <sap2010:ViewStateData Id="WorkflowStep_1" sap2010:WorkflowViewState.IdRef="ViewStateData_24" />
-              <sap2010:ViewStateData Id="IntelliFlo.IO.Workflow.Activities.DelayStep_1" sap2010:WorkflowViewState.IdRef="ViewStateData_25" />
-            </sap2010:ViewStateManager>
-          </sap2010:WorkflowViewState.ViewStateManager>
-        </activities:DelayUntilStep>
+        <Sequence>
+          <local1:WorkflowStep Step="{x:Null}" StepDetail="{x:Null}" StepId="{x:Null}" StepIndex="{x:Null}" EnableLogging="False">
+            <local1:WorkflowStep.Context>
+              <InArgument x:TypeArguments="local:WorkflowContext">
+                <mca:CSharpValue x:TypeArguments="local:WorkflowContext">Context</mca:CSharpValue>
+              </InArgument>
+            </local1:WorkflowStep.Context>
+            <local1:ScheduleDelayUntilStep sap2010:ExpressionActivityEditor.ExpressionActivityEditor="C#" sap2010:WorkflowViewState.IdRef="IntelliFlo.IO.Workflow.Activities.DelayStep_1" StepIndex="-1">
+              <local1:ScheduleDelayUntilStep.ExpiryDateUtc>
+                <InArgument x:TypeArguments="s:DateTime">
+                  <mca:CSharpValue x:TypeArguments="s:DateTime">Context.Start</mca:CSharpValue>
+                </InArgument>
+              </local1:ScheduleDelayUntilStep.ExpiryDateUtc>
+              <local1:ScheduleDelayUntilStep.StepId>
+                <InArgument x:TypeArguments="s:Guid">
+                  <mca:CSharpValue x:TypeArguments="s:Guid">new Guid("c68f0604-4504-450f-a50a-ef36d37f8bb1")</mca:CSharpValue>
+                </InArgument>
+              </local1:ScheduleDelayUntilStep.StepId>
+              <sap2010:WorkflowViewState.ViewStateManager>
+                <sap2010:ViewStateManager>
+                  <sap2010:ViewStateData Id="Assign_1" sap2010:WorkflowViewState.IdRef="ViewStateData_21" />
+                  <sap2010:ViewStateData Id="ResumeOnDelay_1" sap2010:WorkflowViewState.IdRef="ViewStateData_22" />
+                  <sap2010:ViewStateData Id="ViewStateData_1" sap2010:WorkflowViewState.IdRef="ViewStateData_23" />
+                  <sap2010:ViewStateData Id="ViewStateData_2" sap2010:WorkflowViewState.IdRef="ViewStateData_24" />
+                  <sap2010:ViewStateData Id="ViewStateData_3" sap2010:WorkflowViewState.IdRef="ViewStateData_25" />
+                  <sap2010:ViewStateData Id="ViewStateData_4" sap2010:WorkflowViewState.IdRef="ViewStateData_26" />
+                  <sap2010:ViewStateData Id="ViewStateData_5" sap2010:WorkflowViewState.IdRef="ViewStateData_27" />
+                  <sap2010:ViewStateData Id="IntelliFlo.IO.Workflow.Activities.Activity1_1" sap2010:WorkflowViewState.IdRef="ViewStateData_28" />
+                  <sap2010:ViewStateData Id="WorkflowStep_1" sap2010:WorkflowViewState.IdRef="ViewStateData_29" />
+                  <sap2010:ViewStateData Id="IntelliFlo.IO.Workflow.Activities.DelayStep_1" sap2010:WorkflowViewState.IdRef="ViewStateData_30" />
+                </sap2010:ViewStateManager>
+              </sap2010:WorkflowViewState.ViewStateManager>
+            </local1:ScheduleDelayUntilStep>
+            <sap2010:WorkflowViewState.IdRef>WorkflowStep_1</sap2010:WorkflowViewState.IdRef>
+          </local1:WorkflowStep>
+          <sap2010:WorkflowViewState.IdRef>Sequence_5</sap2010:WorkflowViewState.IdRef>
+        </Sequence>
       </If.Then>
     </If>
-    <sads:DebugSymbol.Symbol>d11DOlxXb3JrXEludGVsbGlGbG8uSU8uZGV2XHNyY1xJbnRlbGxpRmxvLlBsYXRmb3JtLlNlcnZpY2VzLldvcmtmbG93XHYxXEFjdGl2aXRpZXNcQ3JlYXRlLnhhbWwdUwPrAQ4CAQFYBdABDAIBEtEBBekBCgIBAlkHjgEUAgFXjwEHzwEUAgET1AEL1AFsAgED2AEJ5wEhAgEKWwthGAIBfmMJjQEUAgFYkQELoAEYAgFIogEJzgEUAgEU2wEP2wFcAgELXhFeawIBf2QLaBMCAXZpC4wBJQIBWZ0BEZ0BawIBUJYBFZYBZQIBSaMBC8YBJQIBK8cBC80BGgIBFWYPZmsCAXd7EXtbAgFvdhF2VwIBaGwRbGMCAWFxEXFfAgFatQERtQFbAgFBsAERsAFXAgE6pgERpgFjAgEzqwERqwFfAgEsygERygFXAgEW</sads:DebugSymbol.Symbol>
+    <sads:DebugSymbol.Symbol>d1FDOlxXb3JrXE1pY3Jvc2VydmljZS5Xb3JrZmxvd1xzcmNcTWljcm9zZXJ2aWNlLldvcmtmbG93XHYxXEFjdGl2aXRpZXNcQ3JlYXRlLnhhbWwhlwEDvwIOAgEBnAEFjwIMAgEkkAIFvQIKAgECnQEHzQEUAgFpzgEHjgIUAgElkwILkwJsAgEDlwIJuwIUAgEKnwELpQEYAwGIAacBCcwBFAIBatABC98BGAIBWuEBCY0CFAIBJpgCC7kCIQIBC6IBEaIBawMBiQGoAQvLASUCAWvcARHcAWsCAWLVARXVAWUCAVviAQuFAiUCAT2GAguMAhoCASeYAnuYAoIBAgETmwIRmwJjAgEMngINtwItAgEUugERugFbAwGBAbUBEbUBVwIBeqsBEasBYwIBc7ABEbABXwIBbPQBEfQBWwIBU+8BEe8BVwIBTOUBEeUBYwIBReoBEeoBXwIBPokCEYkCVwIBKJ4CxQGeAskBAgEjoQIToQJgAgEcpgITpgJ/AgEV</sads:DebugSymbol.Symbol>
   </Sequence>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
       <sap2010:ViewStateData Id="Receive_3" sap:VirtualizedContainerService.HintSize="255,86" />
-      <sap2010:ViewStateData Id="Delay_1" sap:VirtualizedContainerService.HintSize="200,22" />
       <sap2010:ViewStateData Id="ViewStateData_1" sap:VirtualizedContainerService.HintSize="418,22" />
       <sap2010:ViewStateData Id="ViewStateData_2" sap:VirtualizedContainerService.HintSize="200,22" />
       <sap2010:ViewStateData Id="ViewStateData_3" sap:VirtualizedContainerService.HintSize="200,22" />
@@ -260,7 +343,7 @@
       </sap2010:ViewStateData>
       <sap2010:ViewStateData Id="ViewStateData_10" sap:VirtualizedContainerService.HintSize="480,615" />
       <sap2010:ViewStateData Id="IntelliFlo.Workflow.Activities.v1.ValidateCreate_1" sap:VirtualizedContainerService.HintSize="200,22" />
-      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="222,208">
+      <sap2010:ViewStateData Id="Sequence_2" sap:VirtualizedContainerService.HintSize="222,146">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -302,21 +385,40 @@
       </sap2010:ViewStateData>
       <sap2010:ViewStateData Id="PickBranch_2" sap:VirtualizedContainerService.HintSize="307,556" />
       <sap2010:ViewStateData Id="Pick_1" sap:VirtualizedContainerService.HintSize="746,602" />
-      <sap2010:ViewStateData Id="ViewStateData_21" sap:VirtualizedContainerService.HintSize="464,62" />
-      <sap2010:ViewStateData Id="ViewStateData_22" sap:VirtualizedContainerService.HintSize="200,22" />
-      <sap2010:ViewStateData Id="ViewStateData_23" sap:VirtualizedContainerService.HintSize="464,210" />
-      <sap2010:ViewStateData Id="ViewStateData_24" sap:VirtualizedContainerService.HintSize="478,395" />
-      <sap2010:ViewStateData Id="ViewStateData_25" sap:VirtualizedContainerService.HintSize="518,475" />
-      <sap2010:ViewStateData Id="IntelliFlo.IO.Workflow.Activities.DelayStep_1" sap:VirtualizedContainerService.HintSize="200,22" />
-      <sap2010:ViewStateData Id="If_1" sap:VirtualizedContainerService.HintSize="746,210" />
-      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="768,976">
+      <sap2010:ViewStateData Id="ViewStateData_21" sap:VirtualizedContainerService.HintSize="242,62" />
+      <sap2010:ViewStateData Id="ViewStateData_22" sap:VirtualizedContainerService.HintSize="242,22" />
+      <sap2010:ViewStateData Id="ViewStateData_23" sap:VirtualizedContainerService.HintSize="255,22" />
+      <sap2010:ViewStateData Id="ViewStateData_24" sap:VirtualizedContainerService.HintSize="255,97" />
+      <sap2010:ViewStateData Id="ViewStateData_25" sap:VirtualizedContainerService.HintSize="255,86" />
+      <sap2010:ViewStateData Id="ViewStateData_26" sap:VirtualizedContainerService.HintSize="277,409">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="IntelliFlo.IO.Workflow.Activities.Activity1_1" sap:VirtualizedContainerService.HintSize="808,1056" />
+      <sap2010:ViewStateData Id="ViewStateData_27" sap:VirtualizedContainerService.HintSize="317,489" />
+      <sap2010:ViewStateData Id="ViewStateData_28" sap:VirtualizedContainerService.HintSize="242,22" />
+      <sap2010:ViewStateData Id="ViewStateData_29" sap:VirtualizedContainerService.HintSize="256,258" />
+      <sap2010:ViewStateData Id="ViewStateData_30" sap:VirtualizedContainerService.HintSize="296,338" />
+      <sap2010:ViewStateData Id="IntelliFlo.IO.Workflow.Activities.DelayStep_1" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="WorkflowStep_1" sap:VirtualizedContainerService.HintSize="214,116" />
+      <sap2010:ViewStateData Id="Sequence_5" sap:VirtualizedContainerService.HintSize="236,240">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="If_1" sap:VirtualizedContainerService.HintSize="746,390" />
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="768,1156">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="IntelliFlo.IO.Workflow.Activities.Activity1_1" sap:VirtualizedContainerService.HintSize="808,1236" />
     </sap2010:ViewStateManager>
   </sap2010:WorkflowViewState.ViewStateManager>
 </Activity>

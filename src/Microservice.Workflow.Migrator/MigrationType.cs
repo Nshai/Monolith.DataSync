@@ -5,6 +5,7 @@
         None,
         Template,
         Instance,
-        Both
+        Both,
+        InstanceDelay
     }
 }
