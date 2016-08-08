@@ -20,5 +20,6 @@
     <file src="pipeline\aws\appspec.yml" target="" />
     <file src="pipeline\aws\*.*" target="content\scripts" exclude="**\*.yml;**\*.cer;**\*.pfx" />
     <file src="pipeline\aws\*.cer" target="content\certificates" />
+    <file src="config\*" target="config\" />
   </files>
 </package>
