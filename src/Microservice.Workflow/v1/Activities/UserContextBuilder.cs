@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading;
+using System.Windows.Controls;
 using Autofac;
 using IntelliFlo.Platform;
 using IntelliFlo.Platform.Identity;
@@ -34,11 +37,21 @@ namespace Microservice.Workflow.v1.Activities
         private static IEnumerable<Claim> ExtractClaims(string token, ILifetimeScope lifetimeScope)
         {
             // We don't care whether the token has expired, we are just using it to extract the claims
-            var signManager = lifetimeScope.Resolve<ISignManager>();
+            var message = ExtractFromToken(token);
             var signAuthenticationMessageBuilder = lifetimeScope.Resolve<ISignAuthenticationMessageBuilder>();
-            var message = signManager.ExtractFromToken(token);
+            
             var claimsDictionary = signAuthenticationMessageBuilder.ExtractOriginalMessage(message);
             return claimsDictionary.Select(c => new Claim(c.Key, c.Value));
+        }
+
+        private static string ExtractFromToken(string message)
+        {
+            Check.IsNotNullOrWhiteSpace(message, "message cannot be null or empty");
+
+            var base64EncodedBytes = Convert.FromBase64String(message);
+            var decodeMsg = Encoding.UTF8.GetString(base64EncodedBytes);
+
+            return decodeMsg.Split('|')[0];
         }
     }
 }

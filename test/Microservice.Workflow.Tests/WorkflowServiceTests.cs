@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.ServiceModel;
 using System.ServiceModel.Activities;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xaml;
@@ -59,6 +60,7 @@ namespace Microservice.Workflow.Tests
         private const int UserId = 1;
         private const int OwnerPartyId = 324;
         private const int OwnerUserId = 1233;
+        private string bearerToken;
 
         [SetUp]
         public void SetUp()
@@ -71,22 +73,25 @@ namespace Microservice.Workflow.Tests
             messageBuilder = new Mock<ISignAuthenticationMessageBuilder>();
             addressRegistry = new Mock<IServiceAddressRegistry>();
 
-            serviceClient.Setup(c => c.Get<Dictionary<string, object>>(string.Format(Uris.Crm.GetUserInfoByUserId, OwnerUserId), null)).Returns(Task.FromResult(new HttpResponse<Dictionary<string, object>> {Raw = new HttpResponseMessage(HttpStatusCode.OK), Resource = new Dictionary<string, object> {{Constants.ApplicationClaimTypes.PartyId, OwnerPartyId}}}));
+            serviceClient.Setup(c => c.Get<Dictionary<string, object>>(string.Format(Uris.Crm.GetUserInfoByUserId, OwnerUserId), null)).Returns(Task.FromResult(new HttpResponse<Dictionary<string, object>> { Raw = new HttpResponseMessage(HttpStatusCode.OK), Resource = new Dictionary<string, object> { { Constants.ApplicationClaimTypes.PartyId, OwnerPartyId } } }));
             serviceClientFactory.Setup(c => c.Create(It.IsAny<string>())).Returns(serviceClient.Object);
             var entityTaskFactory = new EntityTaskBuilderFactory(serviceClientFactory.Object);
 
-            addressRegistry.Setup(a => a.GetServiceEndpoint("workflow")).Returns(new ServiceEndpointElement {Name = "workflow", BaseAddress = "http://localhost:10083/workflow/"});
+            addressRegistry.Setup(a => a.GetServiceEndpoint("workflow")).Returns(new ServiceEndpointElement { Name = "workflow", BaseAddress = "http://localhost:10083/workflow/" });
 
             serviceFactory = new WorkflowServiceFactory(new DayDelayPeriod(), serviceClientFactory.Object);
 
             var claims = new Dictionary<string, string>
             {
-                { Constants.ApplicationClaimTypes.UserId, UserId.ToString(CultureInfo.InvariantCulture)},
-                { Constants.ApplicationClaimTypes.TenantId, TenantId.ToString(CultureInfo.InvariantCulture)},
-                { Constants.ApplicationClaimTypes.Subject, Guid.NewGuid().ToString()}
+                { Constants.ApplicationClaimTypes.UserId, UserId.ToString(CultureInfo.InvariantCulture) },
+                { Constants.ApplicationClaimTypes.TenantId, TenantId.ToString(CultureInfo.InvariantCulture) },
+                { Constants.ApplicationClaimTypes.Subject, Guid.NewGuid().ToString() }
             };
 
             messageBuilder.Setup(m => m.ExtractOriginalMessage(It.IsAny<string>())).Returns(claims.AsEnumerable());
+            
+            var bearerTokenRaw = $"userId?{UserId};tenantId?{TenantId}";
+            bearerToken = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{bearerTokenRaw}|{bearerTokenRaw}"));
 
             var category = new TemplateCategory("Test", TenantId);
             clientTemplate = new Template("Test", TenantId, category, WorkflowRelatedTo.Client, OwnerUserId);
@@ -122,7 +127,7 @@ namespace Microservice.Workflow.Tests
         {
             using (CreateHost(clientTemplate))
             {
-                var instanceId = CreateInstance(new WorkflowContext {BearerToken = "123", EntityType = EntityType.Client.ToString(), EntityId = EntityId});
+                var instanceId = CreateInstance(new WorkflowContext {BearerToken = bearerToken, EntityType = EntityType.Client.ToString(), EntityId = EntityId});
                 session.Verify(i => i.Save(It.IsAny<Instance>()));
                 Assert.IsTrue(instanceId != Guid.Empty);
             }
@@ -133,7 +138,7 @@ namespace Microservice.Workflow.Tests
         {
             using (CreateHost(clientTemplate))
             {
-                CreateInstance(new WorkflowContext {BearerToken = "123", EntityType = EntityType.Client.ToString(), EntityId = EntityId}, true);
+                CreateInstance(new WorkflowContext {BearerToken = bearerToken, EntityType = EntityType.Client.ToString(), EntityId = EntityId}, true);
             }
         }
 
@@ -144,7 +149,7 @@ namespace Microservice.Workflow.Tests
             {
                 using (CreateHost(clientTemplate))
                 {
-                    CreateInstance(new WorkflowContext {BearerToken = "123", EntityType = EntityType.Plan.ToString(), EntityId = EntityId});
+                    CreateInstance(new WorkflowContext {BearerToken = bearerToken, EntityType = EntityType.Plan.ToString(), EntityId = EntityId});
                 }
             }
             catch (FaultException ex)
@@ -414,7 +419,7 @@ namespace Microservice.Workflow.Tests
 
         private Guid CreateInstance(Action<WorkflowContext> modifyContext = null)
         {
-            var context = new WorkflowContext { BearerToken = "123", EntityType = EntityType.Client.ToString(), EntityId = EntityId };
+            var context = new WorkflowContext { BearerToken = bearerToken, EntityType = EntityType.Client.ToString(), EntityId = EntityId };
             if (modifyContext != null)
                 modifyContext(context);
             
