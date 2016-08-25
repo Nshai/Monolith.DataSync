@@ -101,7 +101,10 @@ namespace Microservice.Workflow.v1.Activities
                 var additionalContext = JsonConvert.DeserializeObject<AdditionalContext>(ctx.AdditionalContext);
                 var runToContext = additionalContext.RunTo;
                 if (runToContext != null)
+                {
+                    this.LogMessage(context, StepName.Restarted.ToString());
                     return;
+                }
             }
 
             this.LogMessage(context, StepName.Created.ToString());

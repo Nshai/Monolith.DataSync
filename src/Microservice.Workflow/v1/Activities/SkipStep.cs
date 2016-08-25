@@ -13,6 +13,7 @@ namespace Microservice.Workflow.v1.Activities
         protected override void Execute(NativeActivityContext context)
         {
             var workflowContext = (WorkflowContext)context.Properties.Find(WorkflowConstants.WorkflowContextKey);
+            var currentStepId = (Guid)context.Properties.Find(WorkflowConstants.WorkflowStepIdKey);
             var currentStepIndex = (int)context.Properties.Find(WorkflowConstants.WorkflowStepIndexKey);
 
             if (string.IsNullOrEmpty(workflowContext.AdditionalContext))
@@ -26,24 +27,49 @@ namespace Microservice.Workflow.v1.Activities
             if (runToContext == null || runToContext.StepIndex < 0)
             {
                 Skip.Set(context, SkipState.Continue);
+                MarkInstanceAsResumed(workflowContext);
                 return;
             }
 
-            if (currentStepIndex < runToContext.StepIndex)
+            if (runToContext.StepId.HasValue)
             {
-                Skip.Set(context, SkipState.Skip);
-                return;
+                if (currentStepId == runToContext.StepId)
+                {
+                    Skip.Set(context, SkipState.TargetStep);
+                    TaskId.Set(context, runToContext.TaskId);
+                    DelayTime.Set(context, runToContext.DelayTime);
+                    MarkInstanceAsResumed(workflowContext);
+                }
+                else
+                {
+                    Skip.Set(context, SkipState.Skip);
+                }
             }
-
-            if (currentStepIndex == runToContext.StepIndex)
+            else
             {
-                Skip.Set(context, SkipState.TargetStep);
-                TaskId.Set(context, runToContext.TaskId);
-                DelayTime.Set(context, runToContext.DelayTime);
-                return;
-            }
+                if (currentStepIndex < runToContext.StepIndex)
+                {
+                    Skip.Set(context, SkipState.Skip);
+                    return;
+                }
+                if (currentStepIndex == runToContext.StepIndex)
+                {
+                    Skip.Set(context, SkipState.TargetStep);
+                    TaskId.Set(context, runToContext.TaskId);
+                    DelayTime.Set(context, runToContext.DelayTime);
+                }
+                else if (currentStepIndex > runToContext.StepIndex)
+                {
+                    Skip.Set(context, SkipState.Continue);
+                }
 
-            Skip.Set(context, SkipState.Continue);
+                MarkInstanceAsResumed(workflowContext);
+            }
+        }
+
+        private void MarkInstanceAsResumed(WorkflowContext ctx)
+        {
+            ctx.AdditionalContext = null;
         }
     }
 }
