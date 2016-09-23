@@ -34,10 +34,16 @@ namespace Microservice.Workflow.v1.Activities
 
             var owner1 = plan.Owners.First();
             var owner2 = plan.Owners.ElementAtOrDefault(1);
+
             request.RelatedPartyId = context.ClientId;
             request.RelatedPlanId = context.EntityId;
+
             if (owner2 != null)
-                request.RelatedJointPartyId = owner2.ClientId;
+            {
+                // NB ClientId may be joint owner (rather than primary)
+                var jointOwner = owner2.ClientId != context.ClientId ? owner2.ClientId : owner1.ClientId;
+                request.RelatedJointPartyId = jointOwner;
+            }
 
             return owner1.ClientId;
         }
