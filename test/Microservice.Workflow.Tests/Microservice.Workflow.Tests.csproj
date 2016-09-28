@@ -73,14 +73,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Autofac.WebApi2.Owin.3.2.0\lib\net45\Autofac.Integration.WebApi.Owin.dll</HintPath>
     </Reference>
-    <Reference Include="AutoMapper, Version=3.2.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+    <Reference Include="AutoMapper">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\AutoMapper.3.2.1\lib\net40\AutoMapper.dll</HintPath>
     </Reference>
     <Reference Include="AutoMapper.Net4">
       <HintPath>..\..\packages\AutoMapper.3.2.1\lib\net40\AutoMapper.Net4.dll</HintPath>
     </Reference>
-    <Reference Include="AWSSDK, Version=2.3.55.0, Culture=neutral, PublicKeyToken=9f476d3089b52be3, processorArchitecture=MSIL">
+    <Reference Include="AWSSDK">
       <HintPath>..\..\packages\AWSSDK.2.3.55.0\lib\net45\AWSSDK.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -114,76 +114,76 @@
     <Reference Include="HibernatingRhinos.Profiler.Appender">
       <HintPath>..\..\packages\NHibernateProfiler.Appender.3.0.3052.0\lib\HibernatingRhinos.Profiler.Appender.dll</HintPath>
     </Reference>
-    <Reference Include="Humanizer, Version=2.0.1.0, Culture=neutral, PublicKeyToken=979442b78dfc278e, processorArchitecture=MSIL">
+    <Reference Include="Humanizer">
       <HintPath>..\..\packages\Humanizer.Core.2.0.1\lib\dotnet\Humanizer.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Iesi.Collections, Version=1.0.1.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Iesi.Collections.3.2.0.4000\lib\Net35\Iesi.Collections.dll</HintPath>
     </Reference>
-    <Reference Include="IntelliFlo.Platform, Version=0.2.314.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\IntelliFlo.Platform.0.2.314\lib\net452\IntelliFlo.Platform.dll</HintPath>
+    <Reference Include="IntelliFlo.Platform">
+      <HintPath>..\..\packages\IntelliFlo.Platform.0.3.348\lib\net452\IntelliFlo.Platform.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.AutoMapper, Version=0.2.314.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\IntelliFlo.Platform.AutoMapper.0.2.314\lib\net452\IntelliFlo.Platform.AutoMapper.dll</HintPath>
+    <Reference Include="IntelliFlo.Platform.AutoMapper">
+      <HintPath>..\..\packages\IntelliFlo.Platform.AutoMapper.0.3.348\lib\net452\IntelliFlo.Platform.AutoMapper.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.Bus, Version=0.2.314.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\IntelliFlo.Platform.Bus.0.2.314\lib\net452\IntelliFlo.Platform.Bus.dll</HintPath>
+    <Reference Include="IntelliFlo.Platform.Bus">
+      <HintPath>..\..\packages\IntelliFlo.Platform.Bus.0.3.348\lib\net452\IntelliFlo.Platform.Bus.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.Caching, Version=0.2.314.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\IntelliFlo.Platform.Caching.0.2.314\lib\net452\IntelliFlo.Platform.Caching.dll</HintPath>
+    <Reference Include="IntelliFlo.Platform.Caching">
+      <HintPath>..\..\packages\IntelliFlo.Platform.Caching.0.3.348\lib\net452\IntelliFlo.Platform.Caching.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.Client, Version=0.2.112.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\IntelliFlo.Platform.Client.0.2.112\lib\net451\IntelliFlo.Platform.Client.dll</HintPath>
+    <Reference Include="IntelliFlo.Platform.Client">
+      <HintPath>..\..\packages\IntelliFlo.Platform.Client.0.3.124\lib\net452\IntelliFlo.Platform.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="IntelliFlo.Platform.Client.OData, Version=0.2.235.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\IntelliFlo.Platform.Client.OData.0.2.235\lib\net451\IntelliFlo.Platform.Client.OData.dll</HintPath>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.Database, Version=0.2.314.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\IntelliFlo.Platform.Database.0.2.314\lib\net452\IntelliFlo.Platform.Database.dll</HintPath>
+    <Reference Include="IntelliFlo.Platform.Database">
+      <HintPath>..\..\packages\IntelliFlo.Platform.Database.0.3.348\lib\net452\IntelliFlo.Platform.Database.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.Events, Version=0.2.314.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\IntelliFlo.Platform.Events.0.2.314\lib\net452\IntelliFlo.Platform.Events.dll</HintPath>
+    <Reference Include="IntelliFlo.Platform.Events">
+      <HintPath>..\..\packages\IntelliFlo.Platform.Events.0.3.348\lib\net452\IntelliFlo.Platform.Events.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.Http, Version=0.2.314.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\IntelliFlo.Platform.Http.0.2.314\lib\net452\IntelliFlo.Platform.Http.dll</HintPath>
+    <Reference Include="IntelliFlo.Platform.Http">
+      <HintPath>..\..\packages\IntelliFlo.Platform.Http.0.3.348\lib\net452\IntelliFlo.Platform.Http.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.Http.Documentation, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\IntelliFlo.Platform.Http.Documentation.0.2.411\lib\net451\IntelliFlo.Platform.Http.Documentation.dll</HintPath>
+    <Reference Include="IntelliFlo.Platform.Http.Documentation">
+      <HintPath>..\..\packages\IntelliFlo.Platform.Http.Documentation.0.3.427\lib\net452\IntelliFlo.Platform.Http.Documentation.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.Http.Documentation.Public, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\IntelliFlo.Platform.Http.Documentation.Public.0.2.20\lib\net452\IntelliFlo.Platform.Http.Documentation.Public.dll</HintPath>
+    <Reference Include="IntelliFlo.Platform.Http.Documentation.Public">
+      <HintPath>..\..\packages\IntelliFlo.Platform.Http.Documentation.Public.0.3.25\lib\net452\IntelliFlo.Platform.Http.Documentation.Public.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.Logging, Version=0.2.314.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\IntelliFlo.Platform.Logging.0.2.314\lib\net452\IntelliFlo.Platform.Logging.dll</HintPath>
+    <Reference Include="IntelliFlo.Platform.Logging">
+      <HintPath>..\..\packages\IntelliFlo.Platform.Logging.0.3.348\lib\net452\IntelliFlo.Platform.Logging.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.MicroService, Version=0.2.221.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\IntelliFlo.Platform.MicroService.0.2.221\lib\net452\IntelliFlo.Platform.MicroService.dll</HintPath>
+    <Reference Include="IntelliFlo.Platform.MicroService">
+      <HintPath>..\..\packages\IntelliFlo.Platform.MicroService.0.3.256\lib\net452\IntelliFlo.Platform.MicroService.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.NHibernate, Version=0.2.314.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\IntelliFlo.Platform.NHibernate.0.2.314\lib\net452\IntelliFlo.Platform.NHibernate.dll</HintPath>
+    <Reference Include="IntelliFlo.Platform.NHibernate">
+      <HintPath>..\..\packages\IntelliFlo.Platform.NHibernate.0.3.348\lib\net452\IntelliFlo.Platform.NHibernate.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.Security, Version=0.2.314.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\IntelliFlo.Platform.Security.0.2.314\lib\net452\IntelliFlo.Platform.Security.dll</HintPath>
+    <Reference Include="IntelliFlo.Platform.Security">
+      <HintPath>..\..\packages\IntelliFlo.Platform.Security.0.3.348\lib\net452\IntelliFlo.Platform.Security.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.Testing, Version=0.2.235.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="IntelliFlo.Platform.Testing">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\IntelliFlo.Platform.Testing.0.2.235\lib\net451\IntelliFlo.Platform.Testing.dll</HintPath>
+      <HintPath>..\..\packages\IntelliFlo.Platform.Testing.0.3.348\lib\net452\IntelliFlo.Platform.Testing.dll</HintPath>
     </Reference>
     <Reference Include="IntelliFlo.PowerShell.DevLib">
       <HintPath>..\..\packages\IntelliFlo.PowerShell.DevLib.0.0.3.0\lib\net45\IntelliFlo.PowerShell.DevLib.dll</HintPath>
@@ -219,28 +219,28 @@
     <Reference Include="Microsoft.Data.OData, Version=5.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Data.OData.5.6.0\lib\net40\Microsoft.Data.OData.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.Owin">
       <HintPath>..\..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Owin.Host.HttpListener">
-      <HintPath>..\..\packages\Microsoft.Owin.Host.HttpListener.3.0.0\lib\net45\Microsoft.Owin.Host.HttpListener.dll</HintPath>
+      <HintPath>..\..\packages\Microsoft.Owin.Host.HttpListener.3.0.1\lib\net45\Microsoft.Owin.Host.HttpListener.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Owin.Hosting, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.Owin.Hosting">
       <HintPath>..\..\packages\Microsoft.Owin.Hosting.3.0.1\lib\net45\Microsoft.Owin.Hosting.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Owin.Security, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.Owin.Security">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Microsoft.Owin.Security.3.0.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+      <HintPath>..\..\packages\Microsoft.Owin.Security.3.0.1\lib\net45\Microsoft.Owin.Security.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Owin.Security.Jwt, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.Owin.Security.Jwt">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Microsoft.Owin.Security.Jwt.3.0.0\lib\net45\Microsoft.Owin.Security.Jwt.dll</HintPath>
+      <HintPath>..\..\packages\Microsoft.Owin.Security.Jwt.3.0.1\lib\net45\Microsoft.Owin.Security.Jwt.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Owin.Security.OAuth, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.Owin.Security.OAuth">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Microsoft.Owin.Security.OAuth.3.0.0\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
+      <HintPath>..\..\packages\Microsoft.Owin.Security.OAuth.3.0.1\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
@@ -252,7 +252,7 @@
     <Reference Include="Moq">
       <HintPath>..\..\packages\Moq.4.2.1507.0118\lib\net40\Moq.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+    <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -270,7 +270,7 @@
     <Reference Include="NHibernate.Validator.Specific">
       <HintPath>..\..\packages\NHibernate.Validator.1.3.2.4000\lib\Net35\NHibernate.Validator.Specific.dll</HintPath>
     </Reference>
-    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+    <Reference Include="NLog">
       <HintPath>..\..\packages\NLog.4.3.5\lib\net45\NLog.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -379,11 +379,11 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Thinktecture.IdentityModel.Owin.ResourceAuthorization.WebApi.3.0.0\lib\net45\Thinktecture.IdentityModel.Owin.ResourceAuthorization.WebApi.dll</HintPath>
     </Reference>
-    <Reference Include="Topshelf, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
+    <Reference Include="Topshelf">
       <HintPath>..\..\packages\Topshelf.4.0.1\lib\net452\Topshelf.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Topshelf.Log4Net, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
+    <Reference Include="Topshelf.Log4Net">
       <HintPath>..\..\packages\Topshelf.Log4Net.4.0.1\lib\net452\Topshelf.Log4Net.dll</HintPath>
       <Private>True</Private>
     </Reference>

@@ -3,14 +3,33 @@ bin
 obj
 *.dbmdl
 *.user
-dist/
-packages/
-/*.suo
-*.lnk
-/teamcityLog.log
-.vs/
-
-node_modules
+/dist/*
+/packages/*
+**.suo
+/*.log
+/deploy/*
 *ncrunchsolution
 *ncrunchproject
-_NCrunch_*
+*_NCrunch*
+node_modules/
+/.vs
+/.build
+_ReSharper.Caches/*
+
+# NUNIT
+*.VisualState.xml
+TestResult.xml
+
+# Others
+*.[Cc]ache
+ClientBin/
+[Ss]tyle[Cc]op.*
+~$*
+*~
+*.dbproj.schemaview
+*.publishsettings
+bower_components/
+
+# NCrunch
+*_NCrunch_*
+.*crunch*.local.xml
