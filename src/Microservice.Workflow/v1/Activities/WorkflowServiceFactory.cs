@@ -133,21 +133,28 @@ namespace Microservice.Workflow.v1.Activities
         {
             using (var crmClient = clientFactory.Create("crm"))
             {
-                HttpResponse<Dictionary<string, object>> userInfoResponse = null;
-                var userInfoTask = crmClient.UsingPolicy(HttpClientPolicy.Retry).SendAsync(c => c.Get<Dictionary<string, object>>(string.Format(Uris.Crm.GetUserInfoByUserId, userId)))
-                    .ContinueWith(t =>
-                    {
-                        t.OnException(status => { throw new HttpClientException(status); });
-                        userInfoResponse = t.Result;
-                    });
+                try
+                {
+                    HttpResponse<Dictionary<string, object>> userInfoResponse = null;
+                    var userInfoTask = crmClient.UsingPolicy(HttpClientPolicy.Retry).SendAsync(c => c.Get<Dictionary<string, object>>(string.Format(Uris.Crm.GetUserInfoByUserId, userId)))
+                        .ContinueWith(t =>
+                        {
+                            t.OnNotFound(() => { throw new TemplatePermissionsException(); });
+                            t.OnException(status => { throw new HttpClientException(status); });
+                            userInfoResponse = t.Result;
+                        });
 
-                userInfoTask.Wait();
+                    userInfoTask.Wait();
+                    var claims = userInfoResponse.Resource;
 
-                var claims = userInfoResponse.Resource;
+                    Check.IsTrue(claims.ContainsKey(IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.PartyId), "Couldn't retrieve party id claim for user id {0}", userId);
 
-                Check.IsTrue(claims.ContainsKey(IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.PartyId), "Couldn't retrieve party id claim for user id {0}", userId);
-
-                return int.Parse(claims[IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.PartyId].ToString());
+                    return int.Parse(claims[IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.PartyId].ToString());
+                }
+                catch (AggregateException ex)
+                {
+                    throw ex.InnerException;
+                }
             }
         }
 
