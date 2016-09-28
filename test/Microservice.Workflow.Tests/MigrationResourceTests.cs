@@ -11,6 +11,7 @@ using IntelliFlo.Platform.NHibernate.Repositories;
 using Microservice.Workflow.Collaborators.v1;
 using Microservice.Workflow.Domain;
 using Microservice.Workflow.Engine;
+using Microservice.Workflow.Modules;
 using Microservice.Workflow.v1;
 using Microservice.Workflow.v1.Activities;
 using Microservice.Workflow.v1.Resources;
@@ -40,6 +41,7 @@ namespace Microservice.Workflow.Tests
         private Mock<IEventDispatcher> eventDispatcher;
         private Mock<IServiceAddressRegistry> addressRegistry;
         private Mock<IServiceEndpoint> serviceEndpoint;
+        private IInstanceResource instanceResource;
         private const int UserId = 123;
         private const int TenantId = 111;
         private const int TemplateId = 1;
@@ -54,6 +56,7 @@ namespace Microservice.Workflow.Tests
             templateDefinitionRepository = new Mock<IRepository<TemplateDefinition>>();
             instanceHistoryRepository = new Mock<IRepository<InstanceHistory>>();
             instanceStepRepository = new Mock<IReadOnlyRepository<InstanceStep>>();
+            
 
             serviceEndpoint = new Mock<IServiceEndpoint>();
             serviceEndpoint.SetupGet(s => s.BaseAddress).Returns("http://localhost:10111");
@@ -72,6 +75,8 @@ namespace Microservice.Workflow.Tests
             client.Setup(c => c.Get<Dictionary<string, object>>(string.Format(Uris.Crm.GetUserInfoByUserId, UserId), null)).Returns(() => Task.FromResult(new HttpResponse<Dictionary<string, object>>() {Raw = new HttpResponseMessage(HttpStatusCode.OK), Resource = new Dictionary<string, object> {{IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.Subject, Guid.NewGuid()}}}));
 
             tokenBuilder = new Mock<ITrustedClientAuthenticationTokenBuilder>();
+
+            instanceResource = new InstanceResource(instanceRepository.Object, templateDefinitionRepository.Object, instanceHistoryRepository.Object, workflowHost.Object, instanceStepRepository.Object, tokenBuilder.Object);
 
             var template = new Template("MyTest", TenantId, new TemplateCategory("Test", TenantId), WorkflowRelatedTo.Client, UserId);
             template.AddStep(new CreateTaskStep(stepOneGuid, TaskTransition.Immediately, 123, null));
@@ -94,7 +99,9 @@ namespace Microservice.Workflow.Tests
             templateRepository.Setup(t => t.Get(TemplateId)).Returns(template);
             templateRepository.Setup(t => t.Query()).Returns(new[] { template }.AsQueryable());
 
-            underTest = new MigrationResource(templateRepository.Object, templateDefinitionRepository.Object, instanceRepository.Object, instanceStepRepository.Object, addressRegistry.Object, clientFactory.Object, tokenBuilder.Object, workflowHost.Object, eventDispatcher.Object, instanceHistoryRepository.Object);
+            underTest = new MigrationResource(templateRepository.Object, templateDefinitionRepository.Object, instanceRepository.Object, instanceStepRepository.Object, addressRegistry.Object, clientFactory.Object, tokenBuilder.Object, workflowHost.Object, eventDispatcher.Object, instanceHistoryRepository.Object, instanceResource);
+
+            new WorkflowAutoMapperModule().Load();
         }
 
         [Test]
@@ -124,6 +131,7 @@ namespace Microservice.Workflow.Tests
             });
             instanceSteps.Add(new InstanceStep()
             {
+                StepId = stepOneGuid,
                 InstanceId = instance.Id,
                 Step = StepName.CreateTask.ToString(),
                 Data = new[]
@@ -136,6 +144,7 @@ namespace Microservice.Workflow.Tests
             });
             instanceSteps.Add(new InstanceStep()
             {
+                StepId = stepTwoGuid,
                 InstanceId = instance.Id,
                 Step = StepName.CreateTask.ToString(),
                 Data = new[]
@@ -148,7 +157,7 @@ namespace Microservice.Workflow.Tests
             var ctx = MigrateInstance();
 
             var runToContext = JsonConvert.DeserializeObject<AdditionalContext>(ctx.AdditionalContext);
-            Assert.AreEqual(1, runToContext.RunTo.StepIndex);
+            Assert.AreEqual(stepTwoGuid, runToContext.RunTo.StepId);
             Assert.AreEqual(234, runToContext.RunTo.TaskId);
         }
 
@@ -162,6 +171,7 @@ namespace Microservice.Workflow.Tests
             });
             instanceSteps.Add(new InstanceStep()
             {
+                StepId = stepOneGuid,
                 InstanceId = instance.Id,
                 Step = StepName.CreateTask.ToString(),
                 Data = new[]
@@ -175,6 +185,7 @@ namespace Microservice.Workflow.Tests
             instanceSteps.Add(new InstanceStep()
             {
                 InstanceId = instance.Id,
+                StepId = stepTwoGuid,
                 Step = StepName.Delay.ToString(),
                 Data = new[]
                 {
@@ -186,7 +197,7 @@ namespace Microservice.Workflow.Tests
             var ctx = MigrateInstance();
 
             var runToContext = JsonConvert.DeserializeObject<AdditionalContext>(ctx.AdditionalContext);
-            Assert.AreEqual(1, runToContext.RunTo.StepIndex);
+            Assert.AreEqual(stepTwoGuid, runToContext.RunTo.StepId);
             Assert.AreEqual(new DateTime(2015, 7, 7, 14, 22, 0, DateTimeKind.Utc), runToContext.RunTo.DelayTime);
         }
         

@@ -45,6 +45,7 @@ namespace Microservice.Workflow.v1.Contracts
                 {
                     RunTo = new RunToAdditionalContext()
                     {
+                        StepId = RunTo.StepId,
                         StepIndex = RunTo.StepIndex,
                         TaskId = RunTo.TaskId,
                         DelayTime = RunTo.DelayTime
@@ -55,6 +56,7 @@ namespace Microservice.Workflow.v1.Contracts
 
         public class RunToDefinition
         {
+            public Guid? StepId { get; set; }
             public int StepIndex { get; set; }
             public int? TaskId { get; set; }
             public DateTime? DelayTime { get; set; }

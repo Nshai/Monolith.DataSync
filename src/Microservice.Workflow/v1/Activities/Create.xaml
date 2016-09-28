@@ -276,8 +276,8 @@
         </InArgument>
       </If.Condition>
       <If.Then>
-        <Sequence>
-          <local1:WorkflowStep Step="{x:Null}" StepDetail="{x:Null}" StepId="{x:Null}" StepIndex="{x:Null}" EnableLogging="False">
+        <Sequence sap2010:WorkflowViewState.IdRef="Sequence_5">
+          <local1:WorkflowStep Step="{x:Null}" StepDetail="{x:Null}" StepId="{x:Null}" StepIndex="{x:Null}" EnableLogging="False" sap2010:WorkflowViewState.IdRef="WorkflowStep_1">
             <local1:WorkflowStep.Context>
               <InArgument x:TypeArguments="local:WorkflowContext">
                 <mca:CSharpValue x:TypeArguments="local:WorkflowContext">Context</mca:CSharpValue>
@@ -291,7 +291,7 @@
               </local1:ScheduleDelayUntilStep.ExpiryDateUtc>
               <local1:ScheduleDelayUntilStep.StepId>
                 <InArgument x:TypeArguments="s:Guid">
-                  <mca:CSharpValue x:TypeArguments="s:Guid">new Guid("c68f0604-4504-450f-a50a-ef36d37f8bb1")</mca:CSharpValue>
+                  <mca:CSharpValue x:TypeArguments="s:Guid">WorkflowConstants.DelayStartId</mca:CSharpValue>
                 </InArgument>
               </local1:ScheduleDelayUntilStep.StepId>
               <sap2010:WorkflowViewState.ViewStateManager>
@@ -309,13 +309,11 @@
                 </sap2010:ViewStateManager>
               </sap2010:WorkflowViewState.ViewStateManager>
             </local1:ScheduleDelayUntilStep>
-            <sap2010:WorkflowViewState.IdRef>WorkflowStep_1</sap2010:WorkflowViewState.IdRef>
           </local1:WorkflowStep>
-          <sap2010:WorkflowViewState.IdRef>Sequence_5</sap2010:WorkflowViewState.IdRef>
         </Sequence>
       </If.Then>
     </If>
-    <sads:DebugSymbol.Symbol>d1FDOlxXb3JrXE1pY3Jvc2VydmljZS5Xb3JrZmxvd1xzcmNcTWljcm9zZXJ2aWNlLldvcmtmbG93XHYxXEFjdGl2aXRpZXNcQ3JlYXRlLnhhbWwhlwEDvwIOAgEBnAEFjwIMAgEkkAIFvQIKAgECnQEHzQEUAgFpzgEHjgIUAgElkwILkwJsAgEDlwIJuwIUAgEKnwELpQEYAwGIAacBCcwBFAIBatABC98BGAIBWuEBCY0CFAIBJpgCC7kCIQIBC6IBEaIBawMBiQGoAQvLASUCAWvcARHcAWsCAWLVARXVAWUCAVviAQuFAiUCAT2GAguMAhoCASeYAnuYAoIBAgETmwIRmwJjAgEMngINtwItAgEUugERugFbAwGBAbUBEbUBVwIBeqsBEasBYwIBc7ABEbABXwIBbPQBEfQBWwIBU+8BEe8BVwIBTOUBEeUBYwIBReoBEeoBXwIBPokCEYkCVwIBKJ4CxQGeAskBAgEjoQIToQJgAgEcpgITpgJ/AgEV</sads:DebugSymbol.Symbol>
+    <sads:DebugSymbol.Symbol>d1FDOlxXb3JrXE1pY3Jvc2VydmljZS5Xb3JrZmxvd1xzcmNcTWljcm9zZXJ2aWNlLldvcmtmbG93XHYxXEFjdGl2aXRpZXNcQ3JlYXRlLnhhbWwhlwEDvQIOAgEBnAEFjwIMAgEkkAIFuwIKAgECnQEHzQEUAgFpzgEHjgIUAgElkwILkwJsAgEDlwIJuQIUAgEKnwELpQEYAwGIAacBCcwBFAIBatABC98BGAIBWuEBCY0CFAIBJpgCC7gCIQIBC6IBEaIBawMBiQGoAQvLASUCAWvcARHcAWsCAWLVARXVAWUCAVviAQuFAiUCAT2GAguMAhoCASeYAnuYAoIBAgETmwIRmwJjAgEMngINtwItAgEUugERugFbAwGBAbUBEbUBVwIBeqsBEasBYwIBc7ABEbABXwIBbPQBEfQBWwIBU+8BEe8BVwIBTOUBEeUBYwIBReoBEeoBXwIBPokCEYkCVwIBKJ4CxQGeAskBAgEjoQIToQJgAgEcpgITpgJtAgEV</sads:DebugSymbol.Symbol>
   </Sequence>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>

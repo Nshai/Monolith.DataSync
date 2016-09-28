@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Security.Claims;
 using System.Threading;
+using IntelliFlo.Platform.Identity;
 using IntelliFlo.Platform.NHibernate.Repositories;
 using IntelliFlo.Platform.Principal;
 using Microservice.Workflow.Domain;
@@ -21,8 +22,10 @@ namespace Microservice.Workflow.Tests
         private Mock<IReadOnlyRepository<Instance>> instanceRepository;
         private Mock<IRepository<TemplateDefinition>> templateDefinitionRepository;
         private Mock<IRepository<InstanceHistory>> instanceHistoryRepository;
+        private Mock<IRepository<InstanceStep>> instanceStepRepository;
         private Mock<IDynamicWorkflow> dynamicWorkflow;
         private Mock<IWorkflowHost> workflowHost;
+        private Mock<ITrustedClientAuthenticationTokenBuilder> trustedClientTokenBuilder;
         private IInstanceResource underTest;
         private Instance instance;
         private readonly Guid instanceId = Guid.NewGuid();
@@ -36,6 +39,8 @@ namespace Microservice.Workflow.Tests
             instanceRepository = new Mock<IReadOnlyRepository<Instance>>();
             instanceHistoryRepository = new Mock<IRepository<InstanceHistory>>();
             templateDefinitionRepository = new Mock<IRepository<TemplateDefinition>>();
+            instanceStepRepository = new Mock<IRepository<InstanceStep>>();
+            trustedClientTokenBuilder = new Mock<ITrustedClientAuthenticationTokenBuilder>();
             dynamicWorkflow = new Mock<IDynamicWorkflow>();
             workflowHost = new Mock<IWorkflowHost>();
             
@@ -54,7 +59,7 @@ namespace Microservice.Workflow.Tests
             identity.AddClaim(new Claim(Constants.ApplicationClaimTypes.Subject, Guid.NewGuid().ToString()));
             Thread.CurrentPrincipal = new IntelliFloClaimsPrincipal(identity);
 
-            underTest = new InstanceResource(instanceRepository.Object, templateDefinitionRepository.Object, instanceHistoryRepository.Object, workflowHost.Object);
+            underTest = new InstanceResource(instanceRepository.Object, templateDefinitionRepository.Object, instanceHistoryRepository.Object, workflowHost.Object, instanceStepRepository.Object, trustedClientTokenBuilder.Object);
 
             new WorkflowAutoMapperModule().Load();
         }

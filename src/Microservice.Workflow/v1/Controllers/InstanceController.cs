@@ -78,6 +78,33 @@ namespace Microservice.Workflow.v1.Controllers
         }
 
         [HttpPost]
+        [Route("{instanceId}/restart")]
+        public IHttpActionResult<InstanceDocument> Restart(Guid instanceId)
+        {
+            try
+            {
+                var newInstance = instanceResource.Restart(instanceId);
+                return Request.CreateTypedResult(HttpStatusCode.Created, newInstance);
+            }
+            catch (ServerTooBusyException ex)
+            {
+                return Request.CreateTypedResult<InstanceDocument>(HttpStatusCode.ServiceUnavailable, ex.Message);
+            }
+            catch (InstanceNotFoundException)
+            {
+                throw new EntityNotFoundException("Instance not found");
+            }
+            catch (InstancePermissionsException)
+            {
+                throw new ForbiddenException("Not permitted to restart this instance");
+            }
+            catch (InstanceNotRestartableException)
+            {
+                return Request.CreateTypedResult<InstanceDocument>(HttpStatusCode.BadRequest, "Instance not restartable");
+            }
+        }
+
+        [HttpPost]
         [Route("{instanceId}/unsuspend")]
         public NoContentActionResult Unsuspend(Guid instanceId)
         {

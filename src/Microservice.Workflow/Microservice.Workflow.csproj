@@ -395,6 +395,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Domain\InstanceNotRestartableException.cs" />
     <Compile Include="Host\BusStartup.cs" />
     <Compile Include="Host\WorkflowScopes.cs" />
     <Compile Include="Messaging\MessageHandlers\ResumeInstanceMessageHandler.cs" />

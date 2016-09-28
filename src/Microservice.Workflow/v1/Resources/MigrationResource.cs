@@ -7,28 +7,20 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
 using AutoMapper;
-using IntelliFlo.Platform;
-using IntelliFlo.Platform.Bus;
-using IntelliFlo.Platform.Bus.Scheduler;
 using IntelliFlo.Platform.Http;
 using IntelliFlo.Platform.Http.Client;
 using IntelliFlo.Platform.Identity;
 using IntelliFlo.Platform.NHibernate.Repositories;
-using IntelliFlo.Platform.Principal;
 using IntelliFlo.Platform.Transactions;
 using Microservice.Workflow.Collaborators.v1;
 using Microservice.Workflow.Domain;
 using Microservice.Workflow.Engine;
-using Microservice.Workflow.Messaging.Messages;
 using Microservice.Workflow.v1.Activities;
 using Microservice.Workflow.v1.Contracts;
 using Newtonsoft.Json;
 using NHibernate.Criterion;
 using Check = IntelliFlo.Platform.Check;
-using Constants = IntelliFlo.Platform.Http.Client.Constants;
-using DelayStep = Microservice.Workflow.Domain.DelayStep;
 using Instance = Microservice.Workflow.Domain.Instance;
-using InstanceStatus = Microservice.Workflow.Domain.InstanceStatus;
 
 namespace Microservice.Workflow.v1.Resources
 {
@@ -44,8 +36,9 @@ namespace Microservice.Workflow.v1.Resources
         private readonly IWorkflowHost workflowHost;
         private readonly IEventDispatcher eventDispatcher;
         private readonly IRepository<InstanceHistory> instanceHistoryRepository;
+        private readonly IInstanceResource instanceResource;
 
-        public MigrationResource(IRepository<Template> templateRepository, IRepository<TemplateDefinition> templateDefinitionRepository, IReadOnlyRepository<Instance> instanceRepository, IReadOnlyRepository<InstanceStep> instanceStepRepository, IServiceAddressRegistry serviceAddressRegistry, IHttpClientFactory clientFactory, ITrustedClientAuthenticationTokenBuilder tokenBuilder, IWorkflowHost workflowHost, IEventDispatcher eventDispatcher, IRepository<InstanceHistory> instanceHistoryRepository)
+        public MigrationResource(IRepository<Template> templateRepository, IRepository<TemplateDefinition> templateDefinitionRepository, IReadOnlyRepository<Instance> instanceRepository, IReadOnlyRepository<InstanceStep> instanceStepRepository, IServiceAddressRegistry serviceAddressRegistry, IHttpClientFactory clientFactory, ITrustedClientAuthenticationTokenBuilder tokenBuilder, IWorkflowHost workflowHost, IEventDispatcher eventDispatcher, IRepository<InstanceHistory> instanceHistoryRepository, IInstanceResource instanceResource)
         {
             this.templateRepository = templateRepository;
             this.templateDefinitionRepository = templateDefinitionRepository;
@@ -57,6 +50,7 @@ namespace Microservice.Workflow.v1.Resources
             this.workflowHost = workflowHost;
             this.eventDispatcher = eventDispatcher;
             this.instanceHistoryRepository = instanceHistoryRepository;
+            this.instanceResource = instanceResource;
         }
 
         public PagedResult<TemplateMigrationDocument> GetTemplates(string query, IDictionary<string, object> routeValues)
@@ -150,33 +144,6 @@ namespace Microservice.Workflow.v1.Resources
             return new TemplateMigrationResponse() {Id = templateId, Status = MigrationStatus.Success.ToString()};
         }
 
-        private void FixInstanceHistoryStepIds(Instance instance)
-        {
-            var template = templateRepository.Query().SingleOrDefault(t => t.Guid == instance.Template.Id);
-            var instanceHistory = instanceHistoryRepository.Query().Where(i => i.InstanceId == instance.Id).ToList();
-            var templateStepIds = template.Steps.Select(s => s.Id);
-
-            int stepIndex = 0;
-            var instanceSteps = instanceStepRepository.Query().Where(i => i.InstanceId == instance.Id).OrderBy(s => s.StepIndex);
-            foreach (var instanceStep in instanceSteps)
-            {
-                if (!new[] { StepName.CreateTask.ToString(), StepName.Delay.ToString() }.Contains(instanceStep.Step))
-                    continue;
-
-                if (templateStepIds.Contains(instanceStep.StepId))
-                    continue;
-
-                var newStepId = template.Steps.ElementAt(stepIndex).Id;
-                foreach (var instanceHistoryRecord in instanceHistory.Where(i => i.StepId == instanceStep.StepId))
-                {
-                    instanceHistoryRecord.StepId = newStepId;
-                    instanceHistoryRepository.Save(instanceHistoryRecord);
-                }
-
-                stepIndex++;
-            }
-        }
-
         [Transaction]
         public async Task<InstanceMigrationResponse> MigrateInstance(Guid instanceId)
         {
@@ -192,6 +159,10 @@ namespace Microservice.Workflow.v1.Resources
             if(templateDefinition.Version < TemplateDefinition.DefaultVersion)
                 return new InstanceMigrationResponse() { Id = instanceId, Status = MigrationStatus.Skipped.ToString(), Description = "Instance template was not migrated"};
 
+            var template = templateRepository.Query().SingleOrDefault(t => t.Guid == instance.Template.Id);
+            if (template == null)
+                throw new TemplateNotFoundException();
+
             var userSubject = await GetSubject(instance.UserId, instance.TenantId);
             var identity = new ClaimsIdentity(new[]
             {
@@ -203,83 +174,10 @@ namespace Microservice.Workflow.v1.Resources
             var principal = new ClaimsPrincipal(identity);
             using (Thread.CurrentPrincipal.AsDelegate(() => principal))
             {
-                var bearerToken = tokenBuilder.Build(DateTime.UtcNow, ClaimsPrincipal.Current);
-                var uri = GetEndpointAddress(instance.Template.Id);
-
-                // Resolve step index of current instance
-                var steps = GetInstanceSteps(instanceId).ToList();
-                var stepIndex = steps.Count() - 1;
-                var currentStep = steps.ElementAt(stepIndex);
-
-                CreateTaskLog taskDetail = null;
-                DelayLog delayDetail = null;
-                foreach (var stepData in currentStep.Data)
-                {
-                    if (currentStep.Step == StepName.CreateTask.ToString())
-                    {
-                        taskDetail = stepData.Detail as CreateTaskLog;
-                        if (taskDetail != null)
-                            break;
-                    }
-                    else if (currentStep.Step == StepName.Delay.ToString())
-                    {
-                        delayDetail = stepData.Detail as DelayLog;
-                        if (delayDetail != null)
-                            break;
-                    }
-                }
-
-                var delayedStart = false;
-                var startTime = DateTime.UtcNow;
-                if (stepIndex == 0 && currentStep.Step == StepName.Delay.ToString())
-                {
-                    var template = templateRepository.Query().Single(t => t.Guid == templateDefinition.Id);
-                    if (template.Steps[0].GetType() != typeof (DelayStep))
-                    {
-                        startTime = delayDetail.DelayUntil;
-                        delayedStart = true;
-                    }
-                }
-
-                var additionalContext = string.Empty;
-                if (!delayedStart)
-                {
-                    additionalContext = JsonConvert.SerializeObject(new AdditionalContext
-                    {
-                        RunTo = new RunToAdditionalContext
-                        {
-                            StepIndex = stepIndex,
-                            TaskId = taskDetail?.TaskId,
-                            DelayTime = delayDetail?.DelayUntil
-                        }
-                    });
-                }
-                else
-                {
-                    additionalContext = JsonConvert.SerializeObject(new AdditionalContext
-                    {
-                        RunTo = new RunToAdditionalContext
-                        {
-                            StepIndex = -1
-                        }
-                    });
-                }
-
-                Guid? newInstanceId = workflowHost.Create(templateDefinition, new WorkflowContext
-                {
-                    EntityType = instance.EntityType,
-                    EntityId = instance.EntityId,
-                    ClientId = instance.ParentEntityId,
-                    CorrelationId = instance.Id,
-                    RelatedEntityId = instance.RelatedEntityId,
-                    BearerToken = bearerToken,
-                    Start = startTime,
-                    AdditionalContext = additionalContext,
-                    PreventDuplicates = false
-                });
+                var newInstance = instanceResource.Restart(instanceId, false);
                 
                 // TODO Merge instance history from old instance
-                instanceRepository.ExecuteStoredProcedure<object>("workflow.dbo.SpNMigrationMergeInstances", new[] {new Parameter("InstanceId", instanceId), new Parameter("NewInstanceId", newInstanceId.Value)});
+                instanceRepository.ExecuteStoredProcedure<object>("workflow.dbo.SpNMigrationMergeInstances", new[] {new Parameter("InstanceId", instanceId), new Parameter("NewInstanceId", newInstance.Id)});
 
                 return new InstanceMigrationResponse() {Id = instanceId, Status = MigrationStatus.Success.ToString()};
             }
@@ -306,23 +204,6 @@ namespace Microservice.Workflow.v1.Resources
 
                 return Guid.Parse(claims[IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.Subject].ToString());
             }
-        }
-
-        private IEnumerable<InstanceStep> GetInstanceSteps(Guid instanceId)
-        {
-            return instanceStepRepository.Query().Where(i => i.InstanceId == instanceId && i.Step != StepName.Created.ToString()).OrderBy(i => i.StepIndex);
-        }
-
-        private string GetEndpointAddress(Guid templateId, string relativeUri = null)
-        {
-            var workflowEndpointAddress = serviceAddressRegistry.GetServiceEndpoint("workflow").BaseAddress;
-            var uri = new UriBuilder(workflowEndpointAddress);
-            uri.Path += string.Format("{0}.xamlx", templateId);
-            if (!string.IsNullOrEmpty(relativeUri))
-            {
-                uri.Path += string.Format("/{0}", relativeUri);
-            }
-            return uri.Uri.AbsoluteUri;
         }
     }
 }

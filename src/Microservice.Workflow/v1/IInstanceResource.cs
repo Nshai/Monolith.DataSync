@@ -13,5 +13,6 @@ namespace Microservice.Workflow.v1
         InstanceDocument Abort(Guid instanceId);
         InstanceDocument Unsuspend(Guid instanceId);
 
+        InstanceDocument Restart(Guid instanceId, bool onlyAbortedInstances = true);
     }
 }

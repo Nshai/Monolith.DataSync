@@ -8,6 +8,7 @@
         Delay,
         Errored,
         Aborted,
-        Completed
+        Completed,
+        Restarted
     }
 }
