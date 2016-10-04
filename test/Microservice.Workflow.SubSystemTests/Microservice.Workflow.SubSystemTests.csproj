@@ -71,7 +71,7 @@
       <HintPath>..\..\packages\Iesi.Collections.3.2.0.4000\lib\Net35\Iesi.Collections.dll</HintPath>
     </Reference>
     <Reference Include="IntelliFlo.Platform">
-      <HintPath>..\..\packages\IntelliFlo.Platform.0.3.348\lib\net452\IntelliFlo.Platform.dll</HintPath>
+      <HintPath>..\..\packages\IntelliFlo.Platform.0.3.354\lib\net452\IntelliFlo.Platform.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="IntelliFlo.Platform.Client">
@@ -79,11 +79,11 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="IntelliFlo.Platform.NHibernate">
-      <HintPath>..\..\packages\IntelliFlo.Platform.NHibernate.0.3.348\lib\net452\IntelliFlo.Platform.NHibernate.dll</HintPath>
+      <HintPath>..\..\packages\IntelliFlo.Platform.NHibernate.0.3.354\lib\net452\IntelliFlo.Platform.NHibernate.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="IntelliFlo.Platform.Security">
-      <HintPath>..\..\packages\IntelliFlo.Platform.Security.0.3.348\lib\net452\IntelliFlo.Platform.Security.dll</HintPath>
+      <HintPath>..\..\packages\IntelliFlo.Platform.Security.0.3.354\lib\net452\IntelliFlo.Platform.Security.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="log4net">

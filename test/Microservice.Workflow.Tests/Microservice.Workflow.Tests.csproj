@@ -122,19 +122,19 @@
       <HintPath>..\..\packages\Iesi.Collections.3.2.0.4000\lib\Net35\Iesi.Collections.dll</HintPath>
     </Reference>
     <Reference Include="IntelliFlo.Platform">
-      <HintPath>..\..\packages\IntelliFlo.Platform.0.3.348\lib\net452\IntelliFlo.Platform.dll</HintPath>
+      <HintPath>..\..\packages\IntelliFlo.Platform.0.3.354\lib\net452\IntelliFlo.Platform.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="IntelliFlo.Platform.AutoMapper">
-      <HintPath>..\..\packages\IntelliFlo.Platform.AutoMapper.0.3.348\lib\net452\IntelliFlo.Platform.AutoMapper.dll</HintPath>
+      <HintPath>..\..\packages\IntelliFlo.Platform.AutoMapper.0.3.354\lib\net452\IntelliFlo.Platform.AutoMapper.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="IntelliFlo.Platform.Bus">
-      <HintPath>..\..\packages\IntelliFlo.Platform.Bus.0.3.348\lib\net452\IntelliFlo.Platform.Bus.dll</HintPath>
+      <HintPath>..\..\packages\IntelliFlo.Platform.Bus.0.3.354\lib\net452\IntelliFlo.Platform.Bus.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="IntelliFlo.Platform.Caching">
-      <HintPath>..\..\packages\IntelliFlo.Platform.Caching.0.3.348\lib\net452\IntelliFlo.Platform.Caching.dll</HintPath>
+      <HintPath>..\..\packages\IntelliFlo.Platform.Caching.0.3.354\lib\net452\IntelliFlo.Platform.Caching.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="IntelliFlo.Platform.Client">
@@ -146,15 +146,15 @@
       <HintPath>..\..\packages\IntelliFlo.Platform.Client.OData.0.2.235\lib\net451\IntelliFlo.Platform.Client.OData.dll</HintPath>
     </Reference>
     <Reference Include="IntelliFlo.Platform.Database">
-      <HintPath>..\..\packages\IntelliFlo.Platform.Database.0.3.348\lib\net452\IntelliFlo.Platform.Database.dll</HintPath>
+      <HintPath>..\..\packages\IntelliFlo.Platform.Database.0.3.354\lib\net452\IntelliFlo.Platform.Database.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="IntelliFlo.Platform.Events">
-      <HintPath>..\..\packages\IntelliFlo.Platform.Events.0.3.348\lib\net452\IntelliFlo.Platform.Events.dll</HintPath>
+      <HintPath>..\..\packages\IntelliFlo.Platform.Events.0.3.354\lib\net452\IntelliFlo.Platform.Events.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="IntelliFlo.Platform.Http">
-      <HintPath>..\..\packages\IntelliFlo.Platform.Http.0.3.348\lib\net452\IntelliFlo.Platform.Http.dll</HintPath>
+      <HintPath>..\..\packages\IntelliFlo.Platform.Http.0.3.354\lib\net452\IntelliFlo.Platform.Http.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="IntelliFlo.Platform.Http.Documentation">
@@ -166,24 +166,24 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="IntelliFlo.Platform.Logging">
-      <HintPath>..\..\packages\IntelliFlo.Platform.Logging.0.3.348\lib\net452\IntelliFlo.Platform.Logging.dll</HintPath>
+      <HintPath>..\..\packages\IntelliFlo.Platform.Logging.0.3.354\lib\net452\IntelliFlo.Platform.Logging.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="IntelliFlo.Platform.MicroService">
-      <HintPath>..\..\packages\IntelliFlo.Platform.MicroService.0.3.256\lib\net452\IntelliFlo.Platform.MicroService.dll</HintPath>
+      <HintPath>..\..\packages\IntelliFlo.Platform.MicroService.0.3.258\lib\net452\IntelliFlo.Platform.MicroService.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="IntelliFlo.Platform.NHibernate">
-      <HintPath>..\..\packages\IntelliFlo.Platform.NHibernate.0.3.348\lib\net452\IntelliFlo.Platform.NHibernate.dll</HintPath>
+      <HintPath>..\..\packages\IntelliFlo.Platform.NHibernate.0.3.354\lib\net452\IntelliFlo.Platform.NHibernate.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="IntelliFlo.Platform.Security">
-      <HintPath>..\..\packages\IntelliFlo.Platform.Security.0.3.348\lib\net452\IntelliFlo.Platform.Security.dll</HintPath>
+      <HintPath>..\..\packages\IntelliFlo.Platform.Security.0.3.354\lib\net452\IntelliFlo.Platform.Security.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="IntelliFlo.Platform.Testing">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\IntelliFlo.Platform.Testing.0.3.348\lib\net452\IntelliFlo.Platform.Testing.dll</HintPath>
+      <HintPath>..\..\packages\IntelliFlo.Platform.Testing.0.3.354\lib\net452\IntelliFlo.Platform.Testing.dll</HintPath>
     </Reference>
     <Reference Include="IntelliFlo.PowerShell.DevLib">
       <HintPath>..\..\packages\IntelliFlo.PowerShell.DevLib.0.0.3.0\lib\net45\IntelliFlo.PowerShell.DevLib.dll</HintPath>
