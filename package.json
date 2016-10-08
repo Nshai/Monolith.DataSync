@@ -15,5 +15,8 @@
     "object-assign-deep": "0.0.4",
     "require-dir": "^0.3.0",
     "sprintf-js": "^1.0.3"
+  },
+  "dependencies": {
+    "gulp": "git+https://github.com/gulpjs/gulp.git#4.0"
   }
 }

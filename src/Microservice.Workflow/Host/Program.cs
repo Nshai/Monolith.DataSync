@@ -19,7 +19,7 @@ namespace Microservice.Workflow.Host
                 host.Configure(out options)
                     .Service<DefaultMicroService>(service =>
                     {
-                        service.ConstructUsing(() => new DefaultMicroService(Settings.Default)
+                        service.ConstructUsing(() => new DefaultMicroService(Settings.Default, options)
                             .WithContainer(s => new ContainerStartup(s))
                             .WithApi(s => new ApiStartup())
                             .WithDb(s => new DefaultDbStartup(s, options))
@@ -32,6 +32,7 @@ namespace Microservice.Workflow.Host
                 host.SetDisplayName("Microservice.Workflow");
                 host.SetServiceName("Microservice.Workflow");
 
+                host.ConfigureServiceRecovery();
                 host.RunAsNetworkService();
             });
         }

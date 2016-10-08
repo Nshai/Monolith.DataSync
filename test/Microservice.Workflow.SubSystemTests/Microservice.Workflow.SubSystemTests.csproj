@@ -70,20 +70,20 @@
     <Reference Include="Iesi.Collections">
       <HintPath>..\..\packages\Iesi.Collections.3.2.0.4000\lib\Net35\Iesi.Collections.dll</HintPath>
     </Reference>
-    <Reference Include="IntelliFlo.Platform, Version=0.2.260.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\IntelliFlo.Platform.0.2.260\lib\net451\IntelliFlo.Platform.dll</HintPath>
+    <Reference Include="IntelliFlo.Platform">
+      <HintPath>..\..\packages\IntelliFlo.Platform.0.3.354\lib\net452\IntelliFlo.Platform.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.Client, Version=0.2.104.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\IntelliFlo.Platform.Client.0.2.104\lib\net451\IntelliFlo.Platform.Client.dll</HintPath>
+    <Reference Include="IntelliFlo.Platform.Client">
+      <HintPath>..\..\packages\IntelliFlo.Platform.Client.0.3.124\lib\net452\IntelliFlo.Platform.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.NHibernate, Version=0.2.260.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\IntelliFlo.Platform.NHibernate.0.2.260\lib\net451\IntelliFlo.Platform.NHibernate.dll</HintPath>
+    <Reference Include="IntelliFlo.Platform.NHibernate">
+      <HintPath>..\..\packages\IntelliFlo.Platform.NHibernate.0.3.354\lib\net452\IntelliFlo.Platform.NHibernate.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="IntelliFlo.Platform.Security, Version=0.2.260.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\IntelliFlo.Platform.Security.0.2.260\lib\net451\IntelliFlo.Platform.Security.dll</HintPath>
+    <Reference Include="IntelliFlo.Platform.Security">
+      <HintPath>..\..\packages\IntelliFlo.Platform.Security.0.3.354\lib\net452\IntelliFlo.Platform.Security.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="log4net">
@@ -93,7 +93,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Metrics.NET.0.2.16\lib\net45\Metrics.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.Owin">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
     </Reference>
@@ -101,20 +101,20 @@
       <HintPath>..\..\packages\Microsoft.Owin.Hosting.3.0.1\lib\net45\Microsoft.Owin.Hosting.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Owin.Security">
-      <HintPath>..\..\packages\Microsoft.Owin.Security.3.0.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+      <HintPath>..\..\packages\Microsoft.Owin.Security.3.0.1\lib\net45\Microsoft.Owin.Security.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Owin.Security.Jwt">
-      <HintPath>..\..\packages\Microsoft.Owin.Security.Jwt.3.0.0\lib\net45\Microsoft.Owin.Security.Jwt.dll</HintPath>
+      <HintPath>..\..\packages\Microsoft.Owin.Security.Jwt.3.0.1\lib\net45\Microsoft.Owin.Security.Jwt.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Owin.Security.OAuth">
-      <HintPath>..\..\packages\Microsoft.Owin.Security.OAuth.3.0.0\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
+      <HintPath>..\..\packages\Microsoft.Owin.Security.OAuth.3.0.1\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Owin.Testing">
       <HintPath>..\..\packages\Microsoft.Owin.Testing.3.0.1\lib\net45\Microsoft.Owin.Testing.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+    <Reference Include="Newtonsoft.Json">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NHibernate">
       <HintPath>..\..\packages\NHibernate.3.3.1.4000\lib\Net35\NHibernate.dll</HintPath>
@@ -135,8 +135,8 @@
     <Reference Include="Owin">
       <HintPath>..\..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
-    <Reference Include="Reassure, Version=1.2.115.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Reassure.1.2.115\lib\net451\Reassure.dll</HintPath>
+    <Reference Include="Reassure">
+      <HintPath>..\..\packages\Reassure.1.2.135\lib\net451\Reassure.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Reassure.IntellifloExtensions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">

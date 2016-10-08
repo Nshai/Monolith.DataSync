@@ -60,10 +60,14 @@
 			<Output TaskParameter="Value" PropertyName="MinorNumber"/>
 		</CreateProperty>
 		<CreateProperty Value="$(Build.Split('.')[2])">
+			<Output TaskParameter="Value" PropertyName="PatchNumber"/>
+		</CreateProperty>
+		<CreateProperty Value="$(Build.Split('.')[3])">
 			<Output TaskParameter="Value" PropertyName="BuildNumber"/>
 		</CreateProperty>
 		<Message Text="MajorNumber: $(MajorNumber)" Importance="high"/>
 		<Message Text="MinorNumber: $(MinorNumber)" Importance="high"/>
+		<Message Text="BuildNumber: $(PatchNumber)" Importance="high"/>
 		<Message Text="BuildNumber: $(BuildNumber)" Importance="high"/>
 	</Target>
 	<Target Name="AssemblyInfoVersion" DependsOnTargets="SplitBuildVersionNumber">
@@ -75,16 +79,16 @@
 			AssemblyProduct="$(MicroserviceName)"
 			AssemblyCopyright="Copyright ©2015 IntelliFlo Ltd"
 			CLSCompliant="false"
-			AssemblyVersion="$(MajorNumber).$(MinorNumber).$(BuildNumber).0"
-			AssemblyFileVersion="$(MajorNumber).$(MinorNumber).$(BuildNumber).0" 
-			AssemblyInformationalVersion="$(MajorNumber).$(MinorNumber).$(BuildNumber).$(GitHash)"
+			AssemblyVersion="$(MajorNumber).$(MinorNumber).$(PatchNumber).$(BuildNumber)"
+			AssemblyFileVersion="$(MajorNumber).$(MinorNumber).$(PatchNumber).$(BuildNumber)" 
+			AssemblyInformationalVersion="$(MajorNumber).$(MinorNumber).$(PatchNumber).$(BuildNumber)"
 			/>
 	</Target>
 	<Target Name="Version" DependsOnTargets="AssemblyInfoVersion">
 		<ItemGroup>
-			<VersionFile Include="$(BuildFolder)\.version.\$(MajorNumber).$(MinorNumber).$(BuildNumber).$(GitHash)" />
+			<VersionFile Include="$(BuildFolder)\.version.\$(MajorNumber).$(MinorNumber).$(PatchNumber).$(BuildNumber)" />
 			<VersionExeFile Include="$(BuildFolder)\$(MicroserviceExe).version" />
-			<Line Include="line01"><Text>$(MajorNumber).$(MinorNumber).$(BuildNumber).$(GitHash)</Text></Line>
+			<Line Include="line01"><Text>$(MajorNumber).$(MinorNumber).$(PatchNumber).$(BuildNumber)</Text></Line>
 			<Lines Include="%(Line.Text)" />
 		</ItemGroup>	
 		<Message Text="Create Version file: @(VersionFile)" Importance="high"/>
