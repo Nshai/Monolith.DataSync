@@ -124,6 +124,7 @@
     <None Include="dbodata\Data\main\4.5-000010 IO-46251 Author system workflows.sql" />
     <Build Include="dbo\Views\dbo.vwInstance.sql" />
     <Build Include="dbo\Tables\dbo._EventLog.sql" />
+    <None Include="dbodata\Data\main\4.5-000011 IP-11258 Add template registration for sharing.sql" />
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>PowerShell -NoProfile -ExecutionPolicy Bypass -Command "&amp; '$(SolutionDir)packages\IntelliFlo.PowerShell.DevLib.0.0.3.0\content\zip-directory.ps1' -ZIPFILENAME '$(SolutionDir)dist\db-workflow.zip' -SOURCEDIR '$(ProjectDir)dbo\'
