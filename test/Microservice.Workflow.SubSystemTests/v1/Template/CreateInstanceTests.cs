@@ -18,11 +18,14 @@ namespace Microservice.Workflow.SubSystemTests.v1.Template
             var template = Test.Api().CreateTemplateWithExistingCategory(Config.User1);
             Test.Api()
                 .Given()
-                .OAuth2BearerToken(Config.User1.GetAccessToken())
-                .Header("Accept", "application/json")
-                .Body(JObject.Parse("{ EntityType: \"Client\", EntityId: 1 }"))
-                .When().Post<string>(string.Format("v1/templates/{0}/createinstance/ondemand", template.Id))
-                .Then().ExpectStatus(400).ExpectReasonPhrase("Template not active")
+                    .OAuth2BearerToken(Config.User1.GetAccessToken())
+                    .Header("Accept", "application/json")
+                    .Body(JObject.Parse("{ EntityType: \"Client\", EntityId: 1 }"))
+                .When()
+                    .Post<string>($"v1/templates/{template.Id}/createinstance/ondemand")
+                .Then()
+                    .ExpectStatus(400)
+                    .ExpectReasonPhrase("Template not active")
                 .Run();
         }
 
@@ -53,7 +56,7 @@ namespace Microservice.Workflow.SubSystemTests.v1.Template
                     .OAuth2BearerToken(Config.User1.GetAccessToken())
                     .Header("Accept", "application/json")
                     .Body(JObject.Parse("{ EntityType: \"Client\", EntityId: 1 }"))
-                    .When().Post<string>(string.Format("v1/templates/{0}/createinstance/ondemand", template.Id))
+                    .When().Post<string>($"v1/templates/{template.Id}/createinstance/ondemand")
                     .Then().ExpectStatus(204)
                     .Run();
 

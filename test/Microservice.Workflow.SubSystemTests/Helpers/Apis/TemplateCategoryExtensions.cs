@@ -12,8 +12,12 @@ namespace Microservice.Workflow.SubSystemTests.Helpers.Apis
         {
             var state = Test.Api()
                 .Given().OAuth2BearerToken(user.GetAccessToken()).Body(new CreateTemplateCategoryRequest() { Name = Guid.NewGuid().ToString() })
-                .When().Post<TemplateCategoryDocument>("v1/templatecategories")
-                .Then().ExpectStatus(200)
+                .When()
+                    .Post<TemplateCategoryDocument>("v1/templatecategories")
+                .Then()
+                    .ExpectStatus(200)
+                    .ExpectReasonPhrase("Created")
+                    .ExpectHeader("Content-Type", "application/json; charset=utf-8")
                 .Run();
 
             return state.Response.Body as TemplateCategoryDocument;
