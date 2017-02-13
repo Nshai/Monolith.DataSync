@@ -22,11 +22,15 @@ namespace Microservice.Workflow.SubSystemTests.v1.Template
             var template = Test.Api().CreateTemplateWithExistingCategory(Config.User1);
             Test.Api()
                 .Given()
-                .OAuth2BearerToken(Config.User1.GetAccessToken())
-                .Header("Accept", "application/json")
-                .Body(JObject.Parse(string.Format("{{ Name: \"{0}\" }}", Guid.NewGuid())))
-                .When().Post<TemplateDocument>(string.Format("v1/templates/{0}/clone", template.Id))
-                .Then().ExpectStatus(201)
+                    .OAuth2BearerToken(Config.User1.GetAccessToken())
+                    .Header("Accept", "application/json")
+                .Body(JObject.Parse($"{{ Name: \"{Guid.NewGuid()}\" }}"))
+                .When()
+                    .Post<TemplateDocument>($"v1/templates/{template.Id}/clone")
+                .Then()
+                    .ExpectStatus(201)
+                    .ExpectHeader("Content-Type", "application/json; charset=utf-8")
+                    .ExpectReasonPhrase("Created")
                 .Run();
         }
 
@@ -37,11 +41,14 @@ namespace Microservice.Workflow.SubSystemTests.v1.Template
             var template = Test.Api().CreateTemplateWithExistingCategory(Config.User1);
             Test.Api()
                 .Given()
-                .OAuth2BearerToken(Config.User1.GetAccessToken())
-                .Header("Accept", "application/json")
-                .Body(JObject.Parse($"{{ Name: \"{template.Name}\" }}"))
-                .When().Post<TemplateDocument>(string.Format("v1/templates/{0}/clone", template.Id))
-                .Then().ExpectStatus(400).ExpectReasonPhrase("Template name must be unique")
+                    .OAuth2BearerToken(Config.User1.GetAccessToken())
+                    .Header("Accept", "application/json")
+                    .Body(JObject.Parse($"{{ Name: \"{template.Name}\" }}"))
+                .When()
+                    .Post<TemplateDocument>($"v1/templates/{template.Id}/clone")
+                .Then()
+                    .ExpectStatus(400)
+                    .ExpectReasonPhrase("Template name must be unique")
                 .Run();
         }
 
@@ -51,11 +58,14 @@ namespace Microservice.Workflow.SubSystemTests.v1.Template
         {
             Test.Api()
                 .Given()
-                .OAuth2BearerToken(Config.User1.GetAccessToken())
-                .Header("Accept", "application/json")
-                .Body(JObject.Parse(string.Format("{{ Name: \"Test\" }}")))
-                .When().Post<Models.TemplateDocument>("v1/templates/999/clone")
-                .Then().ExpectStatus(404)
+                    .OAuth2BearerToken(Config.User1.GetAccessToken())
+                    .Header("Accept", "application/json")
+                    .Body(JObject.Parse("{ Name: \"Test\" }"))
+                .When()
+                    .Post<TemplateDocument>("v1/templates/999/clone")
+                .Then()
+                    .ExpectStatus(404)
+                    .ExpectReasonPhrase("Template not found")
                 .Run();
         }
     }

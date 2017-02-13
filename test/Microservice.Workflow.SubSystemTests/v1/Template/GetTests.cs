@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using Microservice.Workflow.SubSystemTests.Helpers;
 using Microservice.Workflow.SubSystemTests.Helpers.Apis;
 using Microservice.Workflow.SubSystemTests.v1.Models;
@@ -16,10 +17,18 @@ namespace Microservice.Workflow.SubSystemTests.v1.Template
         public void When_Get_Existing_Template_Should_Return_Expected_Json_Data()
         {
             var template = Test.Api().CreateTemplateWithExistingCategory(Config.User1);
+
             Test.Api()
-                .Given().OAuth2BearerToken(Config.User1.GetAccessToken())
-                .When().Get<TemplateDocument>(string.Format("v1/templates/{0}", template.Id))
-                .Then().ExpectBody(t => t.Name == template.Name)
+                .Given()
+                    .OAuth2BearerToken(Config.User1.GetAccessToken())
+                    .Header("Accept", "application/json")
+                .When()
+                    .Get<TemplateDocument>($"v1/templates/{template.Id}")
+                .Then()
+                    .ExpectBody(t => t.Name == template.Name)
+                    .ExpectStatus(HttpStatusCode.OK)
+                    .ExpectHeader("Content-Type", "application/json; charset=utf-8")
+                    .ExpectReasonPhrase("OK")
                 .Run();
         }
 
@@ -27,9 +36,14 @@ namespace Microservice.Workflow.SubSystemTests.v1.Template
         public void When_Get_NonExisting_Template_Should_Return_Http_404()
         {
             Test.Api()
-                .Given().OAuth2BearerToken(Config.User1.GetAccessToken())
-                .When().Get<string>("v1/templates/999")
-                .Then().ExpectStatus(404)
+                .Given()
+                    .Header("Accept", "application/json")
+                    .OAuth2BearerToken(Config.User1.GetAccessToken())
+                .When()
+                    .Get<string>("v1/templates/999")
+                .Then()
+                    .ExpectStatus(HttpStatusCode.NotFound)
+                    .ExpectReasonPhrase("Template not found")
                 .Run();
         }
 
@@ -38,9 +52,16 @@ namespace Microservice.Workflow.SubSystemTests.v1.Template
         {
             var template = Test.Api().CreateTemplateWithExistingCategory(Config.User1);
             Test.Api()
-                .Given().OAuth2BearerToken(Config.User1.GetAccessToken())
-                .When().Get<TemplateCollection>(string.Format("v1/templates?$filter=Name eq '{0}'", template.Name))
-                .Then().ExpectBody(t => t.Items[0].Name == template.Name)
+                .Given()
+                    .OAuth2BearerToken(Config.User1.GetAccessToken())
+                    .Header("Accept", "application/json")
+                .When()
+                    .Get<TemplateCollection>($"v1/templates?$filter=Name eq '{template.Name}'")
+                .Then()
+                    .ExpectBody(t => t.Items[0].Name == template.Name)
+                    .ExpectStatus(HttpStatusCode.OK)
+                    .ExpectHeader("Content-Type", "application/json; charset=utf-8")
+                    .ExpectReasonPhrase("OK")
                 .Run();
         }
 
@@ -50,11 +71,14 @@ namespace Microservice.Workflow.SubSystemTests.v1.Template
             var template = Test.Api().CreateTemplateWithExistingCategory(Config.User1);
             Test.Api()
                 .Given()
-                .OAuth2BearerToken(Config.User1.GetAccessToken())
-                .Header("Accept", "application/json")
-                .Body(JObject.Parse(string.Format("{{ Name: \"{0}\" }}", Guid.NewGuid())))
-                .When().Post<TemplateDocument>(string.Format("v1/templates/{0}/clone", template.Id))
-                .Then().ExpectStatus(201)
+                    .OAuth2BearerToken(Config.User1.GetAccessToken())
+                    .Header("Accept", "application/json")
+                .Body(JObject.Parse($"{{ Name: \"{Guid.NewGuid()}\" }}"))
+                .When().Post<TemplateDocument>($"v1/templates/{template.Id}/clone")
+                .Then()
+                    .ExpectStatus(201)
+                    .ExpectHeader("Content-Type", "application/json; charset=utf-8")
+                    .ExpectReasonPhrase("Created")
                 .Run();
         }
     }
