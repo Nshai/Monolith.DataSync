@@ -243,7 +243,6 @@ pipeline {
                             }
                         }
                         archive excludes: 'dist/*.zip,dist/*.nupkg,dist/*.md5', includes: 'dist/*.*'
-                        deleteDir()
                     }
                 }
             }
