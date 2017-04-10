@@ -25,6 +25,7 @@ def globals = env
 def stageName
 def semanticVersion
 def packageVersion
+def packageMd5
 def stackName
 def verboseLogging = false
 
@@ -224,6 +225,8 @@ pipeline {
                                 logVerbose = verboseLogging
                                 delegate.stageName = stageName
                             }
+
+                            packageMd5 = readFile("${pwd()}\\dist\\${globals.githubRepoName}.${packageVersion}.nupkg.md5")
                         }
                     }
                 }
@@ -493,6 +496,7 @@ pipeline {
                                 deployScriptsBranchName = 'master'
                                 gitCredentials = gitCredentialsSSH
                                 logVerbose = verboseLogging
+                                packageMd5Checksum = packageMd5
                             }
                         }
 
@@ -611,6 +615,7 @@ pipeline {
                         deployScriptsBranchName = 'master'
                         gitCredentials = gitCredentialsSSH
                         logVerbose = verboseLogging
+                        packageMd5Checksum = packageMd5
                     }
 
                     def successful = pauseForInput {
