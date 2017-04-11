@@ -226,7 +226,10 @@ pipeline {
                                 delegate.stageName = stageName
                             }
 
-                            packageMd5 = readFile("${pwd()}\\dist\\${globals.githubRepoName}.${packageVersion}.nupkg.md5")
+                            packageMd5 = getMd5Sum {
+                                repoName = globals.githubRepoName
+                                version = packageVersion
+                            }
                         }
                     }
                 }
