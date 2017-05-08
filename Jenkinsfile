@@ -221,7 +221,7 @@ pipeline {
                                 version = packageVersion
                                 include = "*.nupkg"
                                 uri = artifactoryUri
-                                properties = "github.pr.number=${changeset.prNumber} git.repo.name=${changeset.repoName} git.master.mergebase=${changeset.masterSha}"
+                                properties = "github.pr.number=${changeset.prNumber} git.repo.name=${changeset.repoName} git.master.mergebase=${changeset.masterSha} jira.ticket=${changeset.jiraTicket}"
                                 logVerbose = verboseLogging
                                 delegate.stageName = stageName
                             }
@@ -406,7 +406,7 @@ pipeline {
                                 version = packageVersion
                                 include = "*.nupkg"
                                 uri = artifactoryUri
-                                properties = "git.branch.name=${changeset.branchName} git.repo.name=${changeset.repoName} git.master.mergebase=${changeset.masterSha}"
+                                properties = "git.branch.name=${changeset.branchName} git.repo.name=${changeset.repoName} git.master.mergebase=${changeset.masterSha} jira.ticket=${changeset.jiraTicket}"
                                 logVerbose = verboseLogging
                                 delegate.stageName = stageName
                             }
