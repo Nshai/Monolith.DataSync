@@ -43,7 +43,7 @@ var get = function(obj, key) {
 microservice.tasks.nuget.version = get(projectSettings, "tasks.nuget.version");
 if (microservice.tasks.nuget.version == undefined) 
 {
-	var defaultGulpToolsVersion = "0.0.12";
+	var defaultGulpToolsVersion = "0.0.13";
 	console.log("Using default gulp tools version " + defaultGulpToolsVersion);
 	microservice.tasks.nuget.version = defaultGulpToolsVersion;
 } else 
