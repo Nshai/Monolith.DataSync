@@ -32,7 +32,7 @@ namespace Microservice.Workflow.SubSystemTests.v1.Template
         [Test]
         public void When_Create_Instance_For_Active_Template_Then_Should_Return_Http_200()
         {
-            var template = Test.Api().CreateActiveTemplateWithExistingCategoryAndCreateTaskStep(Config.User1, 3500000);
+            var template = Test.Api().CreateActiveTemplateWithExistingCategoryAndCreateTaskStep(Config.User1, 3500000, Config.RoleId1);
 
             var claimsStub = Stub.Api()
                 .Request().WithMethod("GET").WithUrl(url => url.Matching("/crm/v1/claims/subject/.*"))
@@ -66,6 +66,23 @@ namespace Microservice.Workflow.SubSystemTests.v1.Template
                 taskStub.Verify().IsCalled(Times.Once());
                 subscriptionStub.Verify().IsCalled(Times.Twice());
             }
+        }
+
+
+        [Test]
+        public void When_Create_Instance_For_Active_Template_AndUserNotHaveAnyAllowedRole_Then_Should_Return_Http_403()
+        {
+            var template = Test.Api().CreateActiveTemplateWithExistingCategoryAndCreateTaskStep(Config.User1, 3500000, Config.RoleId3);
+
+                Test.Api()
+                    .Given()
+                    .OAuth2BearerToken(Config.User1.GetAccessToken())
+                    .Header("Accept", "application/json")
+                    .Body(JObject.Parse("{ EntityType: \"Client\", EntityId: 1 }"))
+                    .When().Post<string>($"v1/templates/{template.Id}/createinstance/ondemand")
+                    .Then().ExpectStatus(403)
+                    .ExpectReasonPhrase("Not permitted to create this instance")
+                    .Run();
         }
     }
 }

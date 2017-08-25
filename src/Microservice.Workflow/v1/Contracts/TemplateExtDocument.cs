@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using IntelliFlo.Platform.Http;
+using IntelliFlo.Platform.Http.Documentation.Annotations;
 using Microservice.Workflow.Domain;
 
 namespace Microservice.Workflow.v1.Contracts
@@ -24,6 +25,7 @@ namespace Microservice.Workflow.v1.Contracts
         public List<TemplateStep> Steps { get; set; }
         public int[] RoleIds { get; set; }
 
+        [SwaggerDefinition("TemplateExtDocument.TemplateStep")]
         public class TemplateStep
         {
             public Guid Id { get; set; }

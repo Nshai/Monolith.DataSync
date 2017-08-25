@@ -42,7 +42,10 @@ namespace Microservice.Workflow.Tests
         private const int TenantId = 1123;
         private const int OwnerUserId = 343;
         private const int TemplateId = 101;
-        private const int RoleId = 993;
+        private const int RoleId1 = 993;
+        private const int RoleId2 = 994;
+        private const int RoleId3 = 995;
+        private const int RoleId4 = 996;
         private const int GroupId = 932;
         private const int ParentGroupId = 34;
 
@@ -52,7 +55,7 @@ namespace Microservice.Workflow.Tests
             XmlConfigurator.Configure();
 
             category = new TemplateCategory("Test", TenantId) { Id = 1 };
-            altCategory = new TemplateCategory("Alt", TenantId) { Id = 2};
+            altCategory = new TemplateCategory("Alt", TenantId) { Id = 2 };
 
             template = new Template("Test", TenantId, category, WorkflowRelatedTo.Client, OwnerUserId) { Id = TemplateId };
 
@@ -67,7 +70,7 @@ namespace Microservice.Workflow.Tests
 
             tokenBuilder = new Mock<ITrustedClientAuthenticationTokenBuilder>();
             templateDefinitionRepository = new Mock<IRepository<TemplateDefinition>>();
-            
+
             clientFactory = new Mock<IHttpClientFactory>();
             client = new Mock<IHttpClient>();
             eventDispatcher = new Mock<IEventDispatcher>();
@@ -89,7 +92,7 @@ namespace Microservice.Workflow.Tests
             identity.AddClaim(new Claim(IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.UserId, OwnerUserId.ToString(CultureInfo.InvariantCulture)));
             identity.AddClaim(new Claim(IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.TenantId, TenantId.ToString(CultureInfo.InvariantCulture)));
             identity.AddClaim(new Claim(IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.Subject, Guid.NewGuid().ToString()));
-            identity.AddClaim(new Claim(IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.RoleId, RoleId.ToString(CultureInfo.InvariantCulture)));
+            identity.AddClaim(new Claim(IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.RoleIds, RoleId1 + ", " + RoleId2));
             identity.AddClaim(new Claim(IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.GroupLineage, string.Join(",", new[] { ParentGroupId, GroupId })));
             Thread.CurrentPrincipal = new IntelliFloClaimsPrincipal(identity);
 
@@ -104,7 +107,7 @@ namespace Microservice.Workflow.Tests
             template.SetStatus(status);
             underTest.CreateInstance(TemplateId, new CreateInstanceRequest());
         }
-        
+
         [Test]
         [ExpectedException(typeof(TemplatePermissionsException))]
         public void WhenCreateInstanceAndUserRoleNotAssignedToTemplateThenExpectException()
@@ -120,7 +123,7 @@ namespace Microservice.Workflow.Tests
         [TestCase(ParentGroupId + 1, true, ExpectedException = typeof(TemplatePermissionsException))]
         public void WhenCreateInstanceAndUserGroupNotAssignedToTemplateThenExpectException(int templateGroupId, bool includeSubGroups)
         {
-            template.SetRoles(new[] { RoleId });
+            template.SetRoles(new[] { RoleId1 });
             template.ApplicableToGroupId = templateGroupId;
             template.IncludeSubGroups = includeSubGroups;
             template.SetStatus(WorkflowStatus.Active);
@@ -130,7 +133,15 @@ namespace Microservice.Workflow.Tests
         [Test]
         public void WhenCreateInstanceThenCreatedSuccessfully()
         {
-            template.SetRoles(new[] { RoleId });
+            template.SetRoles(new[] { RoleId1, RoleId3 });
+            template.SetStatus(WorkflowStatus.Active);
+            underTest.CreateInstance(TemplateId, new CreateInstanceRequest());
+        }
+
+        [ExpectedException(typeof(TemplatePermissionsException))]
+        public void WhenCreateInstanceAndNoneOfUserRolesAssignedToTemplateThenExpectException()
+        {
+            template.SetRoles(new[] { RoleId3, RoleId4 });
             template.SetStatus(WorkflowStatus.Active);
             underTest.CreateInstance(TemplateId, new CreateInstanceRequest());
         }
@@ -156,7 +167,7 @@ namespace Microservice.Workflow.Tests
         [Test]
         public void WhenCloneTemplateThenSuccessful()
         {
-            var clone = underTest.Clone(TemplateId, new CloneTemplateRequest() {Name = "Clone1"});
+            var clone = underTest.Clone(TemplateId, new CloneTemplateRequest() { Name = "Clone1" });
             Assert.AreEqual("Clone1", clone.Name);
             Assert.AreEqual(template.Category.Id, clone.Category.TemplateCategoryId);
             Assert.AreEqual(template.RelatedTo.ToString(), clone.RelatedTo);
@@ -176,7 +187,7 @@ namespace Microservice.Workflow.Tests
             };
             templateRepository.Setup(t => t.Query()).Returns(templates.AsQueryable);
 
-            underTest.Patch(TemplateId, new TemplatePatchRequest() {Name = "Test1"});
+            underTest.Patch(TemplateId, new TemplatePatchRequest() { Name = "Test1" });
         }
 
         [Test]
