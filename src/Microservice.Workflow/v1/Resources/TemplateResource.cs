@@ -350,15 +350,15 @@ namespace Microservice.Workflow.v1.Resources
             throw new TemplateNotUniqueException();
         }
 
-        private Tuple<int, int[]> GetRoleIdAndGroups()
+        private Tuple<int[], int[]> GetRoleIdAndGroups()
         {           
             string lineage;
-            string roleId;
+            string roleIdsClaimValue;
 
             var intellifloClaimsPrincipal = Thread.CurrentPrincipal.AsIFloPrincipal();
 
             if (!intellifloClaimsPrincipal.TryGetClaim(IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.GroupLineage, out lineage) ||
-                !intellifloClaimsPrincipal.TryGetClaim(IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.RoleId, out roleId))
+                !intellifloClaimsPrincipal.TryGetClaim(IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.RoleIds, out roleIdsClaimValue))
             {
                 var subject = intellifloClaimsPrincipal.Subject;
                 using (var crmClient = clientFactory.Create("crm"))
@@ -377,12 +377,19 @@ namespace Microservice.Workflow.v1.Resources
 
                     lineage = claims.ContainsKey(IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.GroupLineage) ? claims[IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.GroupLineage].ToString() : string.Empty;
 
-                    roleId = claims.ContainsKey(IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.RoleId) ? claims[IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.RoleId].ToString() : "0";
+                    roleIdsClaimValue = claims.ContainsKey(IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.RoleIds) ? claims[IntelliFlo.Platform.Principal.Constants.ApplicationClaimTypes.RoleIds].ToString() : "0";
                 }
             }
 
             var groups = GetGroupLineage(lineage);
-            return Tuple.Create(int.Parse(roleId), groups);
+            var roleIds = GetUserRoleIds(roleIdsClaimValue);
+
+            return Tuple.Create(roleIds, groups);
+        }
+
+        private static int[] GetUserRoleIds(string roleIds)
+        {
+            return roleIds.Split(',').Select(int.Parse).ToArray();
         }
 
         private static int[] GetGroupLineage(string lineage)
