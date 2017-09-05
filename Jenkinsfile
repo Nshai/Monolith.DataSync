@@ -6,7 +6,7 @@
 /**
  * By default the master branch of the library is loaded
  * Use the include directive below ONLY if you need to load a branch of the library
- * @Library('intellifloworkflow@IP-17288')
+ * @Library('intellifloworkflow@IP-22228')
  */
 import org.intelliflo.*
 
@@ -47,11 +47,28 @@ pipeline {
 
     options {
         timestamps()
+        skipDefaultCheckout()
     }
 
     stages {
+        stage('Master') {
+            when {
+                branch 'master'
+            }
+            steps {
+                script {
+                    triggerRepoScan {
+                        credentialsId = gitCredentialsId
+                    }
+                }
+            }
+        }
+
         stage('Initialise') {
             agent none
+            when {
+                expression { env.BRANCH_NAME ==~ /^(IP-|PR-).*/ }
+            }
             steps {
                 script {
                     stashResourceFiles {
@@ -69,11 +86,12 @@ pipeline {
         }
 
         stage('Component') {
-
             agent {
                 label 'windows'
             }
-
+            when {
+                expression { env.BRANCH_NAME ==~ /^(IP-|PR-).*/ }
+            }
             steps {
                 bat 'set'
 
@@ -208,31 +226,27 @@ pipeline {
                         logVerbose = verboseLogging
                         delegate.stageName = stageName
                     }
-                }
-            }
 
-            post {
-                success {
-                    script {
-                        if (changeset.pullRequest != null) {
-                            publishPackages {
-                                credentialsId = artifactoryCredentialsId
-                                repo = 'nuget-snapshot'
-                                version = packageVersion
-                                include = "*.nupkg"
-                                uri = artifactoryUri
-                                properties = "github.pr.number=${changeset.prNumber} git.repo.name=${changeset.repoName} git.master.mergebase=${changeset.masterSha} jira.ticket=${changeset.jiraTicket}"
-                                logVerbose = verboseLogging
-                                delegate.stageName = stageName
-                            }
+                    if (changeset.pullRequest != null) {
+                        publishPackages {
+                            credentialsId = artifactoryCredentialsId
+                            repo = 'nuget-snapshot'
+                            version = packageVersion
+                            include = "*.nupkg"
+                            uri = artifactoryUri
+                            properties = "github.pr.number=${changeset.prNumber} git.repo.name=${changeset.repoName} git.master.mergebase=${changeset.masterSha} jira.ticket=${changeset.jiraTicket}"
+                            logVerbose = verboseLogging
+                            delegate.stageName = stageName
+                        }
 
-                            packageMd5 = getMd5Sum {
-                                repoName = globals.githubRepoName
-                                version = packageVersion
-                            }
+                        packageMd5 = getMd5Sum {
+                            repoName = globals.githubRepoName
+                            version = packageVersion
                         }
                     }
                 }
+            }
+            post {
                 always {
                     script {
                         if (changeset.pullRequest != null) {
@@ -249,17 +263,21 @@ pipeline {
                             }
                         }
                         archive excludes: 'dist/*.zip,dist/*.nupkg,dist/*.md5', includes: 'dist/*.*'
+                        deleteWorkspace {
+                            force = true
+                        }
                     }
                 }
             }
         }
 
         stage('SubSystem') {
-
             agent {
                 label 'windows'
             }
-
+            when {
+                expression { env.BRANCH_NAME ==~ /^(IP-|PR-).*/ }
+            }
             steps {
                 script {
                     stageName = 'SubSystem'
@@ -370,54 +388,50 @@ pipeline {
                     } else {
                         echo "[DEBUG] Bypassing ${stageName} Stage"
                     }
-                }
-            }
 
-            post {
-                success {
-                    script {
-                        findAndDeleteOldPackages {
+                    findAndDeleteOldPackages {
+                        credentialsId = artifactoryCredentialsId
+                        packageName = "${changeset.repoName}.${semanticVersion}"
+                        latestBuildNumber = globals.BUILD_NUMBER
+                        url = artifactoryUri
+                        logVerbose = verboseLogging
+                        delegate.stageName = stageName
+                    }
+
+                    if (changeset.pullRequest != null) {
+                        promotePackage {
+                            packageName = changeset.repoName
+                            version = packageVersion
+                            packageMasterSha = changeset.masterSha
+                            sourceRepo = 'nuget-snapshot'
+                            destinationRepo = 'nuget-ready4test'
                             credentialsId = artifactoryCredentialsId
-                            packageName = "${changeset.repoName}.${semanticVersion}"
-                            latestBuildNumber = globals.BUILD_NUMBER
                             url = artifactoryUri
                             logVerbose = verboseLogging
                             delegate.stageName = stageName
                         }
+                    }
 
-                        if (changeset.pullRequest != null) {
-                            promotePackage {
-                                packageName = changeset.repoName
-                                version = packageVersion
-                                packageMasterSha = changeset.masterSha
-                                sourceRepo = 'nuget-snapshot'
-                                destinationRepo = 'nuget-ready4test'
-                                credentialsId = artifactoryCredentialsId
-                                url = artifactoryUri
-                                logVerbose = verboseLogging
-                                delegate.stageName = stageName
-                            }
+                    if (changeset.branch != null) {
+                        publishPackages {
+                            credentialsId = artifactoryCredentialsId
+                            repo = 'nuget-dev-snapshot'
+                            version = packageVersion
+                            include = "*.nupkg"
+                            uri = artifactoryUri
+                            properties = "git.branch.name=${changeset.branchName} git.repo.name=${changeset.repoName} git.master.mergebase=${changeset.masterSha} jira.ticket=${changeset.jiraTicket}"
+                            logVerbose = verboseLogging
+                            delegate.stageName = stageName
                         }
 
-                        if (changeset.branch != null) {
-                            publishPackages {
-                                credentialsId = artifactoryCredentialsId
-                                repo = 'nuget-dev-snapshot'
-                                version = packageVersion
-                                include = "*.nupkg"
-                                uri = artifactoryUri
-                                properties = "git.branch.name=${changeset.branchName} git.repo.name=${changeset.repoName} git.master.mergebase=${changeset.masterSha} jira.ticket=${changeset.jiraTicket}"
-                                logVerbose = verboseLogging
-                                delegate.stageName = stageName
-                            }
-
-                            addDeployLink {
-                                packageName = changeset.repoName
-                                delegate.packageVersion = packageVersion
-                            }
+                        addDeployLink {
+                            packageName = changeset.repoName
+                            delegate.packageVersion = packageVersion
                         }
                     }
                 }
+            }
+            post {
                 always {
                     script {
                         if (!bypassSubsystemStage) {
@@ -458,19 +472,16 @@ pipeline {
                             }
                         }
                         archive excludes: 'dist/*.zip,dist/*.nupkg,dist/*.md5', includes: 'dist/*.*'
+                        deleteDir()
                     }
                 }
             }
         }
 
         stage('System') {
-
             agent none
-
             when {
-                expression {
-                    return env.BRANCH_NAME.startsWith('PR')
-                }
+                expression { env.BRANCH_NAME ==~ /^PR-.*/ }
             }
             steps {
                 script {
@@ -517,41 +528,39 @@ pipeline {
                     } else {
                         echo "[DEBUG] Bypassing ${stageName} Stage"
                     }
-                }
-            }
 
-            post {
-                success {
-                    script {
-                        node('windows') {
-                            unstashResourceFiles {
-                                folder = 'pipeline'
-                                stashName = 'ResourceFiles'
-                            }
-
-                            findAndDeleteOldPackages {
-                                credentialsId = artifactoryCredentialsId
-                                packageName = "${changeset.repoName}.${semanticVersion}"
-                                latestBuildNumber = globals.BUILD_NUMBER
-                                url = artifactoryUri
-                                logVerbose = verboseLogging
-                                delegate.stageName = stageName
-                            }
-
-                            promotePackage {
-                                packageName = changeset.repoName
-                                version = packageVersion
-                                packageMasterSha = changeset.masterSha
-                                sourceRepo = 'nuget-ready4test'
-                                destinationRepo = 'nuget-ready4prd'
-                                credentialsId = artifactoryCredentialsId
-                                url = artifactoryUri
-                                logVerbose = verboseLogging
-                                delegate.stageName = stageName
-                            }
+                    node('windows') {
+                        unstashResourceFiles {
+                            folder = 'pipeline'
+                            stashName = 'ResourceFiles'
                         }
+
+                        findAndDeleteOldPackages {
+                            credentialsId = artifactoryCredentialsId
+                            packageName = "${changeset.repoName}.${semanticVersion}"
+                            latestBuildNumber = globals.BUILD_NUMBER
+                            url = artifactoryUri
+                            logVerbose = verboseLogging
+                            delegate.stageName = stageName
+                        }
+
+                        promotePackage {
+                            packageName = changeset.repoName
+                            version = packageVersion
+                            packageMasterSha = changeset.masterSha
+                            sourceRepo = 'nuget-ready4test'
+                            destinationRepo = 'nuget-ready4prd'
+                            credentialsId = artifactoryCredentialsId
+                            url = artifactoryUri
+                            logVerbose = verboseLogging
+                            delegate.stageName = stageName
+                        }
+
+                        deleteDir()
                     }
                 }
+            }
+            post {
                 always {
                     script {
                         if (!bypassSystemStage) {
@@ -576,6 +585,7 @@ pipeline {
                                 }
 
                                 archive excludes: 'dist/*.zip,dist/*.nupkg,dist/*.md5', includes: 'dist/*.*'
+                                deleteDir()
                             }
                         }
                     }
@@ -584,17 +594,22 @@ pipeline {
         }
 
         stage('Production') {
-
             agent none
-
             when {
-                expression {
-                    return env.BRANCH_NAME.startsWith('PR')
-                }
+                expression { env.BRANCH_NAME ==~ /^PR-.*/ }
             }
             steps {
                 script {
                     stageName = 'Production'
+
+                    validateCodeReviews {
+                        repoName = globals.githubRepoName
+                        prNumber = globals.CHANGE_ID
+                        author = changeset.author
+                        failBuild = false
+                        logVerbose = verboseLogging
+                        delegate.stageName = stageName
+                    }
 
                     validateJiraTicket {
                         delegate.changeset = changeset
@@ -664,74 +679,70 @@ pipeline {
                             logVerbose = verboseLogging
                             delegate.stageName = stageName
                         }
+
+                        unstashResourceFiles {
+                            folder = 'pipeline'
+                            stashName = 'ResourceFiles'
+                        }
+
+                        promotePackage {
+                            packageName = changeset.repoName
+                            version = packageVersion
+                            packageMasterSha = changeset.masterSha
+                            sourceRepo = 'nuget-ready4prd'
+                            destinationRepo = 'nuget-prd'
+                            force = true
+                            credentialsId = artifactoryCredentialsId
+                            url = artifactoryUri
+                            logVerbose = verboseLogging
+                            delegate.stageName = stageName
+                        }
+
+                        updateJiraOnMerge {
+                            issueKey = changeset.jiraTicket
+                            packageName = changeset.repoName
+                            version = packageVersion
+                            credentialsId = jiraCredentialsId
+                            logVerbose = verboseLogging
+                            delegate.stageName = stageName
+                        }
+
+                        deleteDir()
+                    }
+
+                    updateWatermarks {
+                        repoName = changeset.repoName
+                        consulBuildKey = changeset.consulBuildKey
+                        logVerbose = verboseLogging
+                        delegate.stageName = stageName
+                    }
+
+                    tagCommit {
+                        repoName = changeset.repoName
+                        version = semanticVersion
+                        author = changeset.author
+                        email = changeset.commitInfo.author.email
+                        logVerbose = verboseLogging
+                        delegate.stageName = stageName
+                    }
+
+                    updateMasterVersion {
+                        repoName = changeset.repoName
+                        version = semanticVersion
+                        logVerbose = verboseLogging
+                        delegate.stageName = stageName
+                    }
+
+                    cleanupConsul {
+                        repoName = changeset.repoName
+                        prNumber = changeset.prNumber
+                        consulBuildKey = changeset.consulBuildKey
+                        logVerbose = verboseLogging
+                        delegate.stageName = stageName
                     }
                 }
             }
-
             post {
-                success {
-                    script {
-                        node('windows') {
-                            unstashResourceFiles {
-                                folder = 'pipeline'
-                                stashName = 'ResourceFiles'
-                            }
-
-                            promotePackage {
-                                packageName = changeset.repoName
-                                version = packageVersion
-                                packageMasterSha = changeset.masterSha
-                                sourceRepo = 'nuget-ready4prd'
-                                destinationRepo = 'nuget-prd'
-                                force = true
-                                credentialsId = artifactoryCredentialsId
-                                url = artifactoryUri
-                                logVerbose = verboseLogging
-                                delegate.stageName = stageName
-                            }
-
-                            updateJiraOnMerge {
-                                issueKey = changeset.jiraTicket
-                                packageName = changeset.repoName
-                                version = packageVersion
-                                credentialsId = jiraCredentialsId
-                                logVerbose = verboseLogging
-                                delegate.stageName = stageName
-                            }
-                        }
-
-                        updateWatermarks {
-                            repoName = changeset.repoName
-                            consulBuildKey = changeset.consulBuildKey
-                            logVerbose = verboseLogging
-                            delegate.stageName = stageName
-                        }
-
-                        tagCommit {
-                            repoName = changeset.repoName
-                            version = semanticVersion
-                            author = changeset.author
-                            email = changeset.commitInfo.author.email
-                            logVerbose = verboseLogging
-                            delegate.stageName = stageName
-                        }
-
-                        updateMasterVersion {
-                            repoName = changeset.repoName
-                            version = semanticVersion
-                            logVerbose = verboseLogging
-                            delegate.stageName = stageName
-                        }
-
-                        cleanupConsul {
-                            repoName = changeset.repoName
-                            prNumber = changeset.prNumber
-                            consulBuildKey = changeset.consulBuildKey
-                            logVerbose = verboseLogging
-                            delegate.stageName = stageName
-                        }
-                    }
-                }
                 always {
                     script {
                         releaseProductionStage {
@@ -761,17 +772,10 @@ pipeline {
                             }
 
                             archive excludes: 'dist/*.zip,dist/*.nupkg,dist/*.md5', includes: 'dist/*.*'
+                            deleteDir()
                         }
                     }
                 }
-            }
-        }
-    }
-
-    post {
-        success {
-            node ('windows') {
-                deleteDir()
             }
         }
     }
