@@ -13,5 +13,5 @@ module.exports =
 	msbuild : {configuration: 'Debug'},
 	
 	// uncomment to use different gulp tools version
-	//tasks : { nuget : { version : '0.0.12' }} 
+	//tasks : { nuget : { version : '0.0.13' }} 
 };

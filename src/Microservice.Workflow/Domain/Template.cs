@@ -272,7 +272,7 @@ namespace Microservice.Workflow.Domain
             CurrentVersion.Triggers.Add(triggerSet);
         }
 
-        public virtual bool IsUserPermittedToRun(int activeRoleId, int[] groupIds, bool isTriggeredInstance)
+        public virtual bool IsUserPermittedToRun(int[] userRoleIds, int[] groupIds, bool isTriggeredInstance)
         {
             if (ApplicableToGroupId.HasValue)
             {
@@ -297,7 +297,8 @@ namespace Microservice.Workflow.Domain
                 }
             }
 
-            return isTriggeredInstance || CurrentVersion.Roles.Any(r => r.RoleId == activeRoleId);
+            var isAnyAllowedRolesUserHas = CurrentVersion.Roles.Select(r => r.RoleId).Intersect(userRoleIds).Any();
+            return isTriggeredInstance || isAnyAllowedRolesUserHas;
         }
 
         public virtual void MarkForDeletion()

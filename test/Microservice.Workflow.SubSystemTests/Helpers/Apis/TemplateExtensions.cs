@@ -28,11 +28,11 @@ namespace Microservice.Workflow.SubSystemTests.Helpers.Apis
             return (TemplateDocument)state.Response.Body;
         }
 
-        public static TemplateDocument CreateActiveTemplateWithExistingCategoryAndCreateTaskStep(this ApiTestBuilder builder, InMemoryUser user, int ownerPartyId)
+        public static TemplateDocument CreateActiveTemplateWithExistingCategoryAndCreateTaskStep(this ApiTestBuilder builder, InMemoryUser user, int ownerPartyId, int templateRoleId)
         {
             var template = Test.Api().CreateTemplateWithExistingCategory(Config.User1);
             Test.Api().AddCreateTaskStep(Config.User1, template.Id, 3500000);
-            Test.Api().AssignTemplateRole(Config.User1, template.Id);
+            Test.Api().AssignTemplateRole(Config.User1, template.Id, templateRoleId);
 
             var partyIdStub = Stub.Api()
                 .Request().WithMethod("GET").WithUrl(url => url.Matching("/crm/v1/claims/user/.*"))
@@ -46,7 +46,7 @@ namespace Microservice.Workflow.SubSystemTests.Helpers.Apis
             return template;
         }
 
-        public static void AssignTemplateRole(this ApiTestBuilder builder, InMemoryUser user, int templateId)
+        public static void AssignTemplateRole(this ApiTestBuilder builder, InMemoryUser user, int templateId, int templateRoleId)
         {
             if (builder == null)
                 throw new ArgumentNullException("builder");
@@ -55,7 +55,7 @@ namespace Microservice.Workflow.SubSystemTests.Helpers.Apis
                 .Given()
                 .OAuth2BearerToken(user.GetAccessToken())
                 .Header("Accept", "application/json")
-                .Body(new[] { Config.RoleId })
+                .Body(new[] { templateRoleId })
                 .When()
                 .Put<TemplateRoleDocument[]>($"/v1/templates/{templateId}/roles")
                 .Then()
