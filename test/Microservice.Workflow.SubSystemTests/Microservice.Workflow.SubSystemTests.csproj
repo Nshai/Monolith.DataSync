@@ -71,7 +71,7 @@
       <HintPath>..\..\packages\Iesi.Collections.3.2.0.4000\lib\Net35\Iesi.Collections.dll</HintPath>
     </Reference>
     <Reference Include="IntelliFlo.Platform">
-      <HintPath>..\..\packages\IntelliFlo.Platform.0.3.468\lib\net452\IntelliFlo.Platform.dll</HintPath>
+      <HintPath>..\..\packages\IntelliFlo.Platform.0.8.482.2\lib\net452\IntelliFlo.Platform.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="IntelliFlo.Platform.Client">
@@ -79,11 +79,11 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="IntelliFlo.Platform.NHibernate">
-      <HintPath>..\..\packages\IntelliFlo.Platform.NHibernate.0.3.468\lib\net452\IntelliFlo.Platform.NHibernate.dll</HintPath>
+      <HintPath>..\..\packages\IntelliFlo.Platform.NHibernate.0.8.482.2\lib\net452\IntelliFlo.Platform.NHibernate.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="IntelliFlo.Platform.Security">
-      <HintPath>..\..\packages\IntelliFlo.Platform.Security.0.3.468\lib\net452\IntelliFlo.Platform.Security.dll</HintPath>
+      <HintPath>..\..\packages\IntelliFlo.Platform.Security.0.8.482.2\lib\net452\IntelliFlo.Platform.Security.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="log4net">
@@ -117,7 +117,7 @@
       <HintPath>..\..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NHibernate">
-      <HintPath>..\..\packages\NHibernate.3.3.1.4000\lib\Net35\NHibernate.dll</HintPath>
+      <HintPath>..\..\packages\NHibernate.3.4.0.4000\lib\net35\NHibernate.dll</HintPath>
     </Reference>
     <Reference Include="NHibernate.OData">
       <HintPath>..\..\packages\NHibernate.OData.0.5.0.0\lib\net35\NHibernate.OData.dll</HintPath>
@@ -140,7 +140,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Reassure">
-      <HintPath>..\..\packages\Reassure.1.3.176\lib\net451\Reassure.dll</HintPath>
+      <HintPath>..\..\packages\Reassure.1.5.0.2\lib\net452\Reassure.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Reassure.Coverage">
@@ -148,7 +148,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Reassure.IntellifloExtensions">
-      <HintPath>..\..\packages\Reassure.IntellifloExtensions.1.3.16\lib\net452\Reassure.IntellifloExtensions.dll</HintPath>
+      <HintPath>..\..\packages\Reassure.IntellifloExtensions.1.4.2.1\lib\net452\Reassure.IntellifloExtensions.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Reassure.OAuth">
@@ -156,7 +156,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Reassure.WireMock">
-      <HintPath>..\..\packages\Reassure.WireMock.1.3.12\lib\net451\Reassure.WireMock.dll</HintPath>
+      <HintPath>..\..\packages\Reassure.WireMock.1.3.21\lib\net452\Reassure.WireMock.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
