@@ -28,11 +28,12 @@ def packageVersion
 def packageMd5
 def stackName
 def verboseLogging = false
+def noSubsystemStages = ['Microservice.Scheduler']
 
 // ############################################################################
 // DEBUG PURPOSES ONLY
 // Use these bypass switches ONLY if testing changes further on in the pipeline
-def bypassSubsystemStage = false
+def bypassSubsystemStage = env.JOB_NAME.split('/')[1] in noSubsystemStages
 def bypassSystemStage = false
 // ############################################################################
 
@@ -281,17 +282,18 @@ pipeline {
             steps {
                 script {
                     stageName = 'SubSystem'
-                    if (!bypassSubsystemStage) {
 
-                        prepareSubSystemStage {
-                            solutionName = globals.solutionName
-                            subsystemTestsStashName = 'SubSystemTests'
-                            resourceFilesFolder = 'pipeline'
-                            resourceFilesStashName = 'ResourceFiles'
-                            artifactFolder = 'dist'
-                            packagesStashName = 'Packages'
-                            delegate.stageName = stageName
-                        }
+                    prepareSubSystemStage {
+                        solutionName = globals.solutionName
+                        subsystemTestsStashName = 'SubSystemTests'
+                        resourceFilesFolder = 'pipeline'
+                        resourceFilesStashName = 'ResourceFiles'
+                        artifactFolder = 'dist'
+                        packagesStashName = 'Packages'
+                        delegate.stageName = stageName
+                    }
+
+                    if (!bypassSubsystemStage) {
 
                         prepareCodeDeployPackages {
                             isMicroservice = changeset.isMicroservice
@@ -335,6 +337,8 @@ pipeline {
 
                         checkServiceHealth {
                             serverDns = Consul.getStoreValue("${changeset.consulBuildKey}/MicroserviceAddress")
+                            maxAttempts = 12
+                            sleepIncrement = 10
                             logVerbose = verboseLogging
                             delegate.stageName = stageName
                         }
@@ -472,7 +476,9 @@ pipeline {
                             }
                         }
                         archive excludes: 'dist/*.zip,dist/*.nupkg,dist/*.md5', includes: 'dist/*.*'
-                        deleteDir()
+                        deleteWorkspace {
+                            force = true
+                        }
                     }
                 }
             }
@@ -775,6 +781,17 @@ pipeline {
                             deleteDir()
                         }
                     }
+                }
+            }
+        }
+    }
+    post {
+        always {
+            script {
+                reportBuildStatusToSlack {
+                    repoName = globals.githubRepoName
+                    branchName = globals.BRANCH_NAME
+                    changeId = globals.CHANGE_ID
                 }
             }
         }
