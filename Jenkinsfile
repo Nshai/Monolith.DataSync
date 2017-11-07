@@ -10,6 +10,7 @@
  */
 import org.intelliflo.*
 
+def changesetJson = new String()
 def changeset = new Changeset()
 def amazon = new Amazon()
 
@@ -110,8 +111,8 @@ pipeline {
                         delegate.stageName = stageName
                         abortOnFailure = true
                     }
-                    def json = (String)Consul.getStoreValue(ConsulKey.get(globals.githubRepoName, globals.BRANCH_NAME, globals.CHANGE_ID, 'changeset'))
-                    changeset = changeset.fromJson(json)
+                    changesetJson = (String)Consul.getStoreValue(ConsulKey.get(globals.githubRepoName, globals.BRANCH_NAME, globals.CHANGE_ID, 'changeset'))
+                    changeset = changeset.fromJson(changesetJson)
 
                     // Checkout the code and unstash supporting scripts
                     checkoutCode {
@@ -789,9 +790,7 @@ pipeline {
         always {
             script {
                 reportBuildStatusToSlack {
-                    repoName = globals.githubRepoName
-                    branchName = globals.BRANCH_NAME
-                    changeId = globals.CHANGE_ID
+                    delegate.changesetJson = changesetJson
                 }
             }
         }
