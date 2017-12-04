@@ -494,14 +494,14 @@ pipeline {
                 script {
                     stageName = 'System'
                     if (!bypassSystemStage) {
-                        def deploy = pauseForInput {
+                        def inputResult = pauseForInput {
                             delegate.stageName = stageName
                             message = 'SIT testing required?'
                             okButtonText = 'Yes'
                             logVerbose = verboseLogging
                         }
 
-                        if (deploy) {
+                        if (inputResult) {
                             deployToEnvironment {
                                 delegate.stageName = stageName
                                 repoName = changeset.repoName
@@ -521,14 +521,14 @@ pipeline {
                             }
                         }
 
-                        def successful = pauseForInput {
+                        inputResult = pauseForInput {
                             delegate.stageName = stageName
                             message = 'Manual SIT testing successful?'
                             okButtonText = 'Yes'
                             logVerbose = verboseLogging
                         }
 
-                        if (!successful) {
+                        if (inputResult == false) {
                             currentBuild.result = 'ABORTED'
                             error "SIT Testing unsuccessful"
                         }
@@ -643,7 +643,7 @@ pipeline {
                         packageMd5Checksum = packageMd5
                     }
 
-                    def successful = pauseForInput {
+                    def inputResult = pauseForInput {
                         withTimeout = {
                             time = 3
                             unit = 'HOURS'
@@ -654,7 +654,7 @@ pipeline {
                         logVerbose = verboseLogging
                     }
 
-                    if (!successful) {
+                    if (inputResult == false) {
                         currentBuild.result = 'ABORTED'
                         error "PRD Testing unsuccessful"
                     }
