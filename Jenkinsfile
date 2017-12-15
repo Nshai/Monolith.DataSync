@@ -114,6 +114,12 @@ pipeline {
                     changesetJson = (String)Consul.getStoreValue(ConsulKey.get(globals.githubRepoName, globals.BRANCH_NAME, globals.CHANGE_ID, 'changeset'))
                     changeset = changeset.fromJson(changesetJson)
 
+                    validatePlatformVersion {
+                        repoName = globals.githubRepoName
+                        packagesConfigPath = "src/${globals.githubRepoName}/packages.config"
+                        ref = changeset.commitSha
+                    }
+
                     // Checkout the code and unstash supporting scripts
                     checkoutCode {
                         delegate.stageName = stageName
