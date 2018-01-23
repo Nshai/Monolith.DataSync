@@ -396,6 +396,15 @@ pipeline {
                             logVerbose = verboseLogging
                             delegate.stageName = stageName
                         }
+
+                        validatePublicSwagger {
+                            logVerbose = verboseLogging
+                            delegate.stageName = stageName
+                            consulKey = changeset.consulBuildKey
+                            serviceName = changeset.serviceName
+                            gitCredentials = gitCredentialsSSH
+                            outputFolder = "${pwd()}\\dist"
+                        }
                     } else {
                         echo "[DEBUG] Bypassing ${stageName} Stage"
                     }
