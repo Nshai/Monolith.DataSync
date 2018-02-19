@@ -762,6 +762,12 @@ pipeline {
                         logVerbose = verboseLogging
                         delegate.stageName = stageName
                     }
+
+                    deleteGithubBranch {
+                        repoName = changeset.repoName
+                        branchName = changeset.originatingBranch
+                        logVerbose = verboseLogging
+                    }
                 }
             }
             post {
