@@ -152,6 +152,7 @@ pipeline {
                         repoName = globals.githubRepoName
                         solutionName = globals.solutionName
                         version = semanticVersion
+                        branchName = changeset.originatingBranch
                         unitTestResults = "UnitTestResults"
                         coverageResults = "OpenCoverResults"
                         inspectCodeResults = "ResharperInspectCodeResults"
@@ -173,6 +174,12 @@ pipeline {
                         targetFramework = 'v4.5.2'
                         includeSubsystemTests = true
                         logVerbose = verboseLogging
+                        delegate.stageName = stageName
+                    }
+
+                    runDependencyCheck {
+                        repoName = "${globals.solutionName}"
+                        binariesLocation = "src\\${globals.solutionName}\\bin\\Release"
                         delegate.stageName = stageName
                     }
 
