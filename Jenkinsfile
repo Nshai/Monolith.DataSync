@@ -142,10 +142,11 @@ pipeline {
                     }
                     stackName = amazon.getStackName(env.githubRepoName, packageVersion, false, false)
 
-                    validatePlatformVersion {
+                    validateReferencePackageVersion {
                         repoName = globals.githubRepoName
                         packagesConfigPath = "src/${globals.githubRepoName}/packages.config"
                         ref = changeset.commitSha
+                        referencePackages = ['IntelliFlo.Platform', 'Intelliflo.Platform.QueryLang']
                     }
 
                     startSonarQubeAnalysis {
