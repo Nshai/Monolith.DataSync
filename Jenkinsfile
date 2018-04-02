@@ -178,6 +178,13 @@ pipeline {
                         delegate.stageName = stageName
                     }
 
+                    scanWithWhiteSource {
+                        serviceName = changeset.serviceName
+                        libIncludePath = "src/${changeset.serviceName}/bin/**/*.dll"
+                        version = packageVersion
+                        delegate.stageName = stageName
+                    }
+
                     runDependencyCheck {
                         repoName = "${globals.solutionName}"
                         binariesLocation = "src\\${globals.solutionName}\\bin\\Release"
