@@ -179,8 +179,8 @@ pipeline {
                     }
 
                     scanWithWhiteSource {
-                        serviceName = changeset.serviceName
-                        libIncludePath = "src/${changeset.serviceName}/bin/**/*.dll"
+                        serviceName = globals.githubRepoName
+                        libIncludePath = "src/${globals.githubRepoName}/bin/**/*.dll"
                         version = packageVersion
                         delegate.stageName = stageName
                     }
