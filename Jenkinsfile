@@ -200,7 +200,7 @@ pipeline {
                     def unitTestResults = runUnitTests {
                         title = "Unit Tests"
                         withCoverage = true
-                        include = "test\\${globals.solutionName}.Tests\\bin\\Release\\${globals.solutionName}.Tests.dll"
+                        include = "**/test/${globals.solutionName}.Tests/bin/Release/**/${globals.solutionName}.Tests.dll"
                         unitTestsResultsFilename = "UnitTestResults"
                         coverageInclude = globals.solutionName
                         coverageResultsFilename = "OpenCoverResults"
@@ -388,7 +388,7 @@ pipeline {
                         def subsystemTestResults = runUnitTests {
                             title = "SubSystem Tests"
                             withCoverage = false
-                            include = "test\\${globals.solutionName}.SubSystemTests\\bin\\Debug\\${globals.solutionName}.SubSystemTests.dll"
+                            include = "**/test/${globals.solutionName}.SubSystemTests/bin/Debug/**/${globals.solutionName}.SubSystemTests.dll"
                             unitTestsResultsFilename = "SubSystemTestResults"
                             logVerbose = verboseLogging
                             delegate.stageName = stageName
