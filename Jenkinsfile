@@ -114,6 +114,17 @@ pipeline {
                     changesetJson = (String)Consul.getStoreValue(ConsulKey.get(globals.githubRepoName, globals.BRANCH_NAME, globals.CHANGE_ID, 'changeset'))
                     changeset = changeset.fromJson(changesetJson)
 
+                    if (changeset.pullRequest != null) {
+                        syncJiraLabel {
+                            repoName = changeset.repoName
+                            prNumber = changeset.prNumber
+                            jiraTicket = changeset.jiraTicket
+                            label = 'externalfeed'
+                            logVerbose = verboseLogging
+                            delegate.stageName = stageName
+                        }
+                    }
+
                     // Checkout the code and unstash supporting scripts
                     checkoutCode {
                         delegate.stageName = stageName
@@ -181,8 +192,11 @@ pipeline {
                     scanWithWhiteSource {
                         serviceName = globals.githubRepoName
                         libIncludePath = "src/${globals.githubRepoName}/bin/**/*.dll"
+                        semver = semanticVersion
                         version = packageVersion
+                        jiraTicket = changeset.jiraTicket
                         delegate.stageName = stageName
+                        isPr = changeset.pullRequest != null
                     }
 
                     runDependencyCheck {
@@ -742,6 +756,21 @@ pipeline {
                             credentialsId = jiraCredentialsId
                             logVerbose = verboseLogging
                             delegate.stageName = stageName
+                        }
+
+                        deleteDir()
+                    }
+
+                    node('linux') {
+                        scanPackageWithWhiteSource {
+                            cleanTestOrganization = true
+                            serviceName = globals.githubRepoName
+                            libIncludePath = 'content/microservice/**/*.dll'
+                            semver = semanticVersion
+                            repoName = 'nuget-prd'
+                            delegate.packageVersion = packageVersion
+                            packageExtension = 'nupkg'
+                            logVerbose = verboseLogging
                         }
 
                         deleteDir()
