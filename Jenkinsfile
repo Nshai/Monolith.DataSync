@@ -22,6 +22,8 @@ def gitCredentialsId = '1327a29c-d426-4f3d-b54a-339b5629c041'
 def gitCredentialsSSH = 'jenkinsgithub'
 def jiraCredentialsId = '32546070-393c-4c45-afcd-8e8f1de1757b'
 def globals = env
+def githubRepoName = "${env.JOB_NAME.split('/')[1]}"
+def solutionName = "${env.JOB_NAME.split('/')[1].replace('Clone.', '')}"
 
 def stageName
 def semanticVersion
@@ -30,6 +32,7 @@ def packageMd5
 def stackName
 def verboseLogging = false
 def noSubsystemStages = ['Microservice.Scheduler']
+def windowsNode = 'windows'
 
 // ############################################################################
 // DEBUG PURPOSES ONLY
@@ -41,11 +44,6 @@ def bypassSystemStage = false
 pipeline {
 
     agent none
-
-    environment {
-        githubRepoName = "${env.JOB_NAME.split('/')[1]}"
-        solutionName = "${env.JOB_NAME.split('/')[1].replace('Clone.', '')}"
-    }
 
     options {
         timestamps()
@@ -89,7 +87,7 @@ pipeline {
 
         stage('Component') {
             agent {
-                label 'windows'
+                label windowsNode
             }
             when {
                 expression { env.BRANCH_NAME ==~ /^(IP-|PR-).*/ }
@@ -102,7 +100,7 @@ pipeline {
 
                     // Analyse and validate the changeset
                     validateChangeset {
-                        repoName = globals.githubRepoName
+                        repoName = githubRepoName
                         prNumber = globals.CHANGE_ID
                         baseBranch = globals.CHANGE_TARGET
                         branchName = globals.BRANCH_NAME
@@ -111,7 +109,7 @@ pipeline {
                         delegate.stageName = stageName
                         abortOnFailure = true
                     }
-                    changesetJson = (String)Consul.getStoreValue(ConsulKey.get(globals.githubRepoName, globals.BRANCH_NAME, globals.CHANGE_ID, 'changeset'))
+                    changesetJson = (String)Consul.getStoreValue(ConsulKey.get(githubRepoName, globals.BRANCH_NAME, globals.CHANGE_ID, 'changeset'))
                     changeset = changeset.fromJson(changesetJson)
 
                     if (changeset.pullRequest != null) {
@@ -138,31 +136,31 @@ pipeline {
 
                     // Versioning
                     calculateVersion {
-                        buildNumber = globals.BUILD_NUMBER
+                        buildNumber = changeset.buildNumber
                         delegate.changeset = changeset
                         delegate.stageName = stageName
                         abortOnFailure = true
                     }
 
-                    semanticVersion = Consul.getStoreValue(ConsulKey.get(globals.githubRepoName, globals.BRANCH_NAME, globals.CHANGE_ID, 'existing.version'))
-                    packageVersion = "${semanticVersion}.${env.BUILD_NUMBER}"
+                    semanticVersion = Consul.getStoreValue(ConsulKey.get(githubRepoName, changeset.branchName, changeset.prNumber, 'existing.version'))
+                    packageVersion = "${semanticVersion}.${changeset.buildNumber}"
                     if (changeset.pullRequest != null) {
                         currentBuild.displayName = "${githubRepoName}.Pr${changeset.prNumber}(${packageVersion})"
                     } else {
                         currentBuild.displayName = "${githubRepoName}(${packageVersion})"
                     }
-                    stackName = amazon.getStackName(env.githubRepoName, packageVersion, false, false)
+                    stackName = amazon.getStackName(githubRepoName, packageVersion, false, false)
 
                     validateReferencePackageVersion {
-                        repoName = globals.githubRepoName
-                        packagesConfigPath = "src/${globals.githubRepoName}/packages.config"
+                        repoName = githubRepoName
+                        packagesConfigPath = "src/${githubRepoName}/packages.config"
                         ref = changeset.commitSha
                         referencePackages = ['IntelliFlo.Platform', 'Intelliflo.Platform.QueryLang']
                     }
 
                     startSonarQubeAnalysis {
-                        repoName = globals.githubRepoName
-                        solutionName = globals.solutionName
+                        repoName = githubRepoName
+                        delegate.solutionName = solutionName
                         version = semanticVersion
                         branchName = changeset.originatingBranch
                         unitTestResults = "UnitTestResults"
@@ -173,7 +171,7 @@ pipeline {
                     }
 
                     createVersionTargetsFile {
-                        serviceName = globals.solutionName
+                        serviceName = solutionName
                         version = packageVersion
                         sha = changeset.commitSha
                         logVerbose = verboseLogging
@@ -181,7 +179,7 @@ pipeline {
                     }
 
                     buildSolution {
-                        solutionFile = "${globals.solutionName}.sln"
+                        solutionFile = "${solutionName}.sln"
                         configuration = 'Release'
                         targetFramework = 'v4.5.2'
                         includeSubsystemTests = true
@@ -190,8 +188,8 @@ pipeline {
                     }
 
                     scanWithWhiteSource {
-                        serviceName = globals.githubRepoName
-                        libIncludePath = "src/${globals.githubRepoName}/bin/**/*.dll"
+                        serviceName = githubRepoName
+                        libIncludePath = "src/${githubRepoName}/bin/**/*.dll"
                         semver = semanticVersion
                         version = packageVersion
                         jiraTicket = changeset.jiraTicket
@@ -200,31 +198,32 @@ pipeline {
                     }
 
                     runDependencyCheck {
-                        repoName = "${globals.solutionName}"
-                        binariesLocation = "src\\${globals.solutionName}\\bin\\Release"
+                        repoName = "${solutionName}"
+                        binariesLocation = "src\\${solutionName}\\bin\\Release"
                         delegate.stageName = stageName
                     }
 
                     stashSubSystemTests {
-                        solutionName = globals.solutionName
+                        delegate.solutionName = solutionName
                         stashName = 'SubSystemTests'
                         delegate.stageName = stageName
+                        logVerbose = verboseLogging
                     }
 
                     def unitTestResults = runUnitTests {
                         title = "Unit Tests"
                         withCoverage = true
-                        include = "**/test/${globals.solutionName}.Tests/bin/Release/**/${globals.solutionName}.Tests.dll"
+                        include = "**/test/${solutionName}.Tests/bin/Release/**/${solutionName}.Tests.dll"
                         unitTestsResultsFilename = "UnitTestResults"
-                        coverageInclude = globals.solutionName
+                        coverageInclude = solutionName
                         coverageResultsFilename = "OpenCoverResults"
                         logVerbose = verboseLogging
                         delegate.stageName = stageName
                     }
 
                     runResharperInspectCode {
-                        repoName = globals.githubRepoName
-                        solutionName = globals.solutionName
+                        repoName = githubRepoName
+                        delegate.solutionName = solutionName
                         resultsFile = "ResharperInspectCodeResults"
                         logVerbose = verboseLogging
                         delegate.stageName = stageName
@@ -258,7 +257,7 @@ pipeline {
                     findAndDeleteOldPackages {
                         credentialsId = artifactoryCredentialsId
                         packageName = "${changeset.repoName}.${semanticVersion}"
-                        latestBuildNumber = globals.BUILD_NUMBER
+                        latestBuildNumber = changeset.buildNumber
                         url = artifactoryUri
                         logVerbose = verboseLogging
                         delegate.stageName = stageName
@@ -277,7 +276,7 @@ pipeline {
                         }
 
                         packageMd5 = getMd5Sum {
-                            repoName = globals.githubRepoName
+                            repoName = githubRepoName
                             version = packageVersion
                         }
                     }
@@ -310,7 +309,7 @@ pipeline {
 
         stage('SubSystem') {
             agent {
-                label 'windows'
+                label windowsNode
             }
             when {
                 expression { env.BRANCH_NAME ==~ /^(IP-|PR-).*/ }
@@ -318,18 +317,17 @@ pipeline {
             steps {
                 script {
                     stageName = 'SubSystem'
-
-                    prepareSubSystemStage {
-                        solutionName = globals.solutionName
-                        subsystemTestsStashName = 'SubSystemTests'
-                        resourceFilesFolder = 'pipeline'
-                        resourceFilesStashName = 'ResourceFiles'
-                        artifactFolder = 'dist'
-                        packagesStashName = 'Packages'
-                        delegate.stageName = stageName
-                    }
-
                     if (!bypassSubsystemStage) {
+
+                        prepareSubSystemStage {
+                            delegate.solutionName = solutionName
+                            subsystemTestsStashName = 'SubSystemTests'
+                            resourceFilesFolder = 'pipeline'
+                            resourceFilesStashName = 'ResourceFiles'
+                            artifactFolder = 'dist'
+                            packagesStashName = 'Packages'
+                            delegate.stageName = stageName
+                        }
 
                         prepareCodeDeployPackages {
                             isMicroservice = changeset.isMicroservice
@@ -391,7 +389,7 @@ pipeline {
                         }
 
                         prepareSubSystemTestConfigFile {
-                            solutionName = globals.solutionName
+                            delegate.solutionName = solutionName
                             configuration = 'Debug'
                             stack = stackName
                             consulKey = changeset.consulBuildKey
@@ -402,7 +400,7 @@ pipeline {
                         def subsystemTestResults = runUnitTests {
                             title = "SubSystem Tests"
                             withCoverage = false
-                            include = "**/test/${globals.solutionName}.SubSystemTests/bin/Debug/**/${globals.solutionName}.SubSystemTests.dll"
+                            include = "**/test/${solutionName}.SubSystemTests/bin/Debug/**/${solutionName}.SubSystemTests.dll"
                             unitTestsResultsFilename = "SubSystemTestResults"
                             logVerbose = verboseLogging
                             delegate.stageName = stageName
@@ -417,7 +415,7 @@ pipeline {
 
                         measureSubSystemCoverage {
                             repoName = changeset.repoName
-                            solutionName = globals.solutionName
+                            delegate.solutionName = solutionName
                             serviceName = changeset.serviceName
                             consulKey = changeset.consulBuildKey
                             artifactFolder = 'dist'
@@ -441,7 +439,7 @@ pipeline {
                     findAndDeleteOldPackages {
                         credentialsId = artifactoryCredentialsId
                         packageName = "${changeset.repoName}.${semanticVersion}"
-                        latestBuildNumber = globals.BUILD_NUMBER
+                        latestBuildNumber = changeset.buildNumber
                         url = artifactoryUri
                         logVerbose = verboseLogging
                         delegate.stageName = stageName
@@ -549,7 +547,7 @@ pipeline {
                             deployToEnvironment {
                                 delegate.stageName = stageName
                                 repoName = changeset.repoName
-                                solutionName = globals.solutionName
+                                delegate.solutionName = solutionName
                                 serviceName = changeset.serviceName
                                 prNumber = changeset.prNumber
                                 delegate.packageVersion = packageVersion
@@ -580,7 +578,7 @@ pipeline {
                         echo "[DEBUG] Bypassing ${stageName} Stage"
                     }
 
-                    node('windows') {
+                    node(windowsNode) {
                         unstashResourceFiles {
                             folder = 'pipeline'
                             stashName = 'ResourceFiles'
@@ -589,7 +587,7 @@ pipeline {
                         findAndDeleteOldPackages {
                             credentialsId = artifactoryCredentialsId
                             packageName = "${changeset.repoName}.${semanticVersion}"
-                            latestBuildNumber = globals.BUILD_NUMBER
+                            latestBuildNumber = changeset.buildNumber
                             url = artifactoryUri
                             logVerbose = verboseLogging
                             delegate.stageName = stageName
@@ -615,7 +613,7 @@ pipeline {
                 always {
                     script {
                         if (!bypassSystemStage) {
-                            node('windows') {
+                            node(windowsNode) {
                                 bat "if not exist dist\\NUL (mkdir dist)"
 
                                 unstashResourceFiles {
@@ -654,8 +652,8 @@ pipeline {
                     stageName = 'Production'
 
                     validateCodeReviews {
-                        repoName = globals.githubRepoName
-                        prNumber = globals.CHANGE_ID
+                        repoName = githubRepoName
+                        prNumber = changeset.prNumber
                         author = changeset.author
                         failBuild = false
                         logVerbose = verboseLogging
@@ -672,7 +670,7 @@ pipeline {
                     deployToProduction {
                         delegate.stageName = stageName
                         repoName = changeset.repoName
-                        solutionName = globals.solutionName
+                        delegate.solutionName = solutionName
                         serviceName = changeset.serviceName
                         prNumber = changeset.prNumber
                         delegate.packageVersion = packageVersion
@@ -719,7 +717,7 @@ pipeline {
                         delegate.stageName = stageName
                     }
 
-                    node('windows') {
+                    node(windowsNode) {
                         mergePullRequest {
                             repoName = changeset.repoName
                             prNumber = changeset.prNumber
@@ -727,6 +725,22 @@ pipeline {
                             sha = changeset.commitSha
                             consulKey = changeset.consulBaseKey
                             credentialsId = gitCredentialsId
+                            logVerbose = verboseLogging
+                            delegate.stageName = stageName
+                        }
+
+                        updateMasterVersion {
+                            repoName = changeset.repoName
+                            version = semanticVersion
+                            logVerbose = verboseLogging
+                            delegate.stageName = stageName
+                        }
+
+                        tagCommit {
+                            repoName = changeset.repoName
+                            version = semanticVersion
+                            author = changeset.author
+                            email = changeset.commitInfo.author.email
                             logVerbose = verboseLogging
                             delegate.stageName = stageName
                         }
@@ -764,7 +778,7 @@ pipeline {
                     node('linux') {
                         scanPackageWithWhiteSource {
                             cleanTestOrganization = true
-                            serviceName = globals.githubRepoName
+                            serviceName = githubRepoName
                             libIncludePath = 'content/microservice/**/*.dll'
                             semver = semanticVersion
                             repoName = 'nuget-prd'
@@ -779,22 +793,6 @@ pipeline {
                     updateWatermarks {
                         repoName = changeset.repoName
                         consulBuildKey = changeset.consulBuildKey
-                        logVerbose = verboseLogging
-                        delegate.stageName = stageName
-                    }
-
-                    tagCommit {
-                        repoName = changeset.repoName
-                        version = semanticVersion
-                        author = changeset.author
-                        email = changeset.commitInfo.author.email
-                        logVerbose = verboseLogging
-                        delegate.stageName = stageName
-                    }
-
-                    updateMasterVersion {
-                        repoName = changeset.repoName
-                        version = semanticVersion
                         logVerbose = verboseLogging
                         delegate.stageName = stageName
                     }
@@ -823,7 +821,7 @@ pipeline {
                             delegate.stageName = stageName
                         }
 
-                        node('windows') {
+                        node(windowsNode) {
                             bat "if not exist dist\\NUL (mkdir dist)"
 
                             unstashResourceFiles {
