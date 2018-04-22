@@ -112,17 +112,6 @@ pipeline {
                     changesetJson = (String)Consul.getStoreValue(ConsulKey.get(githubRepoName, globals.BRANCH_NAME, globals.CHANGE_ID, 'changeset'))
                     changeset = changeset.fromJson(changesetJson)
 
-                    if (changeset.pullRequest != null) {
-                        syncJiraLabel {
-                            repoName = changeset.repoName
-                            prNumber = changeset.prNumber
-                            jiraTicket = changeset.jiraTicket
-                            label = 'externalfeed'
-                            logVerbose = verboseLogging
-                            delegate.stageName = stageName
-                        }
-                    }
-
                     // Checkout the code and unstash supporting scripts
                     checkoutCode {
                         delegate.stageName = stageName
