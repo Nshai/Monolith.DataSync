@@ -1,5 +1,9 @@
 ---
 logVerbose: false
-build:
-  msBuildTool: MSBuild 14.0
+projectsToBuild:
+- projectFile: Microservice.Workflow.sln
+  buildTool: MSBuild 14.0
   arguments: /m /p:Configuration=Release;TargetFrameworkVersion=v4.5.2 /clp:ErrorsOnly
+- projectFile: Microservice.Workflow.SubSystemTests.sln
+  buildTool: MSBuild 14.0
+  arguments: /m /p:Configuration=Debug;TargetFrameworkVersion=v4.5.2 /clp:ErrorsOnly
