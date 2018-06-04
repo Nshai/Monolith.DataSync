@@ -13,6 +13,7 @@ import org.intelliflo.*
 def changesetJson = new String()
 def changeset = new Changeset()
 def amazon = new Amazon()
+PipelineConfig pipelineConfig
 
 def artifactoryCredentialsId = 'a3c63f46-4be7-48cc-869b-4239a869cbe8'
 def artifactoryUri = 'https://artifactory.intelliflo.io/artifactory'
@@ -121,6 +122,10 @@ pipeline {
                         delegate.stageName = stageName
                     }
 
+                    pipelineConfig = getPipelineConfig {
+                        configFile = "Jenkinsfile-config.yml"
+                    }
+
                     // Scripts required by the pipeline
                     unstashResourceFiles {
                         folder = 'pipeline'
@@ -171,13 +176,11 @@ pipeline {
                         delegate.stageName = stageName
                     }
 
-                    buildSolution {
-                        solutionFile = "${globals.solutionName}.sln"
-                        configuration = 'Release'
-                        targetFramework = 'v4.5.2'
-                        includeSubsystemTests = true
-                        logVerbose = verboseLogging
+                    buildCode {
                         delegate.stageName = stageName
+                        delegate.pipelineConfig = pipelineConfig
+                        delegate.packageVersion = packageVersion
+                        delegate.changeset = changeset
                     }
 
                     scanWithWhiteSource {
@@ -291,7 +294,7 @@ pipeline {
                                 delegate.stageName = stageName
                             }
                         }
-                        archive excludes: 'dist/*.zip,dist/*.nupkg,dist/*.md5', includes: 'dist/*.*'
+                        archiveArtifacts allowEmptyArchive: true, artifacts: 'dist/*.*', caseSensitive: false, excludes: 'dist/*.zip,dist/*.nupkg,dist/*.md5'
                         deleteWorkspace {
                             force = true
                         }
@@ -511,7 +514,7 @@ pipeline {
                                 delegate.stageName = stageName
                             }
                         }
-                        archive excludes: 'dist/*.zip,dist/*.nupkg,dist/*.md5', includes: 'dist/*.*'
+                        archiveArtifacts allowEmptyArchive: true, artifacts: 'dist/*.*', caseSensitive: false, excludes: 'dist/*.zip,dist/*.nupkg,dist/*.md5'
                         deleteWorkspace {
                             force = true
                         }
@@ -626,7 +629,7 @@ pipeline {
                                     delegate.stageName = stageName
                                 }
 
-                                archive excludes: 'dist/*.zip,dist/*.nupkg,dist/*.md5', includes: 'dist/*.*'
+                                archiveArtifacts allowEmptyArchive: true, artifacts: 'dist/*.*', caseSensitive: false, excludes: 'dist/*.zip,dist/*.nupkg,dist/*.md5'
                                 deleteDir()
                             }
                         }
@@ -834,7 +837,7 @@ pipeline {
                                 delegate.stageName = stageName
                             }
 
-                            archive excludes: 'dist/*.zip,dist/*.nupkg,dist/*.md5', includes: 'dist/*.*'
+                            archiveArtifacts allowEmptyArchive: true, artifacts: 'dist/*.*', caseSensitive: false, excludes: 'dist/*.zip,dist/*.nupkg,dist/*.md5'
                             deleteDir()
                         }
                     }
