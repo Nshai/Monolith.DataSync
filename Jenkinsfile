@@ -3,42 +3,18 @@
  * ~~ MANAGED BY DEVOPS ~~
  */
 
-/**
- * By default the master branch of the library is loaded
- * Use the include directive below ONLY if you need to load a branch of the library
- * @Library('intellifloworkflow@IP-36076')
- */
+@Library('intellifloworkflow@IP-36352')
 import org.intelliflo.*
 
-def changesetJson = new String()
-def changeset = new Changeset()
-def amazon = new Amazon()
-PipelineConfig pipelineConfig
-
+def pipelineRuntime = new PipelineRuntime()
 def artifactoryCredentialsId = 'a3c63f46-4be7-48cc-869b-4239a869cbe8'
 def artifactoryUri = 'https://artifactory.intelliflo.io/artifactory'
-def ec2TemplateUrl = 'https://s3-eu-west-1.amazonaws.com/devops-aws/templates/ec2.subsys.vpc.microservice.template'
-def codedeployTemplateUrl = 'https://s3-eu-west-1.amazonaws.com/devops-aws/templates/codedeploy.generic.template'
 def gitCredentialsId = '1327a29c-d426-4f3d-b54a-339b5629c041'
 def gitCredentialsSSH = 'jenkinsgithub'
 def jiraCredentialsId = '32546070-393c-4c45-afcd-8e8f1de1757b'
 def globals = env
-
-def stageName
-def semanticVersion
-def packageVersion
-def packageMd5
-def stackName
-def verboseLogging = false
-def noSubsystemStages = ['Microservice.Scheduler']
 def windowsNode = 'windows'
-
-// ############################################################################
-// DEBUG PURPOSES ONLY
-// Use these bypass switches ONLY if testing changes further on in the pipeline
-def bypassSubsystemStage = env.JOB_NAME.split('/')[1] in noSubsystemStages
-def bypassSystemStage = false
-// ############################################################################
+def linuxNode = 'linux'
 
 pipeline {
 
@@ -46,7 +22,6 @@ pipeline {
 
     environment {
         githubRepoName = "${env.JOB_NAME.split('/')[1]}"
-        solutionName = "${env.JOB_NAME.split('/')[1].replace('Clone.', '')}"
     }
 
     options {
@@ -81,10 +56,6 @@ pipeline {
                         stashName = 'ResourceFiles'
                         resourcePath = "@libs/intellifloworkflow/resources"
                     }
-
-                    abortOlderBuilds {
-                        logVerbose = verboseLogging
-                    }
                 }
             }
         }
@@ -100,203 +71,67 @@ pipeline {
                 bat 'set'
 
                 script {
-                    stageName = 'Component'
-
-                    // Analyse and validate the changeset
-                    validateChangeset {
+                    pipelineRuntime = preparePipeline {
                         repoName = globals.githubRepoName
-                        solutionName = globals.solutionName
                         prNumber = globals.CHANGE_ID
                         baseBranch = globals.CHANGE_TARGET
                         branchName = globals.BRANCH_NAME
                         buildNumber = globals.BUILD_NUMBER
-                        logVerbose = verboseLogging
-                        delegate.stageName = stageName
                         abortOnFailure = true
-                    }
-                    changesetJson = (String)Consul.getStoreValue(ConsulKey.get(globals.githubRepoName, globals.BRANCH_NAME, globals.CHANGE_ID, 'changeset'))
-                    changeset = changeset.fromJson(changesetJson)
-
-                    // Checkout the code and unstash supporting scripts
-                    checkoutCode {
-                        delegate.stageName = stageName
-                    }
-
-                    pipelineConfig = getPipelineConfig {
                         configFile = "Jenkinsfile-config.yml"
                     }
 
-                    // Scripts required by the pipeline
-                    unstashResourceFiles {
-                        folder = 'pipeline'
-                        stashName = 'ResourceFiles'
-                    }
-
-                    // Versioning
-                    calculateVersion {
-                        buildNumber = changeset.buildNumber
-                        delegate.changeset = changeset
-                        delegate.stageName = stageName
-                        abortOnFailure = true
-                    }
-
-                    semanticVersion = Consul.getStoreValue(ConsulKey.get(globals.githubRepoName, changeset.branchName, changeset.prNumber, 'existing.version'))
-                    packageVersion = "${semanticVersion}.${changeset.buildNumber}"
-                    if (changeset.pullRequest != null) {
-                        currentBuild.displayName = "${globals.githubRepoName}.Pr${changeset.prNumber}(${packageVersion})"
-                    } else {
-                        currentBuild.displayName = "${globals.githubRepoName}(${packageVersion})"
-                    }
-                    stackName = amazon.getStackName(globals.githubRepoName, packageVersion, false, false)
-
-                    validateReferencePackageVersion {
-                        repoName = globals.githubRepoName
-                        packagesConfigPath = "src/${globals.githubRepoName}/packages.config"
-                        ref = changeset.commitSha
-                        referencePackages = ['IntelliFlo.Platform', 'Intelliflo.Platform.QueryLang']
-                    }
-
-                    startSonarQubeAnalysis {
-                        repoName = globals.githubRepoName
-                        solutionName = globals.solutionName
-                        version = semanticVersion
-                        branchName = changeset.originatingBranch
-                        unitTestResults = "UnitTestResults"
-                        coverageResults = "OpenCoverResults"
-                        inspectCodeResults = "ResharperInspectCodeResults"
-                        logVerbose = verboseLogging
-                        delegate.stageName = stageName
-                    }
-
-                    createVersionTargetsFile {
-                        serviceName = globals.solutionName
-                        version = packageVersion
-                        sha = changeset.commitSha
-                        logVerbose = verboseLogging
-                        delegate.stageName = stageName
+                    validateReferences {
+                        runtime = pipelineRuntime
                     }
 
                     buildCode {
-                        delegate.stageName = stageName
-                        delegate.pipelineConfig = pipelineConfig
-                        delegate.packageVersion = packageVersion
-                        delegate.changeset = changeset
+                        runtime = pipelineRuntime
                     }
 
-                    scanWithWhiteSource {
-                        serviceName = globals.githubRepoName
-                        libIncludePath = "src/${globals.githubRepoName}/bin/**/*.dll"
-                        semver = semanticVersion
-                        version = packageVersion
-                        jiraTicket = changeset.jiraTicket
-                        delegate.stageName = stageName
-                        isPr = changeset.pullRequest != null
-                    }
-
-                    runDependencyCheck {
-                        repoName = "${globals.solutionName}"
-                        binariesLocation = "src\\${globals.solutionName}\\bin\\Release"
-                        delegate.stageName = stageName
-                    }
-
-                    stashSubSystemTests {
-                        solutionName = globals.solutionName
-                        stashName = 'SubSystemTests'
-                        delegate.stageName = stageName
-                        logVerbose = verboseLogging
-                    }
-
-                    def unitTestResults = runUnitTests {
-                        title = "Unit Tests"
-                        withCoverage = true
-                        include = "**/test/${globals.solutionName}.Tests/bin/Release/**/${globals.solutionName}.Tests.dll"
-                        unitTestsResultsFilename = "UnitTestResults"
-                        coverageInclude = globals.solutionName
-                        coverageResultsFilename = "OpenCoverResults"
-                        logVerbose = verboseLogging
-                        delegate.stageName = stageName
+                    pipelineRuntime = unitTest {
+                        runtime = pipelineRuntime
                     }
 
                     runResharperInspectCode {
-                        repoName = globals.githubRepoName
-                        solutionName = globals.solutionName
-                        resultsFile = "ResharperInspectCodeResults"
-                        logVerbose = verboseLogging
-                        delegate.stageName = stageName
+                        runtime = pipelineRuntime
                     }
 
-                    completeSonarQubeAnalysis {
-                        logVerbose = verboseLogging
-                        delegate.stageName = stageName
+                    analyseBuild {
+                        runtime = pipelineRuntime
                     }
 
-                    analyseTestResults {
-                        title = "Unit Tests"
-                        testResults = unitTestResults
-                        logVerbose = verboseLogging
-                        delegate.stageName = stageName
+                    createPackages {
+                        runtime = pipelineRuntime
                     }
 
-                    createNugetPackages {
-                        createSubsysJsonFile = true
-                        serviceName = changeset.serviceName
-                        updateModConfigJsonFile = true
-                        stack = stackName
-                        version = packageVersion
-                        artifactFolder = 'dist'
-                        stashPackages = true
-                        stashName = 'Packages'
-                        logVerbose = verboseLogging
-                        delegate.stageName = stageName
+                    vulnerabilityScan {
+                        runtime = pipelineRuntime
                     }
 
-                    findAndDeleteOldPackages {
+                    pipelineRuntime = publishPackages {
+                        runtime = pipelineRuntime
                         credentialsId = artifactoryCredentialsId
-                        packageName = "${changeset.repoName}.${semanticVersion}"
-                        latestBuildNumber = changeset.buildNumber
-                        url = artifactoryUri
-                        logVerbose = verboseLogging
-                        delegate.stageName = stageName
-                    }
-
-                    if (changeset.pullRequest != null) {
-                        publishPackages {
-                            credentialsId = artifactoryCredentialsId
-                            repo = 'nuget-snapshot'
-                            version = packageVersion
-                            include = "*.nupkg"
-                            uri = artifactoryUri
-                            properties = "github.pr.number=${changeset.prNumber} git.repo.name=${changeset.repoName} git.master.mergebase=${changeset.masterSha} jira.ticket=${changeset.jiraTicket}"
-                            logVerbose = verboseLogging
-                            delegate.stageName = stageName
-                        }
-
-                        packageMd5 = getMd5Sum {
-                            repoName = globals.githubRepoName
-                            version = packageVersion
-                        }
+                        uri = artifactoryUri
                     }
                 }
             }
             post {
                 always {
                     script {
-                        if (changeset.pullRequest != null) {
-                            publishToSplunk {
-                                stage = stageName
-                                repoName = changeset.repoName
-                                prNumber = changeset.prNumber
-                                version = packageVersion
-                                outputToFile = true
-                                outputToLog = false
-                                consulKey = changeset.consulBuildKey
-                                logVerbose = verboseLogging
-                                delegate.stageName = stageName
-                            }
+                        pipelineRuntime = addTimings {
+                            runtime = pipelineRuntime
                         }
+
+                        publishToSplunk {
+                            runtime = pipelineRuntime
+                        }
+
                         archiveArtifacts allowEmptyArchive: true, artifacts: 'dist/*.*', caseSensitive: false, excludes: 'dist/*.zip,dist/*.nupkg,dist/*.md5'
-                        deleteWorkspace {
-                            force = true
+                        if (pipelineRuntime.config.componentStage == null || pipelineRuntime.config.componentStage.deleteWorkspace) {
+                            deleteWorkspace {
+                                force = true
+                            }
                         }
                     }
                 }
@@ -312,164 +147,50 @@ pipeline {
             }
             steps {
                 script {
-                    stageName = 'SubSystem'
-                    if (!bypassSubsystemStage) {
+                    pipelineRuntime.currentStage = 'SubSystem'
 
-                        prepareSubSystemStage {
-                            solutionName = globals.solutionName
-                            subsystemTestsStashName = 'SubSystemTests'
-                            resourceFilesFolder = 'pipeline'
-                            resourceFilesStashName = 'ResourceFiles'
-                            artifactFolder = 'dist'
-                            packagesStashName = 'Packages'
-                            delegate.stageName = stageName
+                    prepareSubSystemStage {
+                        runtime = pipelineRuntime
+                        credentialsId = artifactoryCredentialsId
+                        uri = artifactoryUri
+                    }
+
+                    if (!pipelineRuntime.config.subSystemStage.bypass) {
+                        deployToSubSystem {
+                            runtime = pipelineRuntime
                         }
 
-                        prepareCodeDeployPackages {
-                            isMicroservice = changeset.isMicroservice
-                            bucket = "codeartefacts"
-                            filter = "${changeset.repoName}.*.nupkg"
-                            artifactFolder = 'dist'
-                            credentials = artifactoryCredentialsId
+                        pipelineRuntime = subSystemTest {
+                            runtime = pipelineRuntime
                             delegate.artifactoryUri = artifactoryUri
-                            consulBuildKey = changeset.consulBuildKey
-                            logVerbose = verboseLogging
-                            delegate.stageName = stageName
                         }
 
-                        createEc2Stack {
-                            stack = stackName
-                            templateUrl = ec2TemplateUrl
-                            consulKey = changeset.consulBuildKey
-                            logVerbose = verboseLogging
-                            delegate.stageName = stageName
-                        }
-
-                        labelStackResources {
-                            repoName = changeset.repoName
-                            version = packageVersion
-                            consulKey = changeset.consulBuildKey
-                            logVerbose = verboseLogging
-                            delegate.stageName = stageName
-                        }
-
-                        deployToAws {
-                            packageName = changeset.repoName
-                            version = packageVersion
-                            isMicroservice = changeset.isMicroservice
-                            instance = "microservice"
-                            serviceAction = "start"
-                            templateUrl = codedeployTemplateUrl
-                            consulKey = changeset.consulBuildKey
-                            logVerbose = verboseLogging
-                            delegate.stageName = stageName
-                        }
-
-                        checkServiceHealth {
-                            serverDns = Consul.getStoreValue("${changeset.consulBuildKey}/MicroserviceAddress")
-                            maxAttempts = 12
-                            sleepIncrement = 10
-                            logVerbose = verboseLogging
-                            delegate.stageName = stageName
-                        }
-
-                        if (changeset.pullRequest != null) {
-                            verifyPackageExists {
-                                packageName = changeset.repoName
-                                version = packageVersion
-                                uri = artifactoryUri
-                                repo = "nuget-snapshot"
-                                logVerbose = verboseLogging
-                                delegate.stageName = stageName
-                            }
-                        }
-
-                        prepareSubSystemTestConfigFile {
-                            solutionName = globals.solutionName
-                            configuration = 'Debug'
-                            stack = stackName
-                            consulKey = changeset.consulBuildKey
-                            logVerbose = verboseLogging
-                            delegate.stageName = stageName
-                        }
-
-                        def subsystemTestResults = runUnitTests {
-                            title = "SubSystem Tests"
-                            withCoverage = false
-                            include = "**/test/${globals.solutionName}.SubSystemTests/bin/Debug/**/${globals.solutionName}.SubSystemTests.dll"
-                            unitTestsResultsFilename = "SubSystemTestResults"
-                            logVerbose = verboseLogging
-                            delegate.stageName = stageName
-                        }
-
-                        analyseTestResults {
-                            title = "SubSystem Tests"
-                            testResults = subsystemTestResults
-                            logVerbose = verboseLogging
-                            delegate.stageName = stageName
-                        }
-
-                        measureSubSystemCoverage {
-                            repoName = changeset.repoName
-                            solutionName = globals.solutionName
-                            serviceName = changeset.serviceName
-                            consulKey = changeset.consulBuildKey
-                            artifactFolder = 'dist'
-                            warnIfProdUrlNotAvailable = true
-                            logVerbose = verboseLogging
-                            delegate.stageName = stageName
-                        }
-
-                        validatePublicSwagger {
-                            logVerbose = verboseLogging
-                            delegate.stageName = stageName
-                            consulKey = changeset.consulBuildKey
-                            serviceName = changeset.serviceName
+                        analyseSubSystem {
+                            runtime = pipelineRuntime
                             gitCredentials = gitCredentialsSSH
-                            outputFolder = "${pwd()}\\dist"
                         }
                     } else {
-                        echo "[DEBUG] Bypassing ${stageName} Stage"
+                        echo "[INFO] Bypassing ${pipelineRuntime.currentStage} Stage"
                     }
 
-                    findAndDeleteOldPackages {
+                    // Promote PR packages
+                    promotePackages {
+                        runtime = pipelineRuntime
                         credentialsId = artifactoryCredentialsId
-                        packageName = "${changeset.repoName}.${semanticVersion}"
-                        latestBuildNumber = changeset.buildNumber
-                        url = artifactoryUri
-                        logVerbose = verboseLogging
-                        delegate.stageName = stageName
+                        uri = artifactoryUri
                     }
 
-                    if (changeset.pullRequest != null) {
-                        promotePackage {
-                            packageName = changeset.repoName
-                            version = packageVersion
-                            packageMasterSha = changeset.masterSha
-                            sourceRepo = 'nuget-snapshot'
-                            destinationRepo = 'nuget-ready4test'
-                            credentialsId = artifactoryCredentialsId
-                            url = artifactoryUri
-                            logVerbose = verboseLogging
-                            delegate.stageName = stageName
-                        }
+                    // Publish branch packages
+                    pipelineRuntime = publishPackages {
+                        runtime = pipelineRuntime
+                        credentialsId = artifactoryCredentialsId
+                        uri = artifactoryUri
                     }
 
-                    if (changeset.branch != null) {
-                        publishPackages {
-                            credentialsId = artifactoryCredentialsId
-                            repo = 'nuget-dev-snapshot'
-                            version = packageVersion
-                            include = "*.nupkg"
-                            uri = artifactoryUri
-                            properties = "git.branch.name=${changeset.branchName} git.repo.name=${changeset.repoName} git.master.mergebase=${changeset.masterSha} jira.ticket=${changeset.jiraTicket}"
-                            logVerbose = verboseLogging
-                            delegate.stageName = stageName
-                        }
-
+                    if (pipelineRuntime.changeset.branch != null) {
                         addDeployLink {
-                            packageName = changeset.repoName
-                            delegate.packageVersion = packageVersion
+                            packageName = pipelineRuntime.changeset.repoName
+                            delegate.packageVersion = pipelineRuntime.packageVersion
                         }
                     }
                 }
@@ -477,46 +198,25 @@ pipeline {
             post {
                 always {
                     script {
-                        if (!bypassSubsystemStage) {
-                            addSubSystemLogsToArtifacts {
-                                stack = stackName
-                                consulKey = changeset.consulBuildKey
-                                artifactFolder = 'dist'
-                                logVerbose = verboseLogging
-                                delegate.stageName = stageName
-                            }
+                        pipelineRuntime = addTimings {
+                            runtime = pipelineRuntime
+                        }
 
-                            removeAwsStacks {
-                                repoName = changeset.repoName
-                                version = packageVersion
-                                isMicroservice = changeset.isMicroservice
-                                logVerbose = verboseLogging
-                                delegate.stageName = stageName
-                            }
+                        cleanUpSubSystem {
+                            runtime = pipelineRuntime
+                        }
 
-                            deleteS3Package {
-                                bucketName = 'codeartefacts'
-                                name = changeset.repoName
-                                version = packageVersion
-                                logVerbose = verboseLogging
-                                delegate.stageName = stageName
-                            }
-
+                        if (!pipelineRuntime.config.subSystemStage.bypass) {
                             publishToSplunk {
-                                stage = stageName
-                                repoName = changeset.repoName
-                                prNumber = changeset.prNumber
-                                version = packageVersion
-                                outputToFile = true
-                                outputToLog = false
-                                consulKey = changeset.consulBuildKey
-                                logVerbose = verboseLogging
-                                delegate.stageName = stageName
+                                runtime = pipelineRuntime
                             }
                         }
+
                         archiveArtifacts allowEmptyArchive: true, artifacts: 'dist/*.*', caseSensitive: false, excludes: 'dist/*.zip,dist/*.nupkg,dist/*.md5'
-                        deleteWorkspace {
-                            force = true
+                        if (pipelineRuntime.config.subSystemStage.deleteWorkspace) {
+                            deleteWorkspace {
+                                force = true
+                            }
                         }
                     }
                 }
@@ -530,48 +230,42 @@ pipeline {
             }
             steps {
                 script {
-                    stageName = 'System'
-                    if (!bypassSystemStage) {
-                        def inputResult = pauseForInput {
-                            delegate.stageName = stageName
+                    pipelineRuntime.currentStage = 'System'
+
+                    abortOlderBuilds {
+                        logVerbose = pipelineRuntime.config.logVerbose
+                    }
+
+                    if (!pipelineRuntime.config.systemStage.bypass) {
+
+                        def testingRequired = pauseForInput {
                             message = 'SIT testing required?'
                             okButtonText = 'Yes'
-                            logVerbose = verboseLogging
+                            stageName = pipelineRuntime.currentStage
+                            logVerbose = pipelineRuntime.config.logVerbose
                         }
 
-                        if (inputResult) {
+                        if (testingRequired) {
                             deployToEnvironment {
-                                delegate.stageName = stageName
-                                repoName = changeset.repoName
-                                solutionName = changeset.solutionName
-                                serviceName = changeset.serviceName
-                                prNumber = changeset.prNumber
-                                delegate.packageVersion = packageVersion
-                                targetRepo = "nuget-ready4test"
+                                runtime = pipelineRuntime
                                 delegate.artifactoryUri = artifactoryUri
-                                packageMasterSha = changeset.masterSha
-                                playbook = "api-service"
-                                deploySlaveLabel = 'deploy'
-                                deployScriptsBranchName = 'master'
                                 gitCredentials = gitCredentialsSSH
-                                logVerbose = verboseLogging
-                                packageMd5Checksum = packageMd5
                             }
                         }
 
-                        inputResult = pauseForInput {
-                            delegate.stageName = stageName
+                        def sitTestingSuccessful = pauseForInput {
                             message = 'Manual SIT testing successful?'
                             okButtonText = 'Yes'
-                            logVerbose = verboseLogging
+                            stageName = pipelineRuntime.currentStage
+                            logVerbose = pipelineRuntime.config.logVerbose
                         }
 
-                        if (inputResult == false) {
+                        if (sitTestingSuccessful == false) {
                             currentBuild.result = 'ABORTED'
                             error "SIT Testing unsuccessful"
                         }
                     } else {
-                        echo "[DEBUG] Bypassing ${stageName} Stage"
+                        echo "[INFO] Bypassing ${pipelineRuntime.currentStage} Stage"
                     }
 
                     node(windowsNode) {
@@ -580,25 +274,10 @@ pipeline {
                             stashName = 'ResourceFiles'
                         }
 
-                        findAndDeleteOldPackages {
+                        promotePackages {
+                            runtime = pipelineRuntime
                             credentialsId = artifactoryCredentialsId
-                            packageName = "${changeset.repoName}.${semanticVersion}"
-                            latestBuildNumber = changeset.buildNumber
-                            url = artifactoryUri
-                            logVerbose = verboseLogging
-                            delegate.stageName = stageName
-                        }
-
-                        promotePackage {
-                            packageName = changeset.repoName
-                            version = packageVersion
-                            packageMasterSha = changeset.masterSha
-                            sourceRepo = 'nuget-ready4test'
-                            destinationRepo = 'nuget-ready4prd'
-                            credentialsId = artifactoryCredentialsId
-                            url = artifactoryUri
-                            logVerbose = verboseLogging
-                            delegate.stageName = stageName
+                            uri = artifactoryUri
                         }
 
                         deleteDir()
@@ -608,7 +287,12 @@ pipeline {
             post {
                 always {
                     script {
-                        if (!bypassSystemStage) {
+                        pipelineRuntime = addTimings {
+                            runtime = pipelineRuntime
+                        }
+
+                        if (!pipelineRuntime.config.systemStage.bypass) {
+
                             node(windowsNode) {
                                 bat "if not exist dist\\NUL (mkdir dist)"
 
@@ -618,15 +302,7 @@ pipeline {
                                 }
 
                                 publishToSplunk {
-                                    stage = stageName
-                                    repoName = changeset.repoName
-                                    prNumber = changeset.prNumber
-                                    version = packageVersion
-                                    outputToFile = true
-                                    outputToLog = false
-                                    consulKey = changeset.consulBuildKey
-                                    logVerbose = verboseLogging
-                                    delegate.stageName = stageName
+                                    runtime = pipelineRuntime
                                 }
 
                                 archiveArtifacts allowEmptyArchive: true, artifacts: 'dist/*.*', caseSensitive: false, excludes: 'dist/*.zip,dist/*.nupkg,dist/*.md5'
@@ -645,100 +321,48 @@ pipeline {
             }
             steps {
                 script {
-                    stageName = 'Production'
+                    pipelineRuntime.currentStage = 'Production'
 
-                    validateCodeReviews {
-                        repoName = changeset.repoName
-                        prNumber = changeset.prNumber
-                        author = changeset.author
-                        failBuild = false
-                        logVerbose = verboseLogging
-                        delegate.stageName = stageName
+                    abortOlderBuilds {
+                        logVerbose = pipelineRuntime.config.logVerbose
                     }
 
-                    validateJiraTicket {
-                        delegate.changeset = changeset
-                        failBuild = false
-                        delegate.stageName = stageName
-                        logVerbose = verboseLogging
+                    validateProductionStage {
+                        runtime = pipelineRuntime
                     }
 
                     deployToProduction {
-                        delegate.stageName = stageName
-                        repoName = changeset.repoName
-                        solutionName = changeset.solutionName
-                        serviceName = changeset.serviceName
-                        prNumber = changeset.prNumber
-                        delegate.packageVersion = packageVersion
-                        targetRepo = "nuget-ready4prd"
+                        runtime = pipelineRuntime
                         delegate.artifactoryUri = artifactoryUri
-                        packageMasterSha = changeset.masterSha
-                        playbook = "api-service"
-                        deploySlaveLabel = 'deploy'
-                        deployScriptsBranchName = 'master'
                         gitCredentials = gitCredentialsSSH
-                        logVerbose = verboseLogging
-                        packageMd5Checksum = packageMd5
                     }
 
-                    def inputResult = pauseForInput {
+                    def prdTestingSuccessful = pauseForInput {
                         withTimeout = {
-                            time = 3
+                            time = pipelineRuntime.config.prdTestingSuccessfulTimeout
                             unit = 'HOURS'
                         }
-                        delegate.stageName = stageName
                         message = 'Has manual PRD testing been successful?'
                         okButtonText = 'Yes'
-                        logVerbose = verboseLogging
+                        stageName = pipelineRuntime.currentStage
+                        logVerbose = pipelineRuntime.config.logVerbose
                     }
 
-                    if (inputResult == false) {
+                    if (prdTestingSuccessful == false) {
                         currentBuild.result = 'ABORTED'
                         error "PRD Testing unsuccessful"
                     }
 
-                    verifyPackageExists {
-                        packageName = changeset.repoName
-                        version = packageVersion
+                    verifyPackages {
+                        runtime = pipelineRuntime
                         uri = artifactoryUri
-                        repo = 'nuget-ready4prd'
-                        logVerbose = verboseLogging
-                        delegate.stageName = stageName
-                    }
-
-                    validateMasterSha {
-                        repoName = changeset.repoName
-                        packageMasterSha = changeset.masterSha
-                        logVerbose = verboseLogging
-                        delegate.stageName = stageName
                     }
 
                     node(windowsNode) {
-                        mergePullRequest {
-                            repoName = changeset.repoName
-                            prNumber = changeset.prNumber
-                            masterSha = changeset.masterSha
-                            sha = changeset.commitSha
-                            consulKey = changeset.consulBaseKey
+
+                        mergeChangeset {
+                            runtime = pipelineRuntime
                             credentialsId = gitCredentialsId
-                            logVerbose = verboseLogging
-                            delegate.stageName = stageName
-                        }
-
-                        updateMasterVersion {
-                            repoName = changeset.repoName
-                            version = semanticVersion
-                            logVerbose = verboseLogging
-                            delegate.stageName = stageName
-                        }
-
-                        tagCommit {
-                            repoName = changeset.repoName
-                            version = semanticVersion
-                            author = changeset.author
-                            email = changeset.commitInfo.author.email
-                            logVerbose = verboseLogging
-                            delegate.stageName = stageName
                         }
 
                         unstashResourceFiles {
@@ -746,75 +370,40 @@ pipeline {
                             stashName = 'ResourceFiles'
                         }
 
-                        promotePackage {
-                            packageName = changeset.repoName
-                            version = packageVersion
-                            packageMasterSha = changeset.masterSha
-                            sourceRepo = 'nuget-ready4prd'
-                            destinationRepo = 'nuget-prd'
-                            force = true
+                        promotePackages {
+                            runtime = pipelineRuntime
                             credentialsId = artifactoryCredentialsId
-                            url = artifactoryUri
-                            logVerbose = verboseLogging
-                            delegate.stageName = stageName
+                            uri = artifactoryUri
                         }
 
                         updateJiraOnMerge {
-                            issueKey = changeset.jiraTicket
-                            packageName = changeset.repoName
-                            version = packageVersion
+                            runtime = pipelineRuntime
                             credentialsId = jiraCredentialsId
-                            logVerbose = verboseLogging
-                            delegate.stageName = stageName
                         }
 
                         deleteDir()
                     }
 
-                    node('linux') {
-                        scanPackageWithWhiteSource {
-                            cleanTestOrganization = true
-                            serviceName = changeset.repoName
-                            libIncludePath = 'content/microservice/**/*.dll'
-                            semver = semanticVersion
-                            repoName = 'nuget-prd'
-                            delegate.packageVersion = packageVersion
-                            packageExtension = 'nupkg'
-                            logVerbose = verboseLogging
-                        }
-
-                        deleteDir()
+                    vulnerabilityScan {
+                        runtime = pipelineRuntime
                     }
 
-                    updateWatermarks {
-                        repoName = changeset.repoName
-                        consulBuildKey = changeset.consulBuildKey
-                        logVerbose = verboseLogging
-                        delegate.stageName = stageName
-                    }
-
-                    cleanupConsul {
-                        repoName = changeset.repoName
-                        prNumber = changeset.prNumber
-                        consulBuildKey = changeset.consulBuildKey
-                        logVerbose = verboseLogging
-                        delegate.stageName = stageName
-                    }
-
-                    deleteGithubBranch {
-                        repoName = changeset.repoName
-                        branchName = changeset.originatingBranch
-                        logVerbose = verboseLogging
+                    cleanUpProduction {
+                        runtime = pipelineRuntime
+                        credentialsId = artifactoryCredentialsId
+                        uri = artifactoryUri
                     }
                 }
             }
             post {
                 always {
                     script {
+                        pipelineRuntime = addTimings {
+                            runtime = pipelineRuntime
+                        }
+
                         releaseProductionStage {
-                            repoName = changeset.repoName
-                            logVerbose = verboseLogging
-                            delegate.stageName = stageName
+                            runtime = pipelineRuntime
                         }
 
                         node(windowsNode) {
@@ -826,15 +415,7 @@ pipeline {
                             }
 
                             publishToSplunk {
-                                stage = stageName
-                                repoName = changeset.repoName
-                                prNumber = changeset.prNumber
-                                version = packageVersion
-                                outputToFile = true
-                                outputToLog = false
-                                consulKey = changeset.consulBuildKey
-                                logVerbose = verboseLogging
-                                delegate.stageName = stageName
+                                runtime = pipelineRuntime
                             }
 
                             archiveArtifacts allowEmptyArchive: true, artifacts: 'dist/*.*', caseSensitive: false, excludes: 'dist/*.zip,dist/*.nupkg,dist/*.md5'
@@ -849,7 +430,7 @@ pipeline {
         always {
             script {
                 reportBuildStatusToSlack {
-                    delegate.changesetJson = changesetJson
+                    changeset = pipelineRuntime.changeset
                 }
             }
         }
