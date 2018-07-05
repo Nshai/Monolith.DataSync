@@ -1,5 +1,12 @@
 ---
 logVerbose: false
+solutionName: Microservice.Workflow
+displayName: Microservice.Workflow
+database: sqlserver
+validateReferences: true
+hasSubSystemTests: true
+deploymentPlaybook: api-service
+prdTestingSuccessfulTimeout: 3
 projectsToBuild:
 - projectFile: Microservice.Workflow.sln
   buildTool: MSBuild 14.0
@@ -7,3 +14,26 @@ projectsToBuild:
 - projectFile: Microservice.Workflow.SubSystemTests.sln
   buildTool: MSBuild 14.0
   arguments: /m /p:Configuration=Debug;TargetFrameworkVersion=v4.5.2 /clp:ErrorsOnly
+codeQuality:
+  resharperInspectCode:
+    run: true
+  sonarQube:
+    run: true
+scan:
+  whiteSource:
+    run: true
+  dependencyCheck:
+    run: false
+    binariesLocation: src\\Microservice.Workflow\\bin\\Release
+packaging:
+  configuration: Release
+  createSubsysJsonFile: true
+  updateModConfigJsonFile: true
+supportedApiVersions:
+  - v1
+subSystemStage:
+  include: "**/test/Microservice.Workflow.SubSystemTests/bin/Debug/**/Microservice.Workflow.SubSystemTests.dll"
+  removeEc2Stack: true
+  healthCheck:
+    maxAttempts: 12
+    sleepIncrement: 10
