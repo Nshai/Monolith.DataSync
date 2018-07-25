@@ -220,15 +220,11 @@ namespace Microservice.Workflow.Tests
 
             if (assignedToUserId.HasValue)
             {
-                serviceClient.Setup(c => c.Get<Dictionary<string, object>>(string.Format(Collaborators.v1.Uris.Crm.GetUserInfoByUserId, assignedToUserId), null))
-                             .Returns(() => Task.FromResult(new HttpResponse<Dictionary<string, object>>
+                serviceClient.Setup(c => c.Get<Collaborators.v1.UserDocument>(string.Format(Collaborators.v1.Uris.Crm.GetUserByUserId, assignedToUserId), null))
+                             .Returns(() => Task.FromResult(new HttpResponse<Collaborators.v1.UserDocument>
                                                                  {
                                                                      Raw = new HttpResponseMessage(HttpStatusCode.OK),
-                                                                     Resource = new Dictionary<string, object>
-                                                                     {
-                                                                         { Constants.ApplicationClaimTypes.PartyId, assignedToPartyId }
-
-                                                                     }
+                                                                     Resource = new UserDocument { PartyId = assignedToPartyId }
                                                                  }));
             }
 

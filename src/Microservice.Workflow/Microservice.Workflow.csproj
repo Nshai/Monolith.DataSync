@@ -404,6 +404,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collaborators\v1\UserDocument.cs" />
     <Compile Include="Collaborators\v2\ClientDocument.cs" />
     <Compile Include="Collaborators\v2\Uris.cs" />
     <Compile Include="Collaborators\v2\UserRefDocument.cs" />

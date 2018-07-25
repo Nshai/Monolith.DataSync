@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Activities;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using IntelliFlo.Platform.Http.Client;
 using IntelliFlo.Platform.Http.Client.Policy;
 using V1 = Microservice.Workflow.Collaborators.v1;
 using V2 = Microservice.Workflow.Collaborators.v2;
 using Microservice.Workflow.Domain;
-using Constants = IntelliFlo.Platform.Principal.Constants;
 
 namespace Microservice.Workflow.v1.Activities
 {
@@ -53,15 +51,13 @@ namespace Microservice.Workflow.v1.Activities
                             return PartyNotFound;
                         }
 
-                        var userClaimsResponse = await crmClient.UsingPolicy(HttpClientPolicy.Retry)
-                                                                .SendAsync(c => c.Get<Dictionary<string, object>>(string.Format(V1.Uris.Crm.GetUserInfoByUserId, entityId)))
+                        var userResponse = await crmClient.UsingPolicy(HttpClientPolicy.Retry)
+                                                                .SendAsync(c => c.Get<V1.UserDocument>(string.Format(V1.Uris.Crm.GetUserByUserId, entityId)))
                                                                 .OnException(s => { throw new HttpClientException(s); });
 
-                        var userClaims = userClaimsResponse.Resource;
+                        var user = userResponse.Resource;
 
-                        return userClaims.ContainsKey(Constants.ApplicationClaimTypes.PartyId)
-                            ? int.Parse(userClaims[Constants.ApplicationClaimTypes.PartyId].ToString())
-                            : PartyNotFound;
+                        return user.PartyId;
                     }
                     default:
                         return PartyNotFound;
