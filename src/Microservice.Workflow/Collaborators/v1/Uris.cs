@@ -18,6 +18,7 @@
             public const string GetLead = "v1/leads/{0}";
             public const string GetUserInfoBySubject = "v1/claims/subject/{0}";
             public const string GetUserInfoByUserId = "v1/claims/user/{0}";
+            public const string GetUserByUserId = "v1/users/{0}";
         }
 
         public static class Portfolio

@@ -7,6 +7,7 @@
         SellingAdviser,
         ServicingAdministrator,
         TandCCoach,
-        Manager
+        Manager,
+        Paraplanner
     }
 }

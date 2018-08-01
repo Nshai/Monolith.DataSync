@@ -191,18 +191,64 @@ namespace Microservice.Workflow.Tests
         }
 
         [Test]
-        public void WhenExecuteCreateTaskStepWithOwnerContextRoleThenTaskCreatedSuccessfully()
+        [TestCase(RoleContextType.Paraplanner, 19394, 9394)]
+        [TestCase(RoleContextType.ServicingAdministrator, 19395, 9395)]
+        [TestCase(RoleContextType.ServicingAdviser, null, 9393)]
+        public void WhenExecuteCreateTaskStepWithOwnerContextRoleThenTaskCreatedSuccessfully(RoleContextType roleContextType, int? assignedToUserId, int assignedToPartyId)
         {
             const int adviserId = 9393;
-            serviceClient.Setup(c => c.Get<ClientDocument>(string.Format(Uris.Crm.GetClient, EntityId), null)).Returns(() => Task.FromResult(new HttpResponse<ClientDocument> {Raw = new HttpResponseMessage(HttpStatusCode.OK), Resource = new ClientDocument {CurrentAdviserPartyId = adviserId}}));
 
-            var createTask = new CreateTaskStep(Guid.NewGuid(), TaskTransition.OnCompletion, 111, TaskAssignee.ContextRole, assignedToRoleContext: RoleContextType.ServicingAdviser);
+            var clientDocumentV1 = new Collaborators.v1.ClientDocument { CurrentAdviserPartyId = adviserId };
+
+            var clientDocumentV2 = new Collaborators.v2.ClientDocument();
+
+            if (assignedToUserId.HasValue && roleContextType == RoleContextType.Paraplanner)
+            {
+                clientDocumentV2.Paraplanner = new Collaborators.v2.UserRefDocument
+                {
+                    Id = assignedToUserId.Value
+                };
+
+            }
+            else if (assignedToUserId.HasValue)
+            {
+                clientDocumentV2.ServicingAdministrator = new Collaborators.v2.UserRefDocument
+                {
+                    Id = assignedToUserId.Value
+                };
+            }
+
+            if (assignedToUserId.HasValue)
+            {
+                serviceClient.Setup(c => c.Get<Collaborators.v1.UserDocument>(string.Format(Collaborators.v1.Uris.Crm.GetUserByUserId, assignedToUserId), null))
+                             .Returns(() => Task.FromResult(new HttpResponse<Collaborators.v1.UserDocument>
+                                                                 {
+                                                                     Raw = new HttpResponseMessage(HttpStatusCode.OK),
+                                                                     Resource = new UserDocument { PartyId = assignedToPartyId }
+                                                                 }));
+            }
+
+            serviceClient.Setup(c => c.Get<Collaborators.v2.ClientDocument>(string.Format(Collaborators.v2.Uris.Crm.GetClient, EntityId), null))
+                         .Returns(() => Task.FromResult(new HttpResponse<Collaborators.v2.ClientDocument>
+                                                             {
+                                                                 Raw = new HttpResponseMessage(HttpStatusCode.OK),
+                                                                 Resource = clientDocumentV2
+                                                             }));
+
+            serviceClient.Setup(c => c.Get<Collaborators.v1.ClientDocument>(string.Format(Collaborators.v1.Uris.Crm.GetClient, EntityId), null))
+                         .Returns(() => Task.FromResult(new HttpResponse<Collaborators.v1.ClientDocument>
+                                                             {
+                                                                 Raw = new HttpResponseMessage(HttpStatusCode.OK),
+                                                                 Resource = clientDocumentV1
+                                                             }));
+
+            var createTask = new CreateTaskStep(Guid.NewGuid(), TaskTransition.OnCompletion, 111, TaskAssignee.ContextRole, assignedToRoleContext: roleContextType);
             var request = ExecuteCreateTaskWorkflow(clientTemplate, new[] {createTask});
 
             serviceClient.Verify(c => c.Post<TaskDocument, CreateTaskRequest>(Uris.Crm.CreateTask, It.IsAny<CreateTaskRequest>()), Times.Once());
 
             Assert.AreEqual(EntityId, request.RelatedPartyId);
-            Assert.AreEqual(adviserId, request.AssignedToPartyId);
+            Assert.AreEqual(assignedToPartyId, request.AssignedToPartyId);
         }
 
         [Test]
