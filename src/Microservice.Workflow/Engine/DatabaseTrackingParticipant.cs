@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Activities.Tracking;
+using System.Net;
 using System.Threading;
 using IntelliFlo.Platform;
 using IntelliFlo.Platform.NHibernate;
@@ -55,7 +56,22 @@ namespace Microservice.Workflow.Engine
                                     if (SetInstanceStatus(instanceRepository, record.InstanceId, InstanceStatus.Aborted))
                                     {
                                         instanceHistory = InstanceHistory.Aborted(record.InstanceId, record.EventTime);
+
+                                        var abortedRecord = record as WorkflowInstanceAbortedRecord;
+                                        if (abortedRecord != null && abortedRecord.Reason.Contains(HttpStatusCode.Forbidden.ToString()))
+                                        {
+                                            instanceHistory.Data = new LogData
+                                            {
+                                                Detail = new AbortRequestLog
+                                                {
+                                                    UserRequested = 0, 
+                                                    Reason = "Assigned User no longer has Access"
+                                                }
+                                            };
+
+                                        }
                                     }
+                                    
                                     LogMessage(record, LogLevel.Warning, "Instance aborted");
                                     break;
                                 case "UnhandledException":
