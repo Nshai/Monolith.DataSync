@@ -6,6 +6,7 @@
         {
             public const string GetServiceCase = "v2/clients/{0}/servicecases/{1}";
             public const string GetClient = "v2/clients/{0}";
+            public const string GetUserByUserId = "v2/users/{0}";
         }
 
     }

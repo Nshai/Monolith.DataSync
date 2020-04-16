@@ -9,6 +9,8 @@ using Microservice.Workflow.Domain;
 using Autofac;
 using IntelliFlo.Platform;
 using Microservice.Workflow.Host;
+using System.Threading;
+using Microservice.Workflow.Utilities.TimeZone;
 
 namespace Microservice.Workflow.v1.Activities
 {
@@ -26,11 +28,13 @@ namespace Microservice.Workflow.v1.Activities
 
         protected override void Execute(NativeActivityContext context)
         {
-            var workflowContext = (WorkflowContext) context.Properties.Find(WorkflowConstants.WorkflowContextKey);
+            var workflowContext = (WorkflowContext)context.Properties.Find(WorkflowConstants.WorkflowContextKey);
 
             using (var lifetimeScope = IoC.Container.BeginLifetimeScope(WorkflowScopes.Scope))
-            using (UserContextBuilder.FromBearerToken(workflowContext.BearerToken, lifetimeScope))
+            using (var userPrincipal = UserContextBuilder.FromBearerToken(workflowContext.BearerToken, lifetimeScope))
             {
+                var (clientFactory, timeZoneConverter) = ResolveDependecies(lifetimeScope);
+                var userId = userPrincipal.Value.UserId;
                 var taskTypeId = TaskTypeId.Get(context);
                 var dueDelay = DueDelay.Get(context);
                 var dueDelayBusinessDays = DueDelayBusinessDays.Get(context);
@@ -40,10 +44,13 @@ namespace Microservice.Workflow.v1.Activities
                 var templateOwnerPartyId = TemplateOwnerPartyId.Get(context);
                 var assignedTo = AssignedTo.Get(context);
 
-                var clientFactory = lifetimeScope.Resolve<IHttpClientFactory>();
                 using (var crmClient = clientFactory.Create("crm"))
                 {
-                    var dueDate = DateCalculator.AddDays(DateTime.UtcNow, TimeSpan.FromDays(dueDelay), dueDelayBusinessDays, (s, e) =>
+                    var userTimeZone = GetUserTimeZone(crmClient, userId);
+
+                    var userDateTimeNow = timeZoneConverter.ConvertFromUtc(SystemTime.Now(), userTimeZone);
+
+                    var dueDate = DateCalculator.AddDays(userDateTimeNow, TimeSpan.FromDays(dueDelay), dueDelayBusinessDays, (s, e) =>
                     {
                         HttpResponse<IEnumerable<HolidayDocument>> holidayResponse = null;
                         var holidayTask = crmClient.UsingPolicy(HttpClientPolicy.Retry).SendAsync(c => c.Get<IEnumerable<HolidayDocument>>(string.Format(Uris.Holidays.Get, s.ToString("s"), e.ToString("s"))))
@@ -66,6 +73,20 @@ namespace Microservice.Workflow.v1.Activities
                     TaskId.Set(context, task.TaskId);
                 }
             }
+        }
+
+        private (IHttpClientFactory, ITimeZoneConverter) ResolveDependecies(ILifetimeScope lifetimeScope)
+        {
+            return (lifetimeScope.Resolve<IHttpClientFactory>(),
+                lifetimeScope.Resolve<ITimeZoneConverter>());
+        }
+
+        private string GetUserTimeZone(IHttpClient crmClient, int userId)
+        {
+            var userDocument = crmClient.UsingPolicy(HttpClientPolicy.Retry).
+                SendAsync(c => c.Get<Collaborators.v2.UserDocument>(string.Format(Collaborators.v2.Uris.Crm.GetUserByUserId, userId.ToString())))
+                .ConfigureAwait(false).GetAwaiter().GetResult();
+            return userDocument.Resource.TimeZone;
         }
     }
 }

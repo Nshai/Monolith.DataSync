@@ -277,6 +277,9 @@
       <HintPath>..\..\packages\NLog.4.3.5\lib\net45\NLog.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="NodaTime, Version=2.4.7.0, Culture=neutral, PublicKeyToken=4226afe0d9b296d1, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NodaTime.2.4.7\lib\net45\NodaTime.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
       <Private>True</Private>
@@ -312,6 +315,7 @@
       <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Client.5.2.6\lib\net45\System.Net.Http.Formatting.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
@@ -416,6 +420,7 @@
     <Compile Include="Collaborators\v2\ClientDocument.cs" />
     <Compile Include="Collaborators\v2\ServiceCaseDocument.cs" />
     <Compile Include="Collaborators\v2\Uris.cs" />
+    <Compile Include="Collaborators\v2\UserDocument.cs" />
     <Compile Include="Collaborators\v2\UserRefDocument.cs" />
     <Compile Include="Domain\InstanceNotRestartableException.cs" />
     <Compile Include="Host\BusStartup.cs" />
@@ -445,6 +450,8 @@
     <Compile Include="RepositoryExtensions.cs" />
     <Compile Include="LogLevel.cs" />
     <Compile Include="ServiceClientException.cs" />
+    <Compile Include="Utilities\TimeZone\ITimeZoneConverter.cs" />
+    <Compile Include="Utilities\TimeZone\TimeZoneConverter.cs" />
     <Compile Include="v1\Activities\ResumeOnDelay.cs" />
     <Compile Include="v1\Activities\PostToService.cs" />
     <Compile Include="v1\Contracts\RegisterTemplateRequest.cs" />
@@ -729,6 +736,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <None Include="README.md" />
+    <EmbeddedResource Include="Utilities\TimeZone\timezoneinfo.nzd" />
   </ItemGroup>
   <ItemGroup>
     <XamlAppDef Include="v1\Activities\Create.xaml">
@@ -800,6 +808,7 @@
     <Analyzer Include="..\..\packages\AWSSDK.SimpleNotificationService.3.3.0.21\analyzers\dotnet\cs\AWSSDK.SimpleNotificationService.CodeAnalysis.dll" />
     <Analyzer Include="..\..\packages\AWSSDK.SQS.3.3.2.7\analyzers\dotnet\cs\AWSSDK.SQS.CodeAnalysis.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if not exist $(SolutionDir)dist md $(SolutionDir)dist
