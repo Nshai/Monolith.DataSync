@@ -49,7 +49,7 @@ namespace Microservice.Workflow.v1.Activities
                     var userTimeZone = GetUserTimeZone(crmClient, userId);
 
                     var userDateTimeNow = timeZoneConverter.ConvertFromUtc(SystemTime.Now(), userTimeZone);
-
+                    var startDate = userDateTimeNow.Date;
                     var dueDate = DateCalculator.AddDays(userDateTimeNow, TimeSpan.FromDays(dueDelay), dueDelayBusinessDays, (s, e) =>
                     {
                         HttpResponse<IEnumerable<HolidayDocument>> holidayResponse = null;
@@ -67,7 +67,7 @@ namespace Microservice.Workflow.v1.Activities
 
                     var taskBuilderFactory = lifetimeScope.Resolve<IEntityTaskBuilderFactory>();
                     var taskBuilder = taskBuilderFactory.Get(workflowContext.EntityType, this, context);
-                    var taskResult = taskBuilder.Create(taskTypeId, dueDate, templateOwnerPartyId, assignedTo, ownerPartyId, ownerRoleId, ownerContextRole, workflowContext).ConfigureAwait(false);
+                    var taskResult = taskBuilder.Create(taskTypeId, startDate, dueDate, templateOwnerPartyId, assignedTo, ownerPartyId, ownerRoleId, ownerContextRole, workflowContext).ConfigureAwait(false);
                     var task = taskResult.GetAwaiter().GetResult();
 
                     TaskId.Set(context, task.TaskId);
