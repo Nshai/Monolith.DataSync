@@ -808,7 +808,6 @@
     <Analyzer Include="..\..\packages\AWSSDK.SimpleNotificationService.3.3.0.21\analyzers\dotnet\cs\AWSSDK.SimpleNotificationService.CodeAnalysis.dll" />
     <Analyzer Include="..\..\packages\AWSSDK.SQS.3.3.2.7\analyzers\dotnet\cs\AWSSDK.SQS.CodeAnalysis.dll" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if not exist $(SolutionDir)dist md $(SolutionDir)dist

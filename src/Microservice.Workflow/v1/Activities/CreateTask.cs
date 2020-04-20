@@ -9,7 +9,6 @@ using Microservice.Workflow.Domain;
 using Autofac;
 using IntelliFlo.Platform;
 using Microservice.Workflow.Host;
-using System.Threading;
 using Microservice.Workflow.Utilities.TimeZone;
 
 namespace Microservice.Workflow.v1.Activities
