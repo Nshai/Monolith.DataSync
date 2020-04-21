@@ -435,6 +435,7 @@
     <Compile Include="MigrationResourceTests.cs" />
     <Compile Include="MigrationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SimpleTimeZoneConverter.cs" />
     <Compile Include="TemplateController.cs" />
     <Compile Include="TemplateResourceTests.cs" />
     <Compile Include="TemplateTests.cs" />
