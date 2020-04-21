@@ -8,7 +8,10 @@ namespace Microservice.Workflow.Utilities.TimeZone
         private readonly IDateTimeZoneProvider timeZoneProvider;
         public TimeZoneConverter(IDateTimeZoneProvider timeZoneProvider)
         {
-            this.timeZoneProvider = timeZoneProvider ?? throw new ArgumentNullException(nameof(timeZoneProvider));
+            if (timeZoneProvider == null)
+                throw new ArgumentNullException("timeZoneProvider");
+
+            this.timeZoneProvider = timeZoneProvider;
         }
 
         public DateTime ConvertFromUtc(DateTime value, string targetTimeZone)

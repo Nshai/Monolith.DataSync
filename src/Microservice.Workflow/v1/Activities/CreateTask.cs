@@ -32,7 +32,8 @@ namespace Microservice.Workflow.v1.Activities
             using (var lifetimeScope = IoC.Container.BeginLifetimeScope(WorkflowScopes.Scope))
             using (var userPrincipal = UserContextBuilder.FromBearerToken(workflowContext.BearerToken, lifetimeScope))
             {
-                var (clientFactory, timeZoneConverter) = ResolveDependecies(lifetimeScope);
+                var clientFactory = lifetimeScope.Resolve<IHttpClientFactory>();
+                var timeZoneConverter = lifetimeScope.Resolve<ITimeZoneConverter>();
                 var userId = userPrincipal.Value.UserId;
                 var taskTypeId = TaskTypeId.Get(context);
                 var dueDelay = DueDelay.Get(context);
@@ -72,12 +73,6 @@ namespace Microservice.Workflow.v1.Activities
                     TaskId.Set(context, task.TaskId);
                 }
             }
-        }
-
-        private (IHttpClientFactory, ITimeZoneConverter) ResolveDependecies(ILifetimeScope lifetimeScope)
-        {
-            return (lifetimeScope.Resolve<IHttpClientFactory>(),
-                lifetimeScope.Resolve<ITimeZoneConverter>());
         }
 
         private string GetUserTimeZone(IHttpClient crmClient, int userId)
