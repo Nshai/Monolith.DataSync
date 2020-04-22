@@ -37,7 +37,9 @@ namespace Microservice.Workflow.SubSystemTests.v1.Template
             var claimsStub = Stub.Api()
                 .Request().WithMethod("GET").WithUrl(url => url.Matching("/crm/v1/claims/subject/.*"))
                 .Return().WithBody("{'party_id': 3500000, 'role_id': 10115, 'group_lineage': '3522' }").WithHeader("Content-Type", "application/json");
-
+            var userDetailsStub = Stub.Api()
+                .Request().WithMethod("GET").WithUrl(url => url.Matching("/crm/v2/users/.*"))
+                .Return().WithBody("{'TimeZone': 'Europe/London'}").WithHeader("Content-Type", "application/json");
             var taskStub = Stub.Api()
                 .Request().WithMethod("POST").WithUrl(url => url.EqualTo("/crm/v1/tasks"))
                 .Return().WithBody("{ TaskId: 123, AssignedToPartyId: 3500000 }").WithHeader("Content-Type", "application/json");
@@ -50,6 +52,7 @@ namespace Microservice.Workflow.SubSystemTests.v1.Template
             {
                 taskStub.Setup();
                 subscriptionStub.Setup();
+                userDetailsStub.Setup();
 
                 Test.Api()
                     .Given()
