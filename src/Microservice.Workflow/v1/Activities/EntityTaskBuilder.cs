@@ -28,11 +28,12 @@ namespace Microservice.Workflow.v1.Activities
             this.context = context;
         }
 
-        public async Task<TaskDocument> Create(int taskTypeId, DateTime dueDate, int templateOwnerPartyId, string assignedTo, int ownerPartyId, int ownerRoleId, string ownerContextRole, WorkflowContext workflowContext)
+        public async Task<TaskDocument> Create(int taskTypeId, DateTime? startDate, DateTime dueDate, int templateOwnerPartyId, string assignedTo, int ownerPartyId, int ownerRoleId, string ownerContextRole, WorkflowContext workflowContext)
         {
             var taskRequest = new CreateTaskRequest
             {
                 TaskTypeId = taskTypeId,
+                StartDate = startDate,
                 DueDate = dueDate,
                 AssignedByPartyId = templateOwnerPartyId
             };

@@ -8,9 +8,12 @@ using IntelliFlo.Platform.NHibernate;
 using Microservice.Workflow.Domain;
 using Microservice.Workflow.Engine;
 using Microservice.Workflow.Engine.Impl;
+using Microservice.Workflow.Utilities.TimeZone;
 using Microservice.Workflow.v1;
 using Microservice.Workflow.v1.Activities;
 using Microservice.Workflow.v1.Resources;
+using NodaTime;
+using NodaTime.TimeZones;
 using Module = Autofac.Module;
 
 namespace Microservice.Workflow.Modules
@@ -61,6 +64,24 @@ namespace Microservice.Workflow.Modules
              .Where(t => t.Name.EndsWith("AutoMapperModule"))
              .As<IModule>()
              .SingleInstance();
+
+            //Register Timezone infrastructure
+            builder.RegisterType<TimeZoneConverter>().As<ITimeZoneConverter>().InstancePerMatchingLifetimeScope(lifeTimeScopeTags);
+            builder.Register(c => BuildDateTimeZoneProvider()).As<IDateTimeZoneProvider>().InstancePerMatchingLifetimeScope(lifeTimeScopeTags);
+        }
+
+        public static IDateTimeZoneProvider BuildDateTimeZoneProvider()
+        {
+            IDateTimeZoneProvider provider;
+            var assembly = Assembly.GetAssembly(typeof(TimeZoneConverter));
+            using (var stream = assembly
+                .GetManifestResourceStream($"{typeof(TimeZoneConverter).Namespace}.timezoneinfo.nzd"))
+            {
+                var source = TzdbDateTimeZoneSource.FromStream(stream);
+                provider = new DateTimeZoneCache(source);
+            }
+
+            return provider;
         }
     }
 }

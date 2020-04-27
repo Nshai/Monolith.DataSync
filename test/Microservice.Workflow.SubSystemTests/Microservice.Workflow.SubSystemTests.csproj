@@ -157,9 +157,8 @@
       <HintPath>..\..\packages\Reassure.IntellifloExtensions.1.4.2.1\lib\net452\Reassure.IntellifloExtensions.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Reassure.OAuth">
-      <HintPath>..\..\packages\Reassure.OAuth.1.1.13\lib\net451\Reassure.OAuth.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Reassure.OAuth, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Reassure.OAuth.1.2.0.2\lib\net451\Reassure.OAuth.dll</HintPath>
     </Reference>
     <Reference Include="Reassure.WireMock">
       <HintPath>..\..\packages\Reassure.WireMock.1.3.21\lib\net452\Reassure.WireMock.dll</HintPath>

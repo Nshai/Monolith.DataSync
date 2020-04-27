@@ -23,6 +23,7 @@ using IntelliFlo.Platform.NHibernate;
 using log4net.Config;
 using Microservice.Workflow.Collaborators.v1;
 using Microservice.Workflow.Domain;
+using Microservice.Workflow.Utilities.TimeZone;
 using Microservice.Workflow.v1;
 using Microservice.Workflow.v1.Activities;
 using Microservice.Workflow.v1.Resources;
@@ -73,6 +74,13 @@ namespace Microservice.Workflow.Tests
             messageBuilder = new Mock<ISignAuthenticationMessageBuilder>();
             addressRegistry = new Mock<IServiceAddressRegistry>();
 
+            var userDataResponse = new HttpResponse<Collaborators.v2.UserDocument>
+            {
+                Raw = new HttpResponseMessage(HttpStatusCode.OK),
+                Resource = new Collaborators.v2.UserDocument { TimeZone = "Europe/London" }
+            };
+            serviceClient.Setup(c => c.Get<Collaborators.v2.UserDocument>(It.IsAny<string>(), null)).Returns(Task.FromResult(userDataResponse));
+
             serviceClient.Setup(c => c.Get<Dictionary<string, object>>(string.Format(Uris.Crm.GetUserInfoByUserId, OwnerUserId), null)).Returns(Task.FromResult(new HttpResponse<Dictionary<string, object>> { Raw = new HttpResponseMessage(HttpStatusCode.OK), Resource = new Dictionary<string, object> { { Constants.ApplicationClaimTypes.PartyId, OwnerPartyId } } }));
             serviceClientFactory.Setup(c => c.Create(It.IsAny<string>())).Returns(serviceClient.Object);
             var entityTaskFactory = new EntityTaskBuilderFactory(serviceClientFactory.Object);
@@ -114,7 +122,7 @@ namespace Microservice.Workflow.Tests
             
             builder.RegisterInstance(signManager.Object).As<ISignManager>();
             builder.RegisterInstance(messageBuilder.Object).As<ISignAuthenticationMessageBuilder>();
-
+            builder.RegisterInstance(new SimpleTimeZoneConverter()).As<ITimeZoneConverter>();
             builder.RegisterInstance(serviceClientFactory.Object).As<IHttpClientFactory>();
             builder.RegisterInstance(entityTaskFactory).As<IEntityTaskBuilderFactory>();
             builder.RegisterInstance(addressRegistry.Object).As<IServiceAddressRegistry>();
