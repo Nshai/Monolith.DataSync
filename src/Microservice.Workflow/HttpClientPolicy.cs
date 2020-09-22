@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using IntelliFlo.Platform.Http.Client;
 using Polly;
+using Polly.Retry;
 
 namespace Microservice.Workflow
 {
@@ -26,15 +27,12 @@ namespace Microservice.Workflow
             }
         }
 
-        public static Policy RetryOn500Error
+        public static RetryPolicy<HttpResponse<T>> GetRetryPolicy<T>()
         {
-            get
-            {
-                return Policy
-                    .Handle<TaskCanceledException>()
-                    .Or<HttpStatusException>(e => retryable.Contains(e.StatusCode))
-                    .WaitAndRetryAsync(3, i => TimeSpan.FromSeconds(10 * i));
-            }
+            return Policy
+            .Handle<TaskCanceledException>()
+            .OrResult<HttpResponse<T>>(e => retryable.Contains(e.Raw.StatusCode))
+            .WaitAndRetryAsync(3, i => TimeSpan.FromSeconds(10 * i));
         }
     }
 }

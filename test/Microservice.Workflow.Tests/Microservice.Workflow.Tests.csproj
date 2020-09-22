@@ -292,8 +292,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Owin.Metrics.0.2.16\lib\net45\Owin.Metrics.dll</HintPath>
     </Reference>
-    <Reference Include="Polly, Version=2.2.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Polly.2.2.3\lib\net45\Polly.dll</HintPath>
+    <Reference Include="Polly, Version=4.3.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\packages\Polly.4.3.0\lib\net45\Polly.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Swashbuckle.Core">

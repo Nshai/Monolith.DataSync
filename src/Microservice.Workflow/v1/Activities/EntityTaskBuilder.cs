@@ -108,7 +108,7 @@ namespace Microservice.Workflow.v1.Activities
                 crmClient.Timeout = TimeSpan.FromMinutes(2);
 
                 //if CRM can't create a task due to DB slowness it will return 500 error as crmClient.Timeout = 2 mins which is > 30 secs DB timeout in CRM.
-                var taskResponse = await crmClient.UsingPolicy(HttpClientPolicy.RetryOn500Error).SendAsync(c => c.Post<TaskDocument, CreateTaskRequest>(Uris.Crm.CreateTask, request));
+                var taskResponse = await HttpClientPolicy.GetRetryPolicy<TaskDocument>().ExecuteAsync(() => crmClient.Post<TaskDocument, CreateTaskRequest>(Uris.Crm.CreateTask, request));
                 taskResponse.OnException(s => { throw new HttpClientException(s); });
                 return taskResponse.Resource;
             }
