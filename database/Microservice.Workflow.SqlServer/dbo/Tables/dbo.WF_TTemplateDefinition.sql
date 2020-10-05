@@ -10,3 +10,6 @@ CREATE TABLE [dbo].[WF_TTemplateDefinition]
 GO
 ALTER TABLE [dbo].[WF_TTemplateDefinition] ADD CONSTRAINT [PK_TWorkflowTemplate] PRIMARY KEY CLUSTERED  ([Id])
 GO
+CREATE NONCLUSTERED INDEX IX_WF_TTemplateDefinition_TenantId
+ON [dbo].[WF_TTemplateDefinition] ([TenantId])
+GO
