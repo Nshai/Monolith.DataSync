@@ -87,8 +87,8 @@
     <Reference Include="IntelliFlo.Platform.Security, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\IntelliFlo.Platform.Security.1.40.512.12\lib\net452\IntelliFlo.Platform.Security.dll</HintPath>
     </Reference>
-    <Reference Include="log4net">
-      <HintPath>..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+    <Reference Include="log4net, Version=2.0.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\log4net.2.0.11\lib\net45\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Metrics, Version=0.2.16.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
