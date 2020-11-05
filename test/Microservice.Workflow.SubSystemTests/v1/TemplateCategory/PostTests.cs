@@ -1,8 +1,7 @@
-﻿using Microservice.Workflow.SubSystemTests.Helpers;
-using Microservice.Workflow.SubSystemTests.v1.Models;
+﻿using Microservice.Workflow.SubSystemTests.v1.Models;
 using NUnit.Framework;
 using Reassure;
-using Reassure.OAuth;
+using Reassure.Security;
 
 namespace Microservice.Workflow.SubSystemTests.v1.TemplateCategory
 {
@@ -13,7 +12,7 @@ namespace Microservice.Workflow.SubSystemTests.v1.TemplateCategory
         {
             Test.Api()
                 .Given()
-                    .OAuth2BearerToken(Config.User1.GetAccessToken())
+                    .OAuth2BearerToken(GetUserAccessToken())
                     .Header("Accept", "application/json")
                     .Body(new CreateTemplateCategoryRequest { Name ="Test template category" })
                 .When()

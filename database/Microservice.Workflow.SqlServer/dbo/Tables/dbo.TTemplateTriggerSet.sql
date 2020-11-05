@@ -1,7 +1,7 @@
 CREATE TABLE [dbo].[TTemplateTriggerSet]
 (
 [TemplateTriggerSetId] [int] NOT NULL IDENTITY(1,1),
-[TriggerType] [varchar] (250) COLLATE Latin1_General_CI_AS NULL,
+[TriggerType] [varchar] (250) NULL,
 [TemplateVersionId] int NOT NULL,
 [TenantId] [int] NOT NULL,
 [ConcurrencyId] [int] NOT NULL CONSTRAINT [DF_TTemplateTriggerSet_ConcurrencyId] DEFAULT ((1)),

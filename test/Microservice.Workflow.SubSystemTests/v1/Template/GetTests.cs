@@ -6,7 +6,7 @@ using Microservice.Workflow.SubSystemTests.v1.Models;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Reassure;
-using Reassure.OAuth;
+using Reassure.Security;
 
 namespace Microservice.Workflow.SubSystemTests.v1.Template
 {
@@ -20,7 +20,7 @@ namespace Microservice.Workflow.SubSystemTests.v1.Template
 
             Test.Api()
                 .Given()
-                    .OAuth2BearerToken(Config.User1.GetAccessToken())
+                    .OAuth2BearerToken(GetUserAccessToken())
                     .Header("Accept", "application/json")
                 .When()
                     .Get<TemplateDocument>($"v1/templates/{template.Id}")
@@ -38,7 +38,7 @@ namespace Microservice.Workflow.SubSystemTests.v1.Template
             Test.Api()
                 .Given()
                     .Header("Accept", "application/json")
-                    .OAuth2BearerToken(Config.User1.GetAccessToken())
+                    .OAuth2BearerToken(GetUserAccessToken())
                 .When()
                     .Get<string>("v1/templates/999")
                 .Then()
@@ -53,7 +53,7 @@ namespace Microservice.Workflow.SubSystemTests.v1.Template
             var template = Test.Api().CreateTemplateWithExistingCategory(Config.User1);
             Test.Api()
                 .Given()
-                    .OAuth2BearerToken(Config.User1.GetAccessToken())
+                    .OAuth2BearerToken(GetUserAccessToken())
                     .Header("Accept", "application/json")
                 .When()
                     .Get<TemplateCollection>($"v1/templates?$filter=Name eq '{template.Name}'")
@@ -71,7 +71,7 @@ namespace Microservice.Workflow.SubSystemTests.v1.Template
             var template = Test.Api().CreateTemplateWithExistingCategory(Config.User1);
             Test.Api()
                 .Given()
-                    .OAuth2BearerToken(Config.User1.GetAccessToken())
+                    .OAuth2BearerToken(GetUserAccessToken())
                     .Header("Accept", "application/json")
                 .Body(JObject.Parse($"{{ Name: \"{Guid.NewGuid()}\" }}"))
                 .When().Post<TemplateDocument>($"v1/templates/{template.Id}/clone")

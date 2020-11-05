@@ -1,10 +1,8 @@
-﻿using System.Threading.Tasks;
-using Microservice.Workflow.SubSystemTests.Helpers;
-using Microservice.Workflow.SubSystemTests.Helpers.Apis;
+﻿using Microservice.Workflow.SubSystemTests.Helpers.Apis;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Reassure;
-using Reassure.OAuth;
+using Reassure.Security;
 using Reassure.Stubs;
 
 namespace Microservice.Workflow.SubSystemTests.v1.Template
@@ -18,7 +16,7 @@ namespace Microservice.Workflow.SubSystemTests.v1.Template
             var template = Test.Api().CreateTemplateWithExistingCategory(Config.User1);
             Test.Api()
                 .Given()
-                    .OAuth2BearerToken(Config.User1.GetAccessToken())
+                    .OAuth2BearerToken(GetUserAccessToken())
                     .Header("Accept", "application/json")
                     .Body(JObject.Parse("{ EntityType: \"Client\", EntityId: 1 }"))
                 .When()
@@ -41,12 +39,20 @@ namespace Microservice.Workflow.SubSystemTests.v1.Template
                 .Request().WithMethod("GET").WithUrl(url => url.Matching("/crm/v2/users/.*"))
                 .Return().WithBody("{'TimeZone': 'Europe/London'}").WithHeader("Content-Type", "application/json");
             var taskStub = Stub.Api()
-                .Request().WithMethod("POST").WithUrl(url => url.EqualTo("/crm/v1/tasks"))
-                .Return().WithBody("{ TaskId: 123, AssignedToPartyId: 3500000 }").WithHeader("Content-Type", "application/json");
+                .Request().
+                WithMethod("POST").
+                WithUrl(url => url.EqualTo("/crm/v1/tasks"))
+                .Return()
+                .WithBody("{ TaskId: 123, AssignedToPartyId: 3500000 }")
+                .WithHeader("Content-Type", "application/json");
 
             var subscriptionStub = Stub.Api()
-                .Request().WithMethod("POST").WithUrl(url => url.EqualTo("/eventmanagement/v1/subscriptions"))
-                .Return().WithBody("{}").WithHeader("Content-Type", "application/json");
+                .Request()
+                .WithMethod("POST")
+                .WithUrl(url => url.EqualTo("/eventmanagement/v1/subscriptions"))
+                .Return()
+                .WithBody("{}")
+                .WithHeader("Content-Type", "application/json");
 
             using (claimsStub.Setup())
             {
@@ -56,15 +62,13 @@ namespace Microservice.Workflow.SubSystemTests.v1.Template
 
                 Test.Api()
                     .Given()
-                    .OAuth2BearerToken(Config.User1.GetAccessToken())
+                    .OAuth2BearerToken(GetUserAccessToken())
                     .Header("Accept", "application/json")
                     .Body(JObject.Parse("{ EntityType: \"Client\", EntityId: 1 }"))
                     .When().Post<string>($"v1/templates/{template.Id}/createinstance/ondemand")
                     .Then().ExpectStatus(204)
                     .Run();
 
-                // TODO Replace this with wait until instance is unloaded?
-                Task.Delay(10000).Wait();
 
                 taskStub.Verify().IsCalled(Times.Once());
                 subscriptionStub.Verify().IsCalled(Times.Twice());
@@ -79,7 +83,7 @@ namespace Microservice.Workflow.SubSystemTests.v1.Template
 
                 Test.Api()
                     .Given()
-                    .OAuth2BearerToken(Config.User1.GetAccessToken())
+                    .OAuth2BearerToken(GetUserAccessToken())
                     .Header("Accept", "application/json")
                     .Body(JObject.Parse("{ EntityType: \"Client\", EntityId: 1 }"))
                     .When().Post<string>($"v1/templates/{template.Id}/createinstance/ondemand")

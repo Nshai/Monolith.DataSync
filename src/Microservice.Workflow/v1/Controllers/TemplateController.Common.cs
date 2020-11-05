@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using System.Web.Http;
 using IntelliFlo.Platform.Http;
 using IntelliFlo.Platform.Http.Exceptions;
@@ -57,7 +57,6 @@ namespace Microservice.Workflow.v1.Controllers
         /// Create instance for specific template
         /// </summary>
         /// <param name="templateIdentifier"></param>
-        /// <param name="request"></param>
         /// <returns></returns>
         [HttpDelete]
         [Route("common/{templateIdentifier}")]

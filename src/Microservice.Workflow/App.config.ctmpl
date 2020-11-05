@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
+
+  {{- $domain := printf "%s-%s-%s.%s" (env "env_name" ) (env "iso_code") (env "env_instance") (env "dns_domain") }}
+
+  <connectionStrings configBuilders="Env" xdt:Transform="Replace">
+    <clear />
+    <add name="read" connectionString="Server=mssql-01,21433;User Id={username};Password={password};database=workflow;enlist=False;Application Name=microservice-workflow;" />
+    <add name="write" connectionString="Server=mssql-01,21433;User Id={username};Password={password};database=workflow;enlist=False;Application Name=microservice-workflow;" />
+    <add name="afper" connectionString="Server=mssql-01,21433;User Id={username};Password={password};database=afper;enlist=False;Application Name=microservice-workflow;" />
+  </connectionStrings>
+
+  <clientConfiguration>
+    <serviceEndpoints>
+      {{- if eq (env "env_name") "sub" }}
+      <add name="crm" baseAddress="http://wiremock/crm/" timeout="60000" xdt:Transform="SetAttributes" xdt:Locator="Match(name)" />
+      <add name="eventmanagement" baseAddress="http://wiremock/eventmanagement/" timeout="60000" xdt:Transform="SetAttributes" xdt:Locator="Match(name)" />
+      <add name="portfolio" baseAddress="http://wiremock/portfolio/" timeout="60000" xdt:Transform="SetAttributes" xdt:Locator="Match(name)" />
+      {{- else }}
+      <add name="crm" baseAddress="https://monolith-crm.{{ $domain }}/" timeout="60000" xdt:Transform="SetAttributes" xdt:Locator="Match(name)" />
+      <add name="eventmanagement" baseAddress="https://monolith-webhooks.{{ $domain }}/" timeout="60000" xdt:Transform="SetAttributes" xdt:Locator="Match(name)" />
+      <add name="portfolio" baseAddress="https://monolith-portfolio.{{ $domain }}/" timeout="60000" xdt:Transform="SetAttributes" xdt:Locator="Match(name)" />
+      <add name="workflow" baseAddress="https://microservice-workflow.{{ $domain }}/" timeout="60000" xdt:Transform="SetAttributes" xdt:Locator="Match(name)" />
+      <add name="author" baseAddress="https://microservice-author.{{ $domain }}/" timeout="60000" xdt:Transform="SetAttributes" xdt:Locator="Match(name)" />
+      <add name="nio" baseAddress="https://intelligent-office.{{ $domain }}/nio/rest/" timeout="60000" xdt:Transform="SetAttributes" xdt:Locator="Match(name)" />
+      {{- end }}
+    </serviceEndpoints>
+  </clientConfiguration>
+
+  {{- if keyExists "services/memcached/ip" }}
+  <enyim.com>
+    <memcached>
+      <servers xdt:Transform="Replace">
+        <add address="{{ key "settings/memcached/ip" }}" port="11211" />
+      </servers>
+    </memcached>
+  </enyim.com>
+  {{- end }}
+
+  <ResourceServerIdentityConfiguration SigningCertificateSubject="{{ key "certificates/identity_signing_certificate" }}" IdentityServerBaseUrl="https://microservice-identity.{{ $domain }}" xdt:Transform="SetAttributes" />
+
+  <aws xdt:Transform="Remove" />
+
+  <AwsSettingsConfiguration AwsRegions= "{{ env "aws_region" }}" xdt:Transform="Replace"/>
+
+  <appSettings>
+    <add key="enableHibernateProfiler" value="false" xdt:Transform="SetAttributes" xdt:Locator="Match(key)" />
+    <add key="enableHibernateProfilerStackTrace" value="false" xdt:Transform="SetAttributes" xdt:Locator="Match(key)" />
+    <add key="client.certificate.default.subjectname" value="{{ key "certificates/client_certificate_default" }}" xdt:Transform="SetAttributes" xdt:Locator="Match(key)" />
+    <add key="encryption.certificate.default.subjectname" value="{{ key "certificates/encryption_certificate_default" }}" xdt:Transform="SetAttributes" xdt:Locator="Match(key)" />
+    <add key="db.timeout" value="30" xdt:Transform="SetAttributes" xdt:Locator="Match(key)" />
+    <add key="ClientSettingsProvider.ServiceUri" value="" xdt:Transform="SetAttributes" xdt:Locator="Match(key)" />
+    <add key="AWSProfileName" value=""  xdt:Transform="Remove" xdt:Locator="Match(key)" />
+    <add key="dbprofile" xdt:Transform="Remove" xdt:Locator="Match(key)"/>
+    {{- if eq (env "env_name") "sub" }}
+    <add key="cache.use" value="nullcache" xdt:Transform="SetAttributes" xdt:Locator="Match(key)" />
+    <add key="dbprofile" value="subsys" xdt:Transform="Insert" />
+    {{- else }}
+    <add key="cache.use" value="memcached" xdt:Transform="SetAttributes" xdt:Locator="Match(key)" />
+    <add key="dbprofile" value="migrate" xdt:Transform="Insert" />
+    {{- end }}
+  </appSettings>
+
+  <system.serviceModel>
+    <behaviors>
+      <serviceBehaviors>
+        <behavior>
+          <sqlWorkflowInstanceStore xdt:Transform="Remove"/>
+          <sqlWorkflowInstanceStore connectionStringName="afper" xdt:Transform="Insert"/>
+        </behavior>
+      </serviceBehaviors>
+    </behaviors>
+  </system.serviceModel>
+
+  <applicationSettings>
+    <Microservice.Workflow.Properties.Settings>
+        <setting name="DatabaseObjectsFolder" serializeAs="String" xdt:Transform="Replace" xdt:Locator="Match(name)">
+            <value>../database</value>
+        </setting>
+        <setting name="DataScriptFolder" serializeAs="String" xdt:Transform="Replace" xdt:Locator="Match(name)">
+            <value>../database/data</value>
+        </setting>
+        <setting name="Instance" serializeAs="String" xdt:Transform="Replace" xdt:Locator="Match(name)">
+            <value>{{ env "iso_code" }}-{{ env "env_instance" }}</value>
+        </setting>
+        <setting name="Environment" serializeAs="String" xdt:Transform="Replace" xdt:Locator="Match(name)">
+            <value>{{ env "env_name" }}</value>
+        </setting>
+        <setting name="BaseAddress" serializeAs="String" xdt:Transform="Replace" xdt:Locator="Match(name)">
+            <value>http://*:80</value>
+        </setting>
+        <setting name="AltBaseAddress" serializeAs="String" xdt:Transform="Replace" xdt:Locator="Match(name)">
+            <value>{{ env "service_url" }}</value>
+        </setting>
+    </Microservice.Workflow.Properties.Settings>
+  </applicationSettings>
+
+  <log4net xdt:Transform="Replace">
+    {{- if or (eq (env "env_name") "sub") (keyOrDefault "settings/applications/microservice-workflow/logToConsole" "false" | parseBool ) }}
+    <appender name="ColoredConsoleAppender" type="log4net.Appender.ColoredConsoleAppender">
+      <mapping>
+        <level value="FATAL" />
+        <foreColor value="Red" />
+      </mapping>
+      <mapping>
+        <level value="ERROR" />
+        <foreColor value="Red, HighIntensity" />
+      </mapping>
+      <mapping>
+        <level value="WARN" />
+        <foreColor value="Yellow" />
+      </mapping>
+      <mapping>
+        <level value="DEBUG" />
+        <foreColor value="White" />
+      </mapping>
+      <mapping>
+        <level value="INFO" />
+        <foreColor value="Green" />
+      </mapping>
+      <layout type="log4net.Layout.PatternLayout">
+        <conversionPattern value="%date [%thread] %-5level %logger [%property{NDC}] - %message%newline" />
+      </layout>
+    </appender>
+    {{- end }}
+    {{- if ne (env "env_name") "sub" }}
+    <appender name="RemoteSyslogAppender" type="log4net.Appender.RemoteSyslogAppender">
+      <facility value="Local3" />
+      <layout type="IntelliFlo.Platform.Logging.CustomPatternLayout, IntelliFlo.Platform.Logging">
+        <IgnoresException value="False" />
+        <conversionPattern value="a_level=%level, a_logger=%logger, a_time=%quot%utcdate%quot, a_sub=%quot%property{subject}%quot, a_uid=%quot%property{userId}%quot, a_tid=%quot%property{tenantId}%quot, a_rid=%quot%property{correlationId}%quot,  a_errid=%quot%property{errorId}%quot, a_aname=%quot%property{assemblyName}%quot, a_aver=%quot%property{assemblyVersion}%quot, a_thread=%quot%thread%quot, a_type=%quot%type%quot, a_met=%quot%method%quot, a_msg=%quot%message%quot, a_stack=%quot%stack%quot  %newline " />
+      </layout>
+      <remoteAddress value="syslog" />
+      <remotePort value="5140" />
+    </appender>
+    {{- end }}
+    <root>
+      <level value="{{keyOrDefault "settings/applications/microservice-workflow/logLevel" "Info"}}" />
+      {{- if or (eq (env "env_name") "sub") (keyOrDefault "settings/applications/microservice-workflow/logToConsole" "false" | parseBool ) }}
+      <appender-ref ref="ColoredConsoleAppender" />
+      {{- end }}
+      {{- if ne (env "env_name") "sub" }}
+      <appender-ref ref="RemoteSyslogAppender" />
+      {{- end }}
+    </root>
+    <logger name="NHibernate">
+      <level value="{{keyOrDefault "settings/applications/microservice-workflow/nhibernateLogLevel" "WARN"}}" />
+    </logger>
+  </log4net>
+
+ <Vault xdt:Transform="Replace">
+    <Disabled value= "False" />
+    <Address value="http://hashicorp-vault.hashicorp-vault.svc.cluster.local:8200" />
+    <KubernetesJwtPath value="C:\var\run\secrets\kubernetes.io\serviceaccount\token" />
+    <SecretPaths>
+    {{- if eq (env "env_name") "sub" }}
+      <add key="ConnectionStrings:add[@name='read']/@connectionString" value="kv/database/credentials" />
+      <add key="ConnectionStrings:add[@name='write']/@connectionString" value="kv/database/credentials" />
+      <add key="ConnectionStrings:add[@name='afper']/@connectionString" value="kv/database/credentials" />
+    {{- else }}
+      <add key="ConnectionStrings:add[@name='read']/@connectionString" value="database/creds/microservice-workflow" />
+      <add key="ConnectionStrings:add[@name='write']/@connectionString" value="database/creds/microservice-workflow" />
+      <add key="ConnectionStrings:add[@name='afper']/@connectionString" value="database/creds/microservice-workflow" />
+    {{- end }}
+    </SecretPaths>
+ </Vault>
+
+</configuration>

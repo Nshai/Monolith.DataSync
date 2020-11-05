@@ -2,7 +2,7 @@ CREATE TABLE [dbo].[TExecutedDataScript]
 (
 [ExecutedDataScriptId] [int] NOT NULL IDENTITY(1, 1),
 [ScriptGUID] [uniqueidentifier] NOT NULL,
-[Comments] [nvarchar] (256) COLLATE Latin1_General_CI_AS NULL,
+[Comments] [nvarchar] (256) NULL,
 [TenantId] [int] NULL,
 [TimeStamp] [datetime] NULL
 )

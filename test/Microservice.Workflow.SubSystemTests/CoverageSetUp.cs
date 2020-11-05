@@ -1,28 +1,27 @@
 ﻿using System;
-using System.Configuration;
 using System.Diagnostics;
 using System.IO;
+using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
+using Reassure.Coverage;
 using Reassure.Logging;
+using Reassure.Stubs;
 
 namespace Microservice.Workflow.SubSystemTests
 {
-    // https://confluence.intelliflo.com/display/DEV/Code+Coverage
-    // If coverage is not working, see how to capture reassure.coverage.exe output here:
-    // https://confluence.intelliflo.com/display/DEV/Code+Coverage#CodeCoverage-Debuggingreassure.coverage
     public class CoverageSetUp
     {
-        private static string AssemblyDir { get; set; }
-        private static string ReassureYamlFile { get; set; }
-        const string yamlFileName = "reassure.yaml";
+        private static string AssemblyDir { get; set; } = GetAssemblyDirectory();
+        private static string ReassureYamlFile { get; set; } = AssemblyDir + "/" + YamlFileName;
+        private const string YamlFileName = "reassure.yaml";
+        public static string environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
-        static CoverageSetUp()
-        {
-            AssemblyDir = GetAssemblyDirectory();
-            ReassureYamlFile = GetAssemblyDirectory() + "/" + yamlFileName;
-        }
+        public static readonly IConfiguration Configuration = 
+            new ConfigurationBuilder().AddJsonFile($"appsettings.json", true, true)
+                                    .AddJsonFile($"appsettings.{environmentName}.json", true, true)
+                                    .Build();
 
-        [SetUp]
+        [OneTimeSetUp]
         public void SetCoverageUp()
         {
             var logger = TestLogger.GlobalLogger();
@@ -38,37 +37,32 @@ namespace Microservice.Workflow.SubSystemTests
             };
         }
 
-        [TearDown]
+        [OneTimeTearDown]
         public void RunAfterAnyTests()
         {
 #if DEBUG
-            var swaggerEndPointV1 = ConfigurationManager.AppSettings["Reassure:ServiceBaseAddress"] + "/docs/v1/swagger";
+            var swaggerEndPoint = Configuration["Reassure:ServiceBaseAddress"] + "/docs/v1/swagger";
 
-            var process = new Process
+            CoverageRunner.Run(
+                YamlFileName,
+                AssemblyDir,
+                new[] { swaggerEndPoint },
+                new string[0],
+                new string[0]);
+
+            const string report = "coverage_full.html";
+
+            if (File.Exists(report))
             {
-                StartInfo = new ProcessStartInfo
-                {
-                    FileName = "reassure.coverage.exe",
-                    Arguments = $"{yamlFileName} -s:{swaggerEndPointV1} -o:{AssemblyDir}",
-                    RedirectStandardInput = true,
-                    CreateNoWindow = true,
-                    UseShellExecute = false
-                }
-            };
-
-            process.Start();
-            process.WaitForExit();
-            process.Close();
-
-            // reports will be in subsys/bin/ folder
-            // e.g. coverage_full_v1.html  or coverage_full_v2.html
+                Process.Start(new ProcessStartInfo { UseShellExecute = true, FileName = report });
+            }
 #endif
+            Stub.DefaultProviderFactory().Reset().GetAwaiter().GetResult();
         }
-
 
         private static string GetAssemblyDirectory()
         {
-            var codeBase = typeof(CoverageSetUp).Assembly.CodeBase;
+            var codeBase = typeof(Config).Assembly.CodeBase;
             var uri = new UriBuilder(codeBase);
             var path = Uri.UnescapeDataString(uri.Path);
             return Path.GetDirectoryName(path);

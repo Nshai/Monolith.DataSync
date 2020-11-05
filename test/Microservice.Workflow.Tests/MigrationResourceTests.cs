@@ -1,10 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using IntelliFlo.Platform.Bus;
 using IntelliFlo.Platform.Http.Client;
 using IntelliFlo.Platform.Identity;
 using IntelliFlo.Platform.NHibernate.Repositories;
@@ -59,7 +58,7 @@ namespace Microservice.Workflow.Tests
             
 
             serviceEndpoint = new Mock<IServiceEndpoint>();
-            serviceEndpoint.SetupGet(s => s.BaseAddress).Returns("http://localhost:10111");
+            serviceEndpoint.SetupGet(s => s.BaseAddress).Returns("http://localhost:40008");
 
             addressRegistry = new Mock<IServiceAddressRegistry>();
             addressRegistry.Setup(a => a.GetServiceEndpoint("workflow")).Returns(() => serviceEndpoint.Object);

@@ -9,13 +9,13 @@
       <Value Profile="(Default)">dev</Value>
     </Setting>
     <Setting Name="BaseAddress" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">http://localhost:10111</Value>
+      <Value Profile="(Default)">http://localhost:40008</Value>
     </Setting>
     <Setting Name="Service" Type="System.String" Scope="Application">
       <Value Profile="(Default)">Workflow</Value>
     </Setting>
     <Setting Name="AltBaseAddress" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">http://localhost:10111</Value>
+      <Value Profile="(Default)">http://localhost:40008</Value>
     </Setting>
     <Setting Name="DatabaseObjectsFolder" Type="System.String" Scope="Application">
       <Value Profile="(Default)">../../../../database/Microservice.Workflow.SqlServer/dbo</Value>

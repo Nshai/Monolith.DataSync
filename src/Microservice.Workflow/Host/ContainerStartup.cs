@@ -19,6 +19,8 @@ namespace Microservice.Workflow.Host
             base.InitialiseContainer(builder);
 
             builder.RegisterType<DevInitialiser>().InstancePerDependency();
+            builder.RegisterType<SubsysInitialiser>().InstancePerDependency();
+            builder.RegisterType<WorkflowMigrationProfileInitializer>().InstancePerDependency();
 
             builder.RegisterModule(new ConfigurationSettingsReader());
             builder.RegisterModule(new WorkflowAutofacModule());

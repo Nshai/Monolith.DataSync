@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle("Microservice.Workflow")]
 [assembly: AssemblyDescription("Provides for hosting and management of user-defined (and system) workflows")]
-[assembly: AssemblyTrademark("")]
+//[assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
 [assembly: ComVisible(false)]

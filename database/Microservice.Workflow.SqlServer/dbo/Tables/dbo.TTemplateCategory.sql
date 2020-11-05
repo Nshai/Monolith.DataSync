@@ -2,7 +2,7 @@ CREATE TABLE [dbo].[TTemplateCategory]
 (
 [TemplateCategoryId] [int] NOT NULL IDENTITY(1, 1),
 [TenantId] [int] NOT NULL,
-[Name] [varchar] (255) COLLATE Latin1_General_CI_AS NOT NULL,
+[Name] [varchar] (255) NOT NULL,
 [IsArchived] [bit] NOT NULL CONSTRAINT [DF_TTemplate_IsArchived] DEFAULT ((0)),
 [ConcurrencyId] [int] NOT NULL CONSTRAINT [DF_TTemplateCategory_ConcurrencyId] DEFAULT ((1))
 )

@@ -49,7 +49,7 @@ namespace Microservice.Workflow.v1
         public Guid CorrelationId { get; set; }
 
         /// <summary>
-        /// Whether to prevent creation of duplicate instances of this workflow template for the specified EntityId & RelatedEntityId
+        /// Whether to prevent creation of duplicate instances of this workflow template for the specified EntityId &amp; RelatedEntityId
         /// </summary>
         [DataMember]
         public bool PreventDuplicates { get; set; }

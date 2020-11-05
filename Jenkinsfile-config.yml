@@ -9,16 +9,20 @@ deploymentPlaybook: api-service
 prdTestingSuccessfulTimeout: 3
 projectsToBuild:
 - projectFile: Microservice.Workflow.sln
-  buildTool: MSBuild 14.0
-  arguments: /m /p:Configuration=Release;TargetFrameworkVersion=v4.5.2 /clp:ErrorsOnly
+  buildTool: MSBuild 15.0
+  arguments: /m /p:Configuration=Release;TargetFrameworkVersion=v4.7.2 /clp:ErrorsOnly
 - projectFile: Microservice.Workflow.SubSystemTests.sln
-  buildTool: MSBuild 14.0
-  arguments: /m /p:Configuration=Debug;TargetFrameworkVersion=v4.5.2 /clp:ErrorsOnly
+  buildTool: dotnet
+  arguments: -c Debug
+  publishArguments: test\Microservice.Workflow.SubSystemTests\Microservice.Workflow.SubSystemTests.csproj -c Debug --self-contained false --output bin/Debug/netcoreapp3.1
+- projectFile: .\database\Microservice.Workflow.SqlServer\Microservice.Workflow.SqlServer.sqlproj
+  buildTool: MSBuild 15.0
+  arguments: /p:Configuration=Release /clp:ErrorsOnly
 codeQuality:
   resharperInspectCode:
-    run: true
+    run: false
   sonarQube:
-    run: true
+    run: false
 scan:
   whiteSource:
     run: true

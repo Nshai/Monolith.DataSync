@@ -2,7 +2,7 @@
 (
 [Id] [int] NOT NULL IDENTITY(1, 1),
 [TenantId] [int] NOT NULL,
-[Identifier] [varchar] (50) COLLATE Latin1_General_CI_AS NOT NULL,
+[Identifier] [varchar] (50) NOT NULL,
 [TemplateId] [uniqueidentifier] NOT NULL,
 [ConcurrencyId] [int] NOT NULL CONSTRAINT [DF_TTemplateRegistration_ConcurrencyId] DEFAULT ((1))
 )

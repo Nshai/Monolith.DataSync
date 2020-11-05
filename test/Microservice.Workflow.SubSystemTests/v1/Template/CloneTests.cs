@@ -9,7 +9,7 @@ using Microservice.Workflow.SubSystemTests.v1.Models;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Reassure;
-using Reassure.OAuth;
+using Reassure.Security;
 
 namespace Microservice.Workflow.SubSystemTests.v1.Template
 {
@@ -22,7 +22,7 @@ namespace Microservice.Workflow.SubSystemTests.v1.Template
             var template = Test.Api().CreateTemplateWithExistingCategory(Config.User1);
             Test.Api()
                 .Given()
-                    .OAuth2BearerToken(Config.User1.GetAccessToken())
+                    .OAuth2BearerToken(GetUserAccessToken())
                     .Header("Accept", "application/json")
                 .Body(JObject.Parse($"{{ Name: \"{Guid.NewGuid()}\" }}"))
                 .When()
@@ -41,7 +41,7 @@ namespace Microservice.Workflow.SubSystemTests.v1.Template
             var template = Test.Api().CreateTemplateWithExistingCategory(Config.User1);
             Test.Api()
                 .Given()
-                    .OAuth2BearerToken(Config.User1.GetAccessToken())
+                    .OAuth2BearerToken(GetUserAccessToken())
                     .Header("Accept", "application/json")
                     .Body(JObject.Parse($"{{ Name: \"{template.Name}\" }}"))
                 .When()
@@ -58,7 +58,7 @@ namespace Microservice.Workflow.SubSystemTests.v1.Template
         {
             Test.Api()
                 .Given()
-                    .OAuth2BearerToken(Config.User1.GetAccessToken())
+                    .OAuth2BearerToken(GetUserAccessToken())
                     .Header("Accept", "application/json")
                     .Body(JObject.Parse("{ Name: \"Test\" }"))
                 .When()

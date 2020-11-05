@@ -1,10 +1,11 @@
 ﻿using IntelliFlo.Platform.Bus;
 using Microservice.Workflow.Messaging.Messages;
 using Microservice.Workflow.v1;
+using System.Threading.Tasks;
 
 namespace Microservice.Workflow.Messaging.MessageHandlers
 {
-    public class ResumeInstanceHandler : IMessageHandler<ResumeInstance>
+    public class ResumeInstanceHandler : IMessageHandlerAsync<ResumeInstance>
     {
         private readonly IInstanceResource instanceResource;
 
@@ -13,10 +14,10 @@ namespace Microservice.Workflow.Messaging.MessageHandlers
             this.instanceResource = instanceResource;
         }
 
-        public bool Handle(IBusContext context, ResumeInstance message)
+        public Task<bool> Handle(IBusContext context, ResumeInstance message)
         {
             instanceResource.Resume(message.InstanceId, message.Bookmark);
-            return true;
+            return Task.FromResult(true);
         }
     }
 }

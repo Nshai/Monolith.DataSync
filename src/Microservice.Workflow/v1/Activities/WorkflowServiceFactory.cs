@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Activities;
 using System.Activities.Expressions;
 using System.Activities.Statements;
@@ -35,7 +35,7 @@ namespace Microservice.Workflow.v1.Activities
         {
             Check.IsNotNull(template, "Template must be supplied");
 
-            var name = string.Format("{0}_{1}", DynamicWorkflow, template.Guid.ToString("N"));
+            var name = $"{DynamicWorkflow}_{template.Guid:N}";
             var workflowService = new System.ServiceModel.Activities.WorkflowService { ConfigurationName = DynamicWorkflow, Name = XName.Get(name) };
 
             var entityType = (EntityType)Enum.Parse(typeof(EntityType), template.RelatedTo.ToString());
@@ -59,7 +59,7 @@ namespace Microservice.Workflow.v1.Activities
 
             rootSequence.Activities.Add(create);
 
-            var parentStep = new WorkflowStep()
+            var parentStep = new WorkflowStep
             {
                 EnableLogging = false,
                 Context = context
@@ -118,15 +118,7 @@ namespace Microservice.Workflow.v1.Activities
 
         public Activity Map(Domain.DelayStep step, Template template, int stepIndex)
         {
-            var activity = new ScheduleDelayStep()
-            {
-                StepId = step.Id,
-                StepIndex = stepIndex,
-                Period = delayPeriod.GetPeriod(step.Days),
-                BusinessDaysOnly = step.BusinessDays
-            };
-
-            return activity;
+            return new ScheduleDelayStep { StepId = step.Id, StepIndex = stepIndex, Period = delayPeriod.GetPeriod(step.Days), BusinessDaysOnly = step.BusinessDays };
         }
 
         private int GetUserPartyId(int userId)

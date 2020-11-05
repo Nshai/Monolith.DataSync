@@ -30,23 +30,35 @@ namespace Microservice.Workflow.v1.Activities
 
                 this.LogMessage(context, LogLevel.Info, "Subscribe to event {0} for entity {1}", eventType, entityId);
 
-                var bookmark = string.Format("{0}:{1}", eventType, entityId);
-                var resumeUri = string.Format("{0}/{1}", clientConfiguration.BaseAddress.TrimEnd('/'), string.Format(Uris.Self.ResumeInstance, context.WorkflowInstanceId, bookmark));
+                var bookmark = $"{eventType}:{entityId}";
+                var resumeUri =
+                    $"{clientConfiguration.BaseAddress.TrimEnd('/')}/{string.Format(Uris.Self.ResumeInstance, context.WorkflowInstanceId, bookmark)}";
 
                 var clientFactory = lifetimeScope.Resolve<IHttpClientFactory>();
                 using (var workflowClient = clientFactory.Create("eventmanagement"))
                 {
-                    var subscribeTask = workflowClient.UsingPolicy(HttpClientPolicy.Retry).SendAsync(c => c.Post<EventSubscriptionDocument, SubscribeRequest>(Uris.EventManagement.Post, new SubscribeRequest()
-                    {
-                        EventType = eventType,
-                        EntityId = entityId,
-                        Filter = filter,
-                        CallbackUrl = resumeUri,
-                        IsPersistent = false
-                    })).ContinueWith(t =>
-                    {
-                        t.OnException(s => { throw new HttpClientException(s); });
-                    });
+                    var subscribeTask = 
+                        workflowClient
+                            .UsingPolicy(HttpClientPolicy.Retry)
+                            .SendAsync(c => c.Post<EventSubscriptionDocument, SubscribeRequest>(
+                                Uris.EventManagement.Post, 
+                                new SubscribeRequest
+                                {
+                                    EventType = eventType,
+                                    EntityId = entityId,
+                                    Filter = filter,
+                                    CallbackUrl = resumeUri,
+                                    IsPersistent = false
+                                }))
+                            .ContinueWith(t =>
+                                {
+                                    
+                                    t.OnException(s =>
+                                    {
+                                        throw new HttpClientException(s);
+                                    });
+                                });
+
                     subscribeTask.Wait();
                 }
             }

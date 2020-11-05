@@ -6,12 +6,12 @@ CREATE TABLE [dbo].[WF_Migration_TInstance]
 [UserId] [int] NOT NULL,
 [TenantId] [int] NOT NULL,
 [EntityId] [int] NOT NULL,
-[EntityType] [varchar] (50) COLLATE Latin1_General_CI_AS NOT NULL,
+[EntityType] [varchar] (50) NOT NULL,
 [RelatedEntityId] [int] NULL,
-[ParentEntityType] [varchar] (50) COLLATE Latin1_General_CI_AS NULL,
+[ParentEntityType] [varchar] (50) NULL,
 [ParentEntityId] [int] NULL,
 [CreatedUtc] [datetime] NOT NULL,
-[Status] [varchar] (50) COLLATE Latin1_General_CI_AS NOT NULL,
+[Status] [varchar] (50) NOT NULL,
 [UniqueId] [uniqueidentifier] NOT NULL,
 [NewInstanceId] [uniqueidentifier] NOT NULL
 )

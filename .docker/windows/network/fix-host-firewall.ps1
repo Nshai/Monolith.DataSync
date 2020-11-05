@@ -1,0 +1,2 @@
+#Requires -RunAsAdministrator
+Get-NetFirewallRule -DisplayName 'com.docker.backend' | Where-Object { ($_.Enabled -eq $true) -and ($_.Direction -eq 'Inbound') -and $_.Action -eq 'Block' } | ForEach-Object { Disable-NetFirewallRule -Name $_.Name }

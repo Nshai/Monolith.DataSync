@@ -3,8 +3,8 @@ CREATE TABLE [dbo].[WF_TInstanceHistory]
 [Id] [int] NOT NULL IDENTITY(1, 1),
 [InstanceId] [uniqueidentifier] NOT NULL,
 [StepId] [uniqueidentifier] NOT NULL,
-[Step] [varchar] (50) COLLATE Latin1_General_CI_AS NOT NULL,
-[Data] [varchar] (max) COLLATE Latin1_General_CI_AS NULL,
+[Step] [varchar] (50) NOT NULL,
+[Data] [varchar] (max) NULL,
 [IsComplete] [bit] NOT NULL,
 [TimestampUtc] [datetime] NOT NULL
 )

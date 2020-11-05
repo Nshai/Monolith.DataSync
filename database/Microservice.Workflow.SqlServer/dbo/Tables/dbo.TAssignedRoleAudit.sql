@@ -7,9 +7,9 @@ CREATE TABLE [dbo].[TAssignedRoleAudit]
 [RoleId] [int] NULL,
 [ConcurrencyId] [int] NOT NULL CONSTRAINT [DF_TAssignedRoleAudit_ConcurrencyId] DEFAULT ((1)),
 [AssignedRoleId] [int] NOT NULL,
-[StampAction] [char] (1) COLLATE Latin1_General_CI_AS NOT NULL,
+[StampAction] [char] (1) NOT NULL,
 [StampDateTime] [datetime] NULL CONSTRAINT [DF_TAssignedRoleAudit_StampDateTime] DEFAULT (getdate()),
-[StampUser] [varchar] (255) COLLATE Latin1_General_CI_AS NULL
+[StampUser] [varchar] (255) NULL
 )
 GO
 ALTER TABLE [dbo].[TAssignedRoleAudit] ADD CONSTRAINT [PK_TAssignedRoleAudit] PRIMARY KEY NONCLUSTERED  ([AuditId]) WITH (FILLFACTOR=80)

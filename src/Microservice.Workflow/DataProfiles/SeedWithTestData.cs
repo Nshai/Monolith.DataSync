@@ -17,7 +17,6 @@ using Microservice.Workflow.Domain;
 using Microservice.Workflow.v1.Activities;
 using Moq;
 using NHibernate.Linq;
-using NUnit.Framework;
 using Constants = IntelliFlo.Platform.Principal.Constants;
 using CreateTaskStep = Microservice.Workflow.Domain.CreateTaskStep;
 
