@@ -1,0 +1,32 @@
+name: Harness trigger
+on:
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  harness:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout github-actions repo
+        uses: actions/checkout@v2
+        with:
+          repository: Intelliflo/github-actions
+          token: ${{ secrets.PAT_TOKEN }}
+          path: my-tools
+
+      - name: setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Install Python dependencies
+        uses: py-actions/py-dependency-install@v2
+        with:
+          path: "my-tools/scripts/trigger_harness_pipeline_requirements.txt"
+
+      - name: execute py script
+        run: |
+          python my-tools/scripts/trigger_harness_pipeline.py
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+          GITHUB_PAC: ${{ secrets.PAT_TOKEN }}

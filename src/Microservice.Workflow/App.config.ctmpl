@@ -5,9 +5,9 @@
 
   <connectionStrings configBuilders="Env" xdt:Transform="Replace">
     <clear />
-    <add name="read" connectionString="Server=mssql-01,21433;User Id={username};Password={password};database=workflow;enlist=False;Application Name=microservice-workflow;" />
-    <add name="write" connectionString="Server=mssql-01,21433;User Id={username};Password={password};database=workflow;enlist=False;Application Name=microservice-workflow;" />
-    <add name="afper" connectionString="Server=mssql-01,21433;User Id={username};Password={password};database=afper;enlist=False;Application Name=microservice-workflow;" />
+    <add name="read" connectionString="Server={{ env "database_instance" }};User Id={username};Password={password};database=workflow;enlist=False;Application Name=microservice-workflow;ApplicationIntent=ReadOnly;MultiSubnetFailover=True;" />
+    <add name="write" connectionString="Server={{ env "database_instance" }};User Id={username};Password={password};database=workflow;enlist=False;Application Name=microservice-workflow;MultiSubnetFailover=True;" />
+    <add name="afper" connectionString="Server={{ env "database_instance" }};User Id={username};Password={password};database=afper;enlist=False;Application Name=microservice-workflow;MultiSubnetFailover=True;" />
   </connectionStrings>
 
   <clientConfiguration>
@@ -31,7 +31,7 @@
   <enyim.com>
     <memcached>
       <servers xdt:Transform="Replace">
-        <add address="{{ key "settings/memcached/ip" }}" port="11211" />
+        <add address="{{ key "services/memcached/ip" }}" port="11211" />
       </servers>
     </memcached>
   </enyim.com>
@@ -152,6 +152,7 @@
     <Disabled value= "False" />
     <Address value="http://hashicorp-vault.hashicorp-vault.svc.cluster.local:8200" />
     <KubernetesJwtPath value="C:\var\run\secrets\kubernetes.io\serviceaccount\token" />
+    <LeaseOffset value="86400000" />
     <SecretPaths>
     {{- if eq (env "env_name") "sub" }}
       <add key="ConnectionStrings:add[@name='read']/@connectionString" value="kv/database/credentials" />

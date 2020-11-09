@@ -58,3 +58,9 @@ src/Microservice.Workflow/App.Localsubsys.config
 infra/hashicorp-vault/.DS_Store
 
 .vscode
+
+# SQL project
+/database/Microservice.Workflow.SqlServer/Microservice.Workflow.SqlServer.jfm
+/database/dacpac
+# Terraform
+**/.terraform/*

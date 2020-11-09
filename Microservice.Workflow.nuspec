@@ -14,6 +14,7 @@
   </metadata>
   <files>
     <file src="src\Microservice.Workflow\bin\Release\*.*" target="content/microservice" />
+    <file src="database\dacpac\**" target="content\database\dacpac" />
     <file src="database\Microservice.Workflow.SqlServer\dbo\**" target="content\database" />
     <file src="database\Microservice.Workflow.SqlServer\dbodata\data\**" target="content\database\data" />
     <file src="subsys.json" target="content\scripts" />

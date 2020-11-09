@@ -44,6 +44,24 @@ RUN msbuild "Microservice.Workflow.csproj" `
     /p:AssemblyVersion=$($Env:APPLICATION_VERSION) `
     /p:AssemblyTrademark=$($Env:GIT_HASH)
 
+
+FROM build AS unit-tests
+WORKDIR /results
+WORKDIR /test
+COPY test/Microservice.Workflow.Tests/Microservice.Workflow.Tests.csproj ./Microservice.Workflow.Tests/
+RUN nuget restore "Microservice.Workflow.Tests/Microservice.Workflow.Tests.csproj"
+COPY ./test/Microservice.Workflow.Tests/ ./Microservice.Workflow.Tests/
+WORKDIR /test/Microservice.Workflow.Tests
+RUN curl.exe https://github.com/nunit/nunit-console/releases/download/v3.11.1/NUnit.Console-3.11.1.zip -L -o NUnit.Console-3.11.1.zip -s; `
+    tar -xf NUnit.Console-3.11.1.zip
+RUN msbuild "Microservice.Workflow.Tests.csproj" `
+    /p:Configuration=Release `
+    /p:TargetFrameworkVersion=v4.7.2 `
+    /p:AssemblyVersion=$($Env:APPLICATION_VERSION) `
+    /p:AssemblyTrademark=$($Env:GIT_HASH)
+RUN ./bin/net35/nunit3-console.exe ./bin/Release/Microservice.Workflow.Tests.dll --result unit-test-results.xml --work ./../../results
+
+
 FROM base AS final
 WORKDIR /database
 COPY ./database/Microservice.Workflow.SqlServer/dbo .
