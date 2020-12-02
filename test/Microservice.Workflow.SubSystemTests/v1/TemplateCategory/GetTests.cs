@@ -1,6 +1,4 @@
 ﻿using System.Net;
-using Microservice.Workflow.SubSystemTests.Helpers;
-using Microservice.Workflow.SubSystemTests.v1.Models;
 using NUnit.Framework;
 using Reassure;
 using Reassure.Security;

@@ -14,9 +14,18 @@ namespace Microservice.Workflow.DataProfiles
     {
         private readonly ConnectionStringSettings connStr;
         private readonly bool DropDatabase;
-        public override void Dispose() {}
+        public override void Dispose() { }
 
-        public CreatePersistenceDataStoreTask(bool dropDatabase = true)
+        private const string createDatabaseSql = "IF (SELECT DB_ID('afper')) IS NULL CREATE DATABASE afper";
+
+        private const string dropDatabaseSql = @"
+            IF db_id('afper') IS NOT NULL 
+            BEGIN 
+                ALTER DATABASE afper SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+                DROP DATABASE [afper]
+            END";
+
+        public CreatePersistenceDataStoreTask(bool dropDatabase = false)
         {
             connStr = ConfigurationManager.ConnectionStrings["afper"];
             DropDatabase = dropDatabase;
@@ -24,13 +33,19 @@ namespace Microservice.Workflow.DataProfiles
 
         public override object Execute(IDatabaseSettings settings)
         {
+            if (false == string.Equals("true", ConfigurationManager.AppSettings["CreateAfperDatabase"], StringComparison.OrdinalIgnoreCase))
+            {
+                Logger.WarnFormat("Skipping execution of 'SqlWorkflowInstanceStoreSchema.sql' and 'SqlWorkflowInstanceStoreLogic.sql' since both scripts deleted all existing data.");
+                return true;
+            }
+
             if (connStr != null)
             {
                 // delete and create 'afper' database
                 RecreateDatabase(settings);
 
                 var sql = (NameValueCollection)ConfigurationManager.GetSection("SqlAfper");
-                if(sql != null)
+                if (sql != null)
                 {
                     for (var i = 0; i < sql.Count; i++)
                     {
@@ -121,24 +136,16 @@ namespace Microservice.Workflow.DataProfiles
                 return s;
             });
 
-
-            var dropSql = @"
-            IF db_id('afper') IS NOT NULL 
-            BEGIN 
-                ALTER DATABASE afper SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
-                DROP DATABASE [afper]
-            END";
-
-
-            var createSql = "IF (SELECT DB_ID('afper')) IS NULL CREATE DATABASE afper";
-
-            Logger.InfoFormat("DatabaseStartUp, Msg=Recreating database 'afper'");
-
             var scripts = new List<string>();
 
-            if (DropDatabase) scripts.Add(dropSql);
-            
-            scripts.Add(createSql);
+            if (DropDatabase)
+            {
+                Logger.InfoFormat("DatabaseStartUp, Msg=Dropping database 'afper'");
+                scripts.Add(dropDatabaseSql);
+            }
+
+            Logger.InfoFormat("DatabaseStartUp, Msg=Creating database 'afper'");
+            scripts.Add(createDatabaseSql);
 
             var con = new SqlConnection(result.ConnectionString);
 
@@ -159,6 +166,7 @@ namespace Microservice.Workflow.DataProfiles
                 con.Close();
             }
         }
+
 
     }
 }

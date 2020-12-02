@@ -10,7 +10,7 @@ namespace Microservice.Workflow.DataProfiles
         public WorkflowMigrationProfileInitializer(IDatabaseInstance instance)
              : base(new CreateDatabaseTask(instance),
                    new MetadataLogPackageVersionLockingTask(instance, new SynchroniseDatabaseTask(instance), new AddRefDataTask(instance)),
-                   new CreatePersistenceDataStoreTask(false))
+                   new CreatePersistenceDataStoreTask(dropDatabase: false))
         {
         }
     }

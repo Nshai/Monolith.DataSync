@@ -15,7 +15,7 @@ namespace Microservice.Workflow.DataProfiles
                 new GrantReadAccessTask(instance),
                 new MetadataLogPackageVersionLockingTask(instance,
                     new SynchroniseDatabaseTask(instance), new AddRefDataTask(instance),
-                new CreatePersistenceDataStoreTask())
+                new CreatePersistenceDataStoreTask(dropDatabase: true))
             )
         {
         }

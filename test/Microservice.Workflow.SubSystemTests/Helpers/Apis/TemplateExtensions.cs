@@ -16,18 +16,21 @@ namespace Microservice.Workflow.SubSystemTests.Helpers.Apis
                 throw new ArgumentNullException("builder");
 
             var state = builder
-                .Given()
-                .OAuth2BearerToken(ApiTestBase.GetUserAccessToken())
-                .Body(new CreateTemplateRequest { 
-                    Name = Guid.NewGuid().ToString(), 
-                    RelatedTo = "Client", 
-                    TemplateCategoryId = Config.ExistingCategoryId, 
-                    OwnerUserId = Config.User1Id })
-                .When()
-                .Post<TemplateDocument>("/v1/templates")
-                .Then()
-                .ExpectStatus(HttpStatusCode.Created)
-                .Run();
+                    .Given()
+                        .OAuth2BearerToken(ApiTestBase.GetUserAccessToken())
+                    .Body(
+                        new CreateTemplateRequest 
+                        { 
+                            Name = Guid.NewGuid().ToString(), 
+                            RelatedTo = "Client", 
+                            TemplateCategoryId = Config.ExistingCategoryId, 
+                            OwnerUserId = Config.User1Id 
+                        })
+                    .When()
+                        .Post<TemplateDocument>("/v1/templates")
+                    .Then()
+                        .ExpectStatus(HttpStatusCode.Created)
+                    .Run();
 
             return (TemplateDocument)state.Response.Body;
         }
