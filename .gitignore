@@ -64,3 +64,5 @@ infra/hashicorp-vault/.DS_Store
 /database/dacpac
 # Terraform
 **/.terraform/*
+
+/.vscode

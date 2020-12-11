@@ -1,5 +1,6 @@
 locals {
   environment            = "${var.env_name}-${var.iso_code}-${var.env_instance}"
+  cdn_bucket_name        = "${local.environment}-io-cdn.${var.dns_domain}"
 
   global_tags = {
     cloud-platform-tenancy = var.tags["cloud-platform-tenancy"]
@@ -12,19 +13,19 @@ locals {
 
 #Create IAM Role for service
 resource "aws_iam_role" "service_role" {
-  name = "${var.env_name}-${var.iso_code}-${var.env_instance}-${var.service_name}"
+  name = "${local.environment}-${var.service_name}"
   assume_role_policy = file("${path.module}/trust.json")
 
   tags = merge(
-    map("Name", "${var.env_name}-${var.iso_code}-${var.env_instance}-${var.service_name}"),
+    map("Name", "${local.environment}-${var.service_name}"),
     local.global_tags
   )
 }
 
 #Upload the policy to corresponding role
 resource "aws_iam_role_policy" "service_policy" {
-  name = "${var.env_name}-${var.iso_code}-${var.env_instance}-${var.service_name}"
-  role = "${var.env_name}-${var.iso_code}-${var.env_instance}-${var.service_name}"
+  name = "${local.environment}-${var.service_name}"
+  role = "${local.environment}-${var.service_name}"
   policy = data.aws_iam_policy_document.queues.json
 }
 

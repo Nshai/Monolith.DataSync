@@ -1,5 +1,5 @@
 data "aws_iam_policy_document" "queues" {
-  # SQS
+  # SQS
   statement {
     effect = "Allow"
     actions = [

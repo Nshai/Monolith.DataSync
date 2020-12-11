@@ -13,7 +13,7 @@ RUN set PATH=%PATH%;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\To
 EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/framework/sdk:4.7.2-windowsservercore-ltsc2019 AS tools
-ARG CONSUL_TMPL_VERSION=0.25.0
+ARG CONSUL_TMPL_VERSION=0.25.1
 WORKDIR /tools
 WORKDIR /temp
 RUN curl.exe https://releases.hashicorp.com/consul-template/$($Env:CONSUL_TMPL_VERSION)/consul-template_$($Env:CONSUL_TMPL_VERSION)_windows_amd64.zip -L -o consul-template.zip -s; `
@@ -28,7 +28,7 @@ RUN curl.exe https://www.nuget.org/api/v2/package/SlowCheetah.Xdt/1.1.7-beta -L 
 COPY ./.docker/windows/wincore /tools
 
 FROM intelliflo/dotnet-framework-sdk AS build
-ARG APPLICATION_VERSION=0.0.1-alpha
+ARG APPLICATION_VERSION=0.0.0.1
 ARG GIT_HASH=0000000000000000000000000000000000000000
 RUN cmd /S /C echo "setting application version '%APPLICATION_VERSION%' and associating git commit '%GIT_HASH%'"
 WORKDIR /src

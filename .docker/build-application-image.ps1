@@ -7,7 +7,7 @@ Param (
     [string]$Tag = 'windows',
     [ValidateNotNullOrEmpty()]
     [string]$RepositoryName = 'intelliflo',
-    [string]$ApplicationVersion = '0.0.1-alpha',
+    [string]$ApplicationVersion = '0.0.0.1',
     [string]$GitHash = $null,
     [switch]$SkipUnitTestRun,
     [switch]$IgnoreLocalBuildSteps,
@@ -23,8 +23,6 @@ Process {
     if($IgnoreLocalBuildSteps -ne $true) {
         # build database in a container
         ./build-database.ps1 -ServiceName $ServiceName -IgnoreLocalBuildSteps:$IgnoreLocalBuildSteps
-
-        Push-Location $PSScriptRoot
     }
 
     $containerName = "$ServiceName"
@@ -62,8 +60,6 @@ Process {
             throw "unable to copy files from test output, please check '$unitTestsImageName' image..."
         }
 
-        # docker rmi $unitTestsImageName
-
     } else {
         Write-Warning "skipping unit test run...`n`n"
     }
@@ -83,7 +79,6 @@ Process {
     docker build -f $dockerfilePath --force-rm -t $imageName --target final --build-arg APPLICATION_VERSION=$ApplicationVersion --build-arg GIT_HASH=$GitHash $buildContext
 
     if ($SkipApiTestBuild -ne $true) {
-
         Write-Output "building API tests image...`n`n"
         docker build -f $dockerfileApiTestsPath -t $apiTestsImageName $buildContext
     } else {
