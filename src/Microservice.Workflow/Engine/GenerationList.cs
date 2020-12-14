@@ -53,7 +53,7 @@ namespace Microservice.Workflow.Engine
                 }
             }
 
-            log.InfoFormat("GenerationPromoted State={0}", ToString());
+            log.DebugFormat("GenerationPromoted State={0}", ToString());
         }
 
         /// <summary>
