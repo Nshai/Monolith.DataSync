@@ -1,30 +1,30 @@
-######Provided by Pipeline
+######Provided by Pipeline##########
 variable "aws_key" {}
 
 variable "aws_secret" {}
 
 variable "env_name" {
-  type    = string
+  type = string
 }
 
 variable "iso_code" {
-  type    = string
+  type = string
 }
 
 variable "env_instance" {
-  type    = string
+  type = string
 }
 
 variable "message_resource" {
-  type    = string
+  type = string
 }
 
 variable "aws_region" {
-  type    = string
+  type = string
 }
 
 variable "aws_account_id" {
-  type    = string
+  type = string
 }
 
 variable "service_name" {
@@ -32,7 +32,7 @@ variable "service_name" {
 }
 
 variable "dns_domain" {
-  type    = string
+  type = string
 }
 
 variable "vault_url" {
@@ -48,9 +48,10 @@ variable "k8s_namespace" {
 }
 
 variable "database_instance" {
-  type    = string
+  type = string
 }
-####any additional variables added below s must be provided in values-intellifloplatform repo under each enviroment
+
+####any additional variables added below must be provided in values-intellifloplatform repo under each enviroment
 
 variable "tags" {
   type = map

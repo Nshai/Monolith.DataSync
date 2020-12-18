@@ -16,10 +16,11 @@ namespace Microservice.Workflow.SubSystemTests
         private const string YamlFileName = "reassure.yaml";
         public static string environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
-        public static readonly IConfiguration Configuration = 
-            new ConfigurationBuilder().AddJsonFile($"appsettings.json", true, true)
-                                    .AddJsonFile($"appsettings.{environmentName}.json", true, true)
-                                    .Build();
+        public static readonly IConfiguration Configuration = new ConfigurationBuilder()
+            .AddJsonFile($"appsettings.json", true, true)
+            .AddJsonFile($"appsettings.{environmentName}.json", true, true)
+            .AddEnvironmentVariables()
+            .Build();
 
         [OneTimeSetUp]
         public void SetCoverageUp()

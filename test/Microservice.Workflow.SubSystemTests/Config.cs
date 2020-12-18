@@ -64,7 +64,7 @@ namespace Microservice.Workflow.SubSystemTests
             Stub.DefaultProviderFactory = () => new WireMock(new WireMockConfiguration
             {
                 BaseAddress = Configuration["Reassure:WiremockBaseAddress"]
-            });
+            }); ;
         }
     }
 }

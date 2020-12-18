@@ -3,7 +3,7 @@
 Param (
     [Parameter(Mandatory=$true)]
     [ValidateNotNullOrEmpty()]
-    [string]$ServiceName,
+    [string]$ServiceName = 'microservice-workflow',
     [ValidateNotNullOrEmpty()]
     [string]$Tag = 'latest',
     [ValidateNotNullOrEmpty()]
@@ -20,6 +20,7 @@ Process {
     if($IgnoreLocalBuildSteps -ne $true) {
         # use Windows containers
         ./.docker/switch-docker-daemon.ps1 -TargetDaemon 'windows'
+        Start-Sleep -Seconds 2
     }
 
     $containerName = "$ServiceName-database"

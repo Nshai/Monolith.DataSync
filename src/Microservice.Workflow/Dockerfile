@@ -13,7 +13,7 @@ RUN set PATH=%PATH%;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\To
 EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/framework/sdk:4.7.2-windowsservercore-ltsc2019 AS tools
-ARG CONSUL_TMPL_VERSION=0.25.0
+ARG CONSUL_TMPL_VERSION=0.25.1
 WORKDIR /tools
 WORKDIR /temp
 RUN curl.exe https://releases.hashicorp.com/consul-template/$($Env:CONSUL_TMPL_VERSION)/consul-template_$($Env:CONSUL_TMPL_VERSION)_windows_amd64.zip -L -o consul-template.zip -s; `
@@ -28,7 +28,7 @@ RUN curl.exe https://www.nuget.org/api/v2/package/SlowCheetah.Xdt/1.1.7-beta -L 
 COPY ./.docker/windows/wincore /tools
 
 FROM intelliflo/dotnet-framework-sdk AS build
-ARG APPLICATION_VERSION=0.0.1-alpha
+ARG APPLICATION_VERSION=0.0.0.1
 ARG GIT_HASH=0000000000000000000000000000000000000000
 RUN cmd /S /C echo "setting application version '%APPLICATION_VERSION%' and associating git commit '%GIT_HASH%'"
 WORKDIR /src
@@ -43,6 +43,24 @@ RUN msbuild "Microservice.Workflow.csproj" `
     /p:OutputPath=../publish `
     /p:AssemblyVersion=$($Env:APPLICATION_VERSION) `
     /p:AssemblyTrademark=$($Env:GIT_HASH)
+
+
+FROM build AS unit-tests
+WORKDIR /results
+WORKDIR /test
+COPY test/Microservice.Workflow.Tests/Microservice.Workflow.Tests.csproj ./Microservice.Workflow.Tests/
+RUN nuget restore "Microservice.Workflow.Tests/Microservice.Workflow.Tests.csproj"
+COPY ./test/Microservice.Workflow.Tests/ ./Microservice.Workflow.Tests/
+WORKDIR /test/Microservice.Workflow.Tests
+RUN curl.exe https://github.com/nunit/nunit-console/releases/download/v3.11.1/NUnit.Console-3.11.1.zip -L -o NUnit.Console-3.11.1.zip -s; `
+    tar -xf NUnit.Console-3.11.1.zip
+RUN msbuild "Microservice.Workflow.Tests.csproj" `
+    /p:Configuration=Release `
+    /p:TargetFrameworkVersion=v4.7.2 `
+    /p:AssemblyVersion=$($Env:APPLICATION_VERSION) `
+    /p:AssemblyTrademark=$($Env:GIT_HASH)
+RUN ./bin/net35/nunit3-console.exe ./bin/Release/Microservice.Workflow.Tests.dll --result unit-test-results.xml --work ./../../results
+
 
 FROM base AS final
 WORKDIR /database

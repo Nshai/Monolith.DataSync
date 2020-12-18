@@ -15,7 +15,7 @@ Process {
     }
     else {
         Write-Output "Switching Docker daemon to use '$TargetDaemon' containers...";
-        # TODO: add Linux support
+
         & $Env:ProgramFiles\Docker\Docker\DockerCli.exe -SwitchDaemon
 
         Write-Output "Docker daemon switched!"

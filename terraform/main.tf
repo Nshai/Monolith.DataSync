@@ -1,11 +1,13 @@
 locals {
-  environment = "${var.env_name}-${var.iso_code}-${var.env_instance}"
+  environment            = "${var.env_name}-${var.iso_code}-${var.env_instance}"
+  cdn_bucket_name        = "${local.environment}-io-cdn.${var.dns_domain}"
+
   global_tags = {
-    cloud-platform-tenancy = "${var.tags["cloud-platform-tenancy"]}"
-    service-group          = var.tags["service-group"] != "" ? "${var.tags["service-group"]}" : "${var.service_name}"
-    service-name           = var.tags["service-name"] != "" ? "${var.tags["service-name"]}" : "${var.service_name}"
-    project                = "${var.tags["project"]}"
-    map-migrated           = "${var.map_migrated[var.tags["cloud-platform-tenancy"]]}"
+    cloud-platform-tenancy = var.tags["cloud-platform-tenancy"]
+    service-group          = var.tags["service-group"] != "" ? var.tags["service-group"] : var.service_name
+    service-name           = var.tags["service-name"] != "" ? var.tags["service-name"] : var.service_name
+    project                = var.tags["project"]
+    map-migrated           = var.map_migrated[var.tags["cloud-platform-tenancy"]]
   }
 }
 
@@ -14,7 +16,7 @@ resource "aws_iam_role" "service_role" {
   name = "${local.environment}-${var.service_name}"
   assume_role_policy = file("${path.module}/trust.json")
 
-    tags = merge(
+  tags = merge(
     map("Name", "${local.environment}-${var.service_name}"),
     local.global_tags
   )
@@ -26,6 +28,7 @@ resource "aws_iam_role_policy" "service_policy" {
   role = "${local.environment}-${var.service_name}"
   policy = data.aws_iam_policy_document.queues.json
 }
+
 
 #Create Vault Policy for Service
 data "template_file" "policy_hcl" {
@@ -44,9 +47,9 @@ resource "vault_policy" "servicepolicy" {
 resource "vault_database_secret_backend_role" "servicename" {
   backend             = "database"
   name                = var.service_name
-  db_name             = "mssql-01"
+  db_name             = var.database_instance
   creation_statements = [file("${path.module}/database_policy.hcl")]
-  default_ttl         = 0
+  default_ttl         = 172800
   max_ttl             = 0
 }
 
