@@ -55,6 +55,7 @@
     {{- if eq (env "env_name") "sub" }}
     <add key="cache.use" value="nullcache" xdt:Transform="SetAttributes" xdt:Locator="Match(key)" />
     <add key="dbprofile" value="subsys" xdt:Transform="Insert" />
+    <add key="CreateAfperDatabase" value="true" xdt:Transform="SetAttributes" xdt:Locator="Match(key)" />
     {{- else }}
     <add key="cache.use" value="memcached" xdt:Transform="SetAttributes" xdt:Locator="Match(key)" />
     <add key="dbprofile" value="migrate" xdt:Transform="Insert" />
