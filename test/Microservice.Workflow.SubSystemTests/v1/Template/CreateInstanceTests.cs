@@ -20,7 +20,7 @@ namespace Microservice.Workflow.SubSystemTests.v1.Template
                     .Header("Accept", "application/json")
                     .Body(JObject.Parse("{ EntityType: \"Client\", EntityId: 1 }"))
                 .When()
-                    .Post<string>($"/v1/templates/{template.Id}/createinstance/ondemand")
+                    .Post<string>($"v1/templates/{template.Id}/createinstance/ondemand")
                 .Then()
                     .ExpectStatus(400)
                     .ExpectReasonPhrase("Template not active")
@@ -65,7 +65,7 @@ namespace Microservice.Workflow.SubSystemTests.v1.Template
                     .OAuth2BearerToken(GetUserAccessToken())
                     .Header("Accept", "application/json")
                     .Body(JObject.Parse("{ EntityType: \"Client\", EntityId: 1 }"))
-                    .When().Post<string>($"/v1/templates/{template.Id}/createinstance/ondemand")
+                    .When().Post<string>($"v1/templates/{template.Id}/createinstance/ondemand")
                     .Then().ExpectStatus(204)
                     .Run();
 
@@ -86,7 +86,7 @@ namespace Microservice.Workflow.SubSystemTests.v1.Template
                     .OAuth2BearerToken(GetUserAccessToken())
                     .Header("Accept", "application/json")
                     .Body(JObject.Parse("{ EntityType: \"Client\", EntityId: 1 }"))
-                    .When().Post<string>($"/v1/templates/{template.Id}/createinstance/ondemand")
+                    .When().Post<string>($"v1/templates/{template.Id}/createinstance/ondemand")
                     .Then().ExpectStatus(403)
                     .ExpectReasonPhrase("Not permitted to create this instance")
                     .Run();

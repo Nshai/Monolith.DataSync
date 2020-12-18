@@ -16,7 +16,7 @@ namespace Microservice.Workflow.SubSystemTests.v1.TemplateCategory
                     .Header("Accept", "application/json")
                     .OAuth2BearerToken(GetUserAccessToken())
                 .When()
-                    .Get<string>("/v1/templatecategories/77777")
+                    .Get<string>("v1/templatecategories/77777")
                 .Then()
                     .ExpectStatus(HttpStatusCode.NotFound)
                     .ExpectReasonPhrase("Template category not found")
