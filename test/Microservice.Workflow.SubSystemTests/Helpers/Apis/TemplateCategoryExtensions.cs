@@ -16,7 +16,7 @@ namespace Microservice.Workflow.SubSystemTests.Helpers.Apis
                         .OAuth2BearerToken(ApiTestBase.GetUserAccessToken())
                     .Body(new CreateTemplateCategoryRequest() { Name = Guid.NewGuid().ToString() })
                     .When()
-                        .Post<TemplateCategoryDocument>("v1/templatecategories")
+                        .Post<TemplateCategoryDocument>("/v1/templatecategories")
                     .Then()
                         .ExpectStatus(200)
                         .ExpectReasonPhrase("Created")

@@ -16,7 +16,7 @@ namespace Microservice.Workflow.SubSystemTests.v1.TemplateCategory
                     .Header("Accept", "application/json")
                     .Body(new CreateTemplateCategoryRequest { Name ="Test template category" })
                 .When()
-                    .Post<TemplateCategoryDocument>("v1/templatecategories")
+                    .Post<TemplateCategoryDocument>("/v1/templatecategories")
                 .Then()
                     .ExpectStatus(201)
                     .ExpectReasonPhrase("Created")
