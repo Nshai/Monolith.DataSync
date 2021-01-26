@@ -35,6 +35,10 @@ variable "dns_domain" {
   type = string
 }
 
+variable "consul_url" {
+  type = string
+}
+
 variable "vault_url" {
   type = string
 }

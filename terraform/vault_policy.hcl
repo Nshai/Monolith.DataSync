@@ -1,41 +1,34 @@
-# list kv secrets, from kv root folder
-path "kv/database/credentials"
+################
+# certificates #
+################
+path "kv/certificates/signing"
 {
   capabilities = ["read"]
 }
 
-path "kv/certificates/identity_signing_certificate"
+path "kv/certificates/encryption"
 {
   capabilities = ["read"]
 }
 
-path "kv/certificates/client_certificate_default"
+################################
+# application specific secrets #
+################################
+path "kv/${service_name}"
 {
   capabilities = ["read"]
 }
 
-path "kv/certificates/encryption_certificate_default"
-{
-  capabilities = ["read"]
-}
-
-path "kv/certificates/idsrv3test/*"
-{
-  capabilities = ["read"]
-}
-
-path "kv/certificates/idsrv3test"
-{
-  capabilities = ["read"]
-}
-
-path "kv/dataprotectionsecret"
-{
-  capabilities = ["read"]
-}
-
-# read database
+###################
+# database access #
+###################
 path "database/creds/${service_name}"
+{
+  capabilities = ["read"]
+}
+
+# for subsystem only (testing environment)
+path "kv/database/credentials"
 {
   capabilities = ["read"]
 }

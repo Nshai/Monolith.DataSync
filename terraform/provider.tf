@@ -10,3 +10,8 @@ provider "vault" {
   address = var.vault_url
   token   = var.vault_token
 }
+
+#Consul Provider Credentials
+provider "consul" {
+  address = var.consul_url
+}
