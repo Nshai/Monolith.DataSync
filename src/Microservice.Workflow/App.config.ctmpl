@@ -39,9 +39,9 @@
 
   <ResourceServerIdentityConfiguration SigningCertificateSubject="{{ key "certificates/signing" }}" IdentityServerBaseUrl="https://identity.{{ $domain }}" xdt:Transform="SetAttributes" />
 
-  <aws xdt:Transform="Remove" />
+  <aws region="{{ env "aws_region" }}" xdt:Transform="Replace"/>
 
-  <AwsSettingsConfiguration AwsRegions= "{{ env "aws_region" }}" xdt:Transform="Replace"/>
+  <AwsSettingsConfiguration AwsRegions="{{ env "aws_region" }}" xdt:Transform="Replace"/>
 
   <appSettings>
     <add key="enableHibernateProfiler" value="false" xdt:Transform="SetAttributes" xdt:Locator="Match(key)" />
