@@ -37,7 +37,7 @@
   </enyim.com>
   {{- end }}
 
-  <ResourceServerIdentityConfiguration SigningCertificateSubject="{{ key "certificates/identity_signing_certificate" }}" IdentityServerBaseUrl="https://microservice-identity.{{ $domain }}" xdt:Transform="SetAttributes" />
+  <ResourceServerIdentityConfiguration SigningCertificateSubject="{{ key "certificates/signing" }}" IdentityServerBaseUrl="https://identity.{{ $domain }}" xdt:Transform="SetAttributes" />
 
   <aws xdt:Transform="Remove" />
 
@@ -46,20 +46,21 @@
   <appSettings>
     <add key="enableHibernateProfiler" value="false" xdt:Transform="SetAttributes" xdt:Locator="Match(key)" />
     <add key="enableHibernateProfilerStackTrace" value="false" xdt:Transform="SetAttributes" xdt:Locator="Match(key)" />
-    <add key="client.certificate.default.subjectname" value="{{ key "certificates/client_certificate_default" }}" xdt:Transform="SetAttributes" xdt:Locator="Match(key)" />
-    <add key="encryption.certificate.default.subjectname" value="{{ key "certificates/encryption_certificate_default" }}" xdt:Transform="SetAttributes" xdt:Locator="Match(key)" />
+    <add key="client.certificate.default.subjectname" value="{{ key "certificates/signing" }}" xdt:Transform="SetAttributes" xdt:Locator="Match(key)" />
+    <add key="encryption.certificate.default.subjectname" value="{{ key "certificates/encryption" }}" xdt:Transform="SetAttributes" xdt:Locator="Match(key)" />
     <add key="db.timeout" value="30" xdt:Transform="SetAttributes" xdt:Locator="Match(key)" />
     <add key="ClientSettingsProvider.ServiceUri" value="" xdt:Transform="SetAttributes" xdt:Locator="Match(key)" />
     <add key="AWSProfileName" value=""  xdt:Transform="Remove" xdt:Locator="Match(key)" />
     <add key="dbprofile" xdt:Transform="Remove" xdt:Locator="Match(key)"/>
     {{- if eq (env "env_name") "sub" }}
-    <add key="cache.use" value="nullcache" xdt:Transform="SetAttributes" xdt:Locator="Match(key)" />
     <add key="dbprofile" value="subsys" xdt:Transform="Insert" />
     <add key="CreateAfperDatabase" value="true" xdt:Transform="SetAttributes" xdt:Locator="Match(key)" />
     {{- else }}
-    <add key="cache.use" value="memcached" xdt:Transform="SetAttributes" xdt:Locator="Match(key)" />
     <add key="dbprofile" value="migrate" xdt:Transform="Insert" />
     {{- end }}
+    {{- if keyExists "services/memcached/ip" }}
+    <add key="cache.use" value="memcached" xdt:Transform="SetAttributes" xdt:Locator="Match(key)" />
+    {{- end }}  
   </appSettings>
 
   <system.serviceModel>
@@ -97,7 +98,6 @@
   </applicationSettings>
 
   <log4net xdt:Transform="Replace">
-    {{- if or (eq (env "env_name") "sub") (keyOrDefault "settings/applications/microservice-workflow/logToConsole" "false" | parseBool ) }}
     <appender name="ColoredConsoleAppender" type="log4net.Appender.ColoredConsoleAppender">
       <mapping>
         <level value="FATAL" />
@@ -123,26 +123,9 @@
         <conversionPattern value="%date [%thread] %-5level %logger [%property{NDC}] - %message%newline" />
       </layout>
     </appender>
-    {{- end }}
-    {{- if ne (env "env_name") "sub" }}
-    <appender name="RemoteSyslogAppender" type="log4net.Appender.RemoteSyslogAppender">
-      <facility value="Local3" />
-      <layout type="IntelliFlo.Platform.Logging.CustomPatternLayout, IntelliFlo.Platform.Logging">
-        <IgnoresException value="False" />
-        <conversionPattern value="a_level=%level, a_logger=%logger, a_time=%quot%utcdate%quot, a_sub=%quot%property{subject}%quot, a_uid=%quot%property{userId}%quot, a_tid=%quot%property{tenantId}%quot, a_rid=%quot%property{correlationId}%quot,  a_errid=%quot%property{errorId}%quot, a_aname=%quot%property{assemblyName}%quot, a_aver=%quot%property{assemblyVersion}%quot, a_thread=%quot%thread%quot, a_type=%quot%type%quot, a_met=%quot%method%quot, a_msg=%quot%message%quot, a_stack=%quot%stack%quot  %newline " />
-      </layout>
-      <remoteAddress value="syslog" />
-      <remotePort value="5140" />
-    </appender>
-    {{- end }}
     <root>
       <level value="{{keyOrDefault "settings/applications/microservice-workflow/logLevel" "Info"}}" />
-      {{- if or (eq (env "env_name") "sub") (keyOrDefault "settings/applications/microservice-workflow/logToConsole" "false" | parseBool ) }}
       <appender-ref ref="ColoredConsoleAppender" />
-      {{- end }}
-      {{- if ne (env "env_name") "sub" }}
-      <appender-ref ref="RemoteSyslogAppender" />
-      {{- end }}
     </root>
     <logger name="NHibernate">
       <level value="{{keyOrDefault "settings/applications/microservice-workflow/nhibernateLogLevel" "WARN"}}" />
