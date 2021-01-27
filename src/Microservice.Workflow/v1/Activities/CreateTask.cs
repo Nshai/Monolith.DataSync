@@ -77,10 +77,11 @@ namespace Microservice.Workflow.v1.Activities
 
         private string GetUserTimeZone(IHttpClient crmClient, int userId)
         {
+            string defaultTimeZone = "GMT";
             var userDocument = crmClient.UsingPolicy(HttpClientPolicy.Retry).
                 SendAsync(c => c.Get<Collaborators.v2.UserDocument>(string.Format(Collaborators.v2.Uris.Crm.GetUserByUserId, userId.ToString())))
                 .ConfigureAwait(false).GetAwaiter().GetResult();
-            return userDocument.Resource.TimeZone;
+            return userDocument.Resource.TimeZone ?? defaultTimeZone;
         }
     }
 }
