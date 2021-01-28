@@ -1,6 +1,5 @@
 locals {
   environment            = "${var.env_name}-${var.iso_code}-${var.env_instance}"
-  cdn_bucket_name        = "${local.environment}-io-cdn.${var.dns_domain}"
 
   global_tags = {
     cloud-platform-tenancy = var.tags["cloud-platform-tenancy"]
