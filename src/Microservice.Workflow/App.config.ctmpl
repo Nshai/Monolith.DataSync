@@ -31,7 +31,7 @@
   <enyim.com>
     <memcached>
       <servers xdt:Transform="Replace">
-        <add address="{{ key "services/memcached/ip" }}" port="11211" />
+        {{ key "services/memcached/ip" }}
       </servers>
     </memcached>
   </enyim.com>
@@ -134,7 +134,7 @@
 
  <Vault xdt:Transform="Replace">
     <Disabled value= "False" />
-    <Address value="http://hashicorp-vault.hashicorp-vault.svc.cluster.local:8200" />
+    <Address value="{{ env "VAULT_ADDR" }}" />
     <KubernetesJwtPath value="C:\var\run\secrets\kubernetes.io\serviceaccount\token" />
     <LeaseOffset value="86400000" />
     <SecretPaths>

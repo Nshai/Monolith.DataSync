@@ -113,7 +113,7 @@
       <Version>4.0.1</Version>
     </PackageReference>
     <PackageReference Include="IntelliFlo.Platform.Testing">
-      <Version>7.52.0.1</Version>
+      <Version>7.52.522.1-alpha</Version>
     </PackageReference>
     <PackageReference Include="Moq">
       <Version>4.2.1507.118</Version>
