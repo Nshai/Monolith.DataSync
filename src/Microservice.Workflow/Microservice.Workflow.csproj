@@ -480,7 +480,7 @@
       <Version>3.5.1.10</Version>
     </PackageReference>
     <PackageReference Include="IntelliFlo.Platform.MicroService">
-      <Version>7.52.522.1-alpha</Version>
+      <Version>7.52.522.1</Version>
     </PackageReference>
     <PackageReference Include="Metrics.NET">
       <Version>0.2.16</Version>
