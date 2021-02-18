@@ -17,12 +17,12 @@
       <add name="eventmanagement" baseAddress="http://wiremock/eventmanagement/" timeout="60000" xdt:Transform="SetAttributes" xdt:Locator="Match(name)" />
       <add name="portfolio" baseAddress="http://wiremock/portfolio/" timeout="60000" xdt:Transform="SetAttributes" xdt:Locator="Match(name)" />
       {{- else }}
-      <add name="crm" baseAddress="https://monolith-crm.{{ $domain }}/" timeout="60000" xdt:Transform="SetAttributes" xdt:Locator="Match(name)" />
-      <add name="eventmanagement" baseAddress="https://monolith-webhooks.{{ $domain }}/" timeout="60000" xdt:Transform="SetAttributes" xdt:Locator="Match(name)" />
-      <add name="portfolio" baseAddress="https://monolith-portfolio.{{ $domain }}/" timeout="60000" xdt:Transform="SetAttributes" xdt:Locator="Match(name)" />
-      <add name="workflow" baseAddress="https://microservice-workflow.{{ $domain }}/" timeout="60000" xdt:Transform="SetAttributes" xdt:Locator="Match(name)" />
-      <add name="author" baseAddress="https://microservice-author.{{ $domain }}/" timeout="60000" xdt:Transform="SetAttributes" xdt:Locator="Match(name)" />
-      <add name="nio" baseAddress="https://intelligent-office.{{ $domain }}/nio/rest/" timeout="60000" xdt:Transform="SetAttributes" xdt:Locator="Match(name)" />
+      <add name="crm" baseAddress="http://monolith-crm.intelligent-office.svc.cluster.local/" timeout="60000" xdt:Transform="SetAttributes" xdt:Locator="Match(name)" />
+      <add name="eventmanagement" baseAddress="http://monolith-webhooks.intelligent-office.svc.cluster.local/" timeout="60000" xdt:Transform="SetAttributes" xdt:Locator="Match(name)" />
+      <add name="portfolio" baseAddress="http://monolith-portfolio.intelligent-office.svc.cluster.local/" timeout="60000" xdt:Transform="SetAttributes" xdt:Locator="Match(name)" />
+      <add name="workflow" baseAddress="http://microservice-workflow.intelligent-office.svc.cluster.local/" timeout="60000" xdt:Transform="SetAttributes" xdt:Locator="Match(name)" />
+      <add name="author" baseAddress="http://microservice-author.intelligent-office.svc.cluster.local/" timeout="60000" xdt:Transform="SetAttributes" xdt:Locator="Match(name)" />
+      <add name="nio" baseAddress="http://intelliflo-nio.intelligent-office.svc.cluster.local/nio/rest/" timeout="60000" xdt:Transform="SetAttributes" xdt:Locator="Match(name)" />
       {{- end }}
     </serviceEndpoints>
   </clientConfiguration>
@@ -31,13 +31,13 @@
   <enyim.com>
     <memcached>
       <servers xdt:Transform="Replace">
-        <add address="{{ key "services/memcached/ip" }}" port="11211" />
+        {{ key "services/memcached/ip" }}
       </servers>
     </memcached>
   </enyim.com>
   {{- end }}
 
-  <ResourceServerIdentityConfiguration SigningCertificateSubject="{{ key "certificates/signing" }}" IdentityServerBaseUrl="https://identity.{{ $domain }}" xdt:Transform="SetAttributes" />
+  <ResourceServerIdentityConfiguration SigningCertificateSubject="{{ key "certificates/signing" }}" IdentityServerBaseUrl="http://microservice-identity.intelligent-office.svc.cluster.local" xdt:Transform="SetAttributes" />
 
   <aws region="{{ env "aws_region" }}" xdt:Transform="Replace"/>
 
@@ -119,8 +119,9 @@
         <level value="INFO" />
         <foreColor value="Green" />
       </mapping>
-      <layout type="log4net.Layout.PatternLayout">
-        <conversionPattern value="%date [%thread] %-5level %logger [%property{NDC}] - %message%newline" />
+      <layout type="IntelliFlo.Platform.Logging.CustomPatternLayout, IntelliFlo.Platform.Logging">
+        <IgnoresException value="False" />
+        <conversionPattern value="a_level=%level, a_logger=%logger, a_time=%quot%utcdate%quot, a_sub=%quot%property{subject}%quot, a_uid=%quot%property{userId}%quot, a_tid=%quot%property{tenantId}%quot, a_rid=%quot%property{correlationId}%quot,  a_errid=%quot%property{errorId}%quot, a_aname=%quot%property{assemblyName}%quot, a_aver=%quot%property{assemblyVersion}%quot, a_thread=%quot%thread%quot, a_type=%quot%type%quot, a_met=%quot%method%quot, a_msg=%quot%message%quot, a_stack=%quot%stack%quot  %newline " />
       </layout>
     </appender>
     <root>
@@ -134,7 +135,7 @@
 
  <Vault xdt:Transform="Replace">
     <Disabled value= "False" />
-    <Address value="http://hashicorp-vault.hashicorp-vault.svc.cluster.local:8200" />
+    <Address value="{{ env "VAULT_ADDR" }}" />
     <KubernetesJwtPath value="C:\var\run\secrets\kubernetes.io\serviceaccount\token" />
     <LeaseOffset value="86400000" />
     <SecretPaths>
