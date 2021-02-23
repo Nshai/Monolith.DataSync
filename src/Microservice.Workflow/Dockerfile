@@ -1,6 +1,6 @@
 # escape=`
 
-FROM mcr.microsoft.com/dotnet/framework/runtime:4.7.2-windowsservercore-ltsc2019 AS base
+FROM mcr.microsoft.com/dotnet/framework/runtime:4.8-windowsservercore-2004 AS base
 # install additional requirement: SqlCmd
 WORKDIR /tools
 RUN curl.exe -L https://aka.ms/vs/15/release/vc_redist.x64.exe -o vc_redist.x64.exe
@@ -12,8 +12,9 @@ RUN msiexec.exe /i sqlcmd.msi /qn /L*V sqlcmd.log IACCEPTMSSQLCMDLNUTILSLICENSET
 RUN set PATH=%PATH%;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\
 EXPOSE 80
 
-FROM mcr.microsoft.com/dotnet/framework/sdk:4.7.2-windowsservercore-ltsc2019 AS tools
-ARG CONSUL_TMPL_VERSION=0.25.1
+
+FROM mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-2004 AS tools
+ARG CONSUL_TMPL_VERSION=0.25.2
 WORKDIR /tools
 WORKDIR /temp
 RUN curl.exe https://releases.hashicorp.com/consul-template/$($Env:CONSUL_TMPL_VERSION)/consul-template_$($Env:CONSUL_TMPL_VERSION)_windows_amd64.zip -L -o consul-template.zip -s; `
@@ -25,8 +26,10 @@ RUN curl.exe https://www.nuget.org/api/v2/package/SlowCheetah.Xdt/1.1.7-beta -L 
     tar -xf slowcheetah.zip; `
     cp ./lib/SlowCheetah.Xdt.dll /tools; `
     cp ./tools/SlowCheetah.Xdt.exe /tools
-COPY ./.docker/windows/wincore /tools
+COPY ./.docker/windows/entrypoint /tools
 
+
+# please see https://github.com/Intelliflo/IntelligentOffice/tree/master/.docker/windows/dotnet-framework-sdk about how to generate the base image
 FROM intelliflo/dotnet-framework-sdk AS build
 ARG APPLICATION_VERSION=0.0.0.1
 ARG GIT_HASH=0000000000000000000000000000000000000000
@@ -45,6 +48,19 @@ RUN msbuild "Microservice.Workflow.csproj" `
     /p:AssemblyTrademark=$($Env:GIT_HASH)
 
 
+FROM base AS final
+WORKDIR /database
+COPY ./database/Microservice.Workflow.SqlServer/dbo .
+COPY ./database/Microservice.Workflow.SqlServer/dbodata/data ./data
+WORKDIR /app
+COPY --from=build /src/publish .
+COPY --from=tools /tools .
+COPY ./.docker/windows/certs.ps1 /certs.ps1
+HEALTHCHECK --interval=15s --timeout=3s --retries=3 `
+    CMD curl --fail http://localhost/health || exit 1
+ENTRYPOINT ["powershell", "-command", "/certs.ps1", "./consul-template.exe", "-config='consul-template.hcl'", "-once"]
+
+
 FROM build AS unit-tests
 WORKDIR /results
 WORKDIR /test
@@ -60,16 +76,3 @@ RUN msbuild "Microservice.Workflow.Tests.csproj" `
     /p:AssemblyVersion=$($Env:APPLICATION_VERSION) `
     /p:AssemblyTrademark=$($Env:GIT_HASH)
 RUN ./bin/net35/nunit3-console.exe ./bin/Release/Microservice.Workflow.Tests.dll --result unit-test-results.xml --work ./../../results
-
-
-FROM base AS final
-WORKDIR /database
-COPY ./database/Microservice.Workflow.SqlServer/dbo .
-COPY ./database/Microservice.Workflow.SqlServer/dbodata/data ./data
-WORKDIR /app
-COPY --from=build /src/publish .
-COPY --from=tools /tools .
-ADD https://artifactory.intelliflo.services/artifactory/generic-local/cert-load/certs-1.2.0.ps1 /certs.ps1
-HEALTHCHECK --interval=15s --timeout=3s --retries=3 `
-    CMD curl --fail http://localhost/health || exit 1
-ENTRYPOINT ["powershell", "-command", "/certs.ps1", "./consul-template.exe", "-config='consul-template.hcl'", "-once"]
