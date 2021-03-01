@@ -54,13 +54,18 @@
     <add key="dbprofile" xdt:Transform="Remove" xdt:Locator="Match(key)"/>
     {{- if eq (env "env_name") "sub" }}
     <add key="dbprofile" value="subsys" xdt:Transform="Insert" />
-    <add key="CreateAfperDatabase" value="true" xdt:Transform="SetAttributes" xdt:Locator="Match(key)" />
     {{- else }}
     <add key="dbprofile" value="migrate" xdt:Transform="Insert" />
     {{- end }}
     {{- if keyExists "services/memcached/ip" }}
     <add key="cache.use" value="memcached" xdt:Transform="SetAttributes" xdt:Locator="Match(key)" />
-    {{- end }}  
+    {{- end }}
+    {{- if or (eq (env "env_name") "sub") (keyOrDefault "settings/applications/microservice-workflow/createAfperDatabase" "false" | parseBool) }}
+    <add key="CreateAfperDatabase" value="true" xdt:Transform="SetAttributes" xdt:Locator="Match(key)" />
+    {{- end }}
+    {{- if (keyOrDefault "settings/applications/microservice-workflow/upgradeAfperDatabase" "false" | parseBool) }}
+    <add key="UpgradeAfperDatabase" value="true" xdt:Transform="SetAttributes" xdt:Locator="Match(key)" />
+    {{- end }}
   </appSettings>
 
   <system.serviceModel>

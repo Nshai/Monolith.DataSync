@@ -1,7 +1,6 @@
 ﻿using IntelliFlo.Platform.Database;
 using IntelliFlo.Platform.Database.Impl.Initialisers;
 using IntelliFlo.Platform.Database.Impl.Tasks;
-using IntelliFlo.Platform.NHibernate;
 
 namespace Microservice.Workflow.DataProfiles
 {
@@ -15,7 +14,7 @@ namespace Microservice.Workflow.DataProfiles
                 new GrantReadAccessTask(instance),
                 new MetadataLogPackageVersionLockingTask(instance,
                     new SynchroniseDatabaseTask(instance), new AddRefDataTask(instance),
-                new CreatePersistenceDataStoreTask(dropDatabase: true))
+                new CreatePersistenceDataStoreTask(dropDatabase: true, useSafetyCheck: false))
             )
         {
         }

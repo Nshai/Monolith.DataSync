@@ -14,6 +14,7 @@ namespace Microservice.Workflow.DataProfiles
     {
         private readonly ConnectionStringSettings connStr;
         private readonly bool DropDatabase;
+        private readonly bool UseSafetyCheck;
         public override void Dispose() { }
 
         private const string createDatabaseSql = "IF (SELECT DB_ID('afper')) IS NULL CREATE DATABASE afper";
@@ -25,10 +26,13 @@ namespace Microservice.Workflow.DataProfiles
                 DROP DATABASE [afper]
             END";
 
-        public CreatePersistenceDataStoreTask(bool dropDatabase = false)
+        private const string safetyCheckSql = "SELECT COUNT(1) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'";
+
+        public CreatePersistenceDataStoreTask(bool dropDatabase = false, bool useSafetyCheck = true)
         {
             connStr = ConfigurationManager.ConnectionStrings["afper"];
             DropDatabase = dropDatabase;
+            UseSafetyCheck = useSafetyCheck;
         }
 
         public override object Execute(IDatabaseSettings settings)
@@ -39,18 +43,25 @@ namespace Microservice.Workflow.DataProfiles
                 return true;
             }
 
+            if (IsSafeToDeploy() == false)
+            {
+                Logger.WarnFormat("Skipping execution because the creation scripts might delete existing data.");
+                return true;
+            }
+
             if (connStr != null)
             {
                 // delete and create 'afper' database
                 RecreateDatabase(settings);
 
                 var sql = (NameValueCollection)ConfigurationManager.GetSection("SqlAfper");
+
                 if (sql != null)
                 {
-                    for (var i = 0; i < sql.Count; i++)
-                    {
-                        RunSqlScript(sql[i]);
-                    }
+                    Logger.InfoFormat("running script to create 'afper' schema...");
+                    RunSqlScript(sql.Get("schema"));
+                    Logger.InfoFormat("running script to create 'afper' logic...");
+                    RunSqlScript(sql.Get("logic"));
                 }
                 else
                 {
@@ -59,6 +70,35 @@ namespace Microservice.Workflow.DataProfiles
             }
 
             return true;
+        }
+
+        private bool IsSafeToDeploy()
+        {
+            if (UseSafetyCheck == false) 
+            {
+                Logger.WarnFormat("Skipping safety check, potential DATA LOST on 'afper' can occur on schema update.");
+                return true;
+            }
+
+            var con = new SqlConnection(connStr.ConnectionString);
+
+            try
+            {
+                con.Open();
+
+                using (var cmd = new SqlCommand(safetyCheckSql, con))
+                {
+                    var nrOfTablesInAfper = (int)cmd.ExecuteScalar();
+
+                    // it's only safe to deplooy schema if afper does not have any tables (means empty schema)
+                    return nrOfTablesInAfper == 0;
+                }
+
+            }
+            finally
+            {
+                con.Close();
+            }
         }
 
         private void RunSqlScript(string script)

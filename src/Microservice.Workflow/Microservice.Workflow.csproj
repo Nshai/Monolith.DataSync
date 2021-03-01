@@ -98,6 +98,7 @@
     <Compile Include="Collaborators\v2\UserDocument.cs" />
     <Compile Include="Collaborators\v2\UserRefDocument.cs" />
     <Compile Include="DataProfiles\SubsysInitialiser.cs" />
+    <Compile Include="DataProfiles\UpgradePersistenceDataStoreSchemaTask.cs" />
     <Compile Include="DataProfiles\WorkflowMigrationProfileInitializer.cs" />
     <Compile Include="DataProfiles\CreatePersistenceDataStoreTask.cs" />
     <Compile Include="Domain\InstanceNotRestartableException.cs" />
