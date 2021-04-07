@@ -33,19 +33,21 @@ COPY ./.docker/windows/entrypoint /tools
 FROM intelliflo/dotnet-framework-sdk AS build
 ARG APPLICATION_VERSION=0.0.0.1
 ARG GIT_HASH=0000000000000000000000000000000000000000
-RUN cmd /S /C echo "setting application version '%APPLICATION_VERSION%' and associating git commit '%GIT_HASH%'"
+RUN echo "setting application version $($Env:APPLICATION_VERSION) and associating git commit $($Env:GIT_HASH)"
 WORKDIR /src
 COPY src/Microservice.Workflow/Microservice.Workflow.csproj ./Microservice.Workflow/
 RUN nuget sources Add -Name 'Ifl Artifactory (virtual)' -Source 'https://artifactory.intelliflo.io/artifactory/api/nuget/nuget-virtual'
 COPY ./src/ ./
 WORKDIR /src/Microservice.Workflow
-RUN nuget restore "Microservice.Workflow.csproj"
+RUN nuget restore "Microservice.Workflow.csproj" -verbosity quiet
 RUN msbuild "Microservice.Workflow.csproj" `
     /p:Configuration=Release `
     /p:TargetFrameworkVersion=v4.7.2 `
     /p:OutputPath=../publish `
     /p:AssemblyVersion=$($Env:APPLICATION_VERSION) `
-    /p:AssemblyTrademark=$($Env:GIT_HASH)
+    /p:AssemblyFileVersion=$($Env:APPLICATION_VERSION) `
+    /p:AssemblyTrademark=$($Env:GIT_HASH) `
+    /clp:ErrorsOnly
 
 
 FROM base AS final

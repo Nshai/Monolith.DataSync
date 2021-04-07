@@ -1,4 +1,26 @@
 #!/usr/bin/env pwsh
+<#PSScriptInfo
+.VERSION 2021.04.05
+.GUID c32dba51-e208-43d5-bd31-028df532f6d1
+.AUTHOR dev.ops@intelliflo.com
+.COMPANYNAME Intelliflo
+.COPYRIGHT © Copyright 2021 Intelliflo, Ltd.
+.TAGS build docker unit-tests subsystem-tests codeql
+.LICENSEURI
+.PROJECTURI
+.ICONURI
+.EXTERNALMODULEDEPENDENCIES
+.REQUIREDSCRIPTS
+.EXTERNALSCRIPTDEPENDENCIES
+.RELEASENOTES
+.PRIVATEDATA
+#>
+
+<#
+.DESCRIPTION
+ multi-purpose script used to build application Docker image, buld API tests Docker image, run unit-test and run code-analysis
+#>
+
 [CmdletBinding()]
 Param (
     [ValidateNotNullOrEmpty()]
