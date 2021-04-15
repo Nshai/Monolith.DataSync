@@ -27,6 +27,18 @@ namespace Microservice.Workflow
             }
         }
 
+        public static RetryPolicy<HttpResponse<T>> GetRetryOnUnavailableOnInternalErrorOnNotFound<T>()
+        {
+
+            return Policy
+                .Handle<TaskCanceledException>()
+                .OrResult<HttpResponse<T>>(e =>
+                e.Raw.StatusCode == HttpStatusCode.ServiceUnavailable ||
+                e.Raw.StatusCode == HttpStatusCode.InternalServerError ||
+                e.Raw.StatusCode == HttpStatusCode.NotFound)
+                .WaitAndRetryAsync(3, i => TimeSpan.FromSeconds(10 * i));
+
+        }
         public static RetryPolicy<HttpResponse<T>> GetRetryPolicy<T>()
         {
             return Policy
@@ -34,5 +46,6 @@ namespace Microservice.Workflow
             .OrResult<HttpResponse<T>>(e => retryable.Contains(e.Raw.StatusCode))
             .WaitAndRetryAsync(3, i => TimeSpan.FromSeconds(10 * i));
         }
+
     }
 }

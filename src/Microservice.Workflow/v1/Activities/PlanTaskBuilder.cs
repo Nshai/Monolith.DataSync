@@ -1,4 +1,7 @@
+﻿using System;
+using System.Net;
 using System.Activities;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using IntelliFlo.Platform.Http.Client;
@@ -14,7 +17,7 @@ namespace Microservice.Workflow.v1.Activities
         public async override Task<int> GetContextPartyId(string ownerContextRole, WorkflowContext context)
         {
             var plan = await GetPlan(context.ClientId, context.EntityId);
-            
+
             switch (ownerContextRole)
             {
                 case "SellingAdviser":
@@ -48,14 +51,22 @@ namespace Microservice.Workflow.v1.Activities
             return owner1.ClientId;
         }
 
-        private async Task<PlanDocument> GetPlan(int clientId, int planId)
+        internal async Task<PlanDocument> GetPlan(int clientId, int planId)
         {
             using (var portfolioClient = ClientFactory.Create("portfolio"))
             {
-                var planResponse = await portfolioClient.UsingPolicy(HttpClientPolicy.Retry).SendAsync(c => c.Get<PlanDocument>(string.Format(Uris.Portfolio.GetPlan, clientId, planId)));
-                planResponse.OnException(s => { throw new HttpClientException(s); });
+                var uri = string.Format(Uris.Portfolio.GetPlan, clientId, planId);
+                var planResponse = await HttpClientPolicy
+                    .GetRetryOnUnavailableOnInternalErrorOnNotFound<PlanDocument>()
+                    .ExecuteAsync(() => portfolioClient.Get<PlanDocument>(uri));
+
+                planResponse.OnException(s =>
+                {
+                    throw new HttpClientException(s);
+                });
                 return planResponse.Resource;
             }
         }
+
     }
 }
