@@ -142,7 +142,6 @@
     <Disabled value= "False" />
     <Address value="{{ env "VAULT_ADDR" }}" />
     <KubernetesJwtPath value="C:\var\run\secrets\kubernetes.io\serviceaccount\token" />
-    <LeaseOffset value="86400000" />
     <SecretPaths>
     {{- if eq (env "env_name") "sub" }}
       <add key="ConnectionStrings:add[@name='read']/@connectionString" value="kv/database/credentials" />
