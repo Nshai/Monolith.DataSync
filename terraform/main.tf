@@ -16,7 +16,7 @@ resource "aws_iam_role" "service_role" {
   assume_role_policy = file("${path.module}/trust.json")
 
   tags = merge(
-    map("Name", "${local.environment}-${var.service_name}"),
+    tomap({"Name" = "${local.environment}-${var.service_name}"}),
     local.global_tags
   )
 }
@@ -48,7 +48,7 @@ resource "vault_database_secret_backend_role" "servicename" {
   name                = var.service_name
   db_name             = var.database_instance
   creation_statements = [file("${path.module}/database_policy.hcl")]
-  default_ttl         = 172800
+  default_ttl         = 0
   max_ttl             = 0
 }
 
