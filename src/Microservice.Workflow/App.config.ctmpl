@@ -149,9 +149,9 @@
       <add key="ConnectionStrings:add[@name='write']/@connectionString" value="kv/database/credentials" />
       <add key="ConnectionStrings:add[@name='afper']/@connectionString" value="kv/database/credentials" />
     {{- else }}
-      <add key="ConnectionStrings:add[@name='read']/@connectionString" value="database/creds/microservice-workflow" />
-      <add key="ConnectionStrings:add[@name='write']/@connectionString" value="database/creds/microservice-workflow" />
-      <add key="ConnectionStrings:add[@name='afper']/@connectionString" value="database/creds/microservice-workflow" />
+      <add key="ConnectionStrings:add[@name='read']/@connectionString" value="kv/db-credentials/microservice-workflow" />
+      <add key="ConnectionStrings:add[@name='write']/@connectionString" value="kv/db-credentials/microservice-workflow" />
+      <add key="ConnectionStrings:add[@name='afper']/@connectionString" value="kv/db-credentials/microservice-workflow" />
     {{- end }}
     </SecretPaths>
  </Vault>

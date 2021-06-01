@@ -22,6 +22,12 @@ path "kv/${service_name}"
 ###################
 # database access #
 ###################
+path "kv/db-credentials/${service_name}"
+{
+  capabilities = ["read", "create", "update"]
+}
+
+# k8s job needs the following permissions
 path "database/creds/${service_name}"
 {
   capabilities = ["read"]
