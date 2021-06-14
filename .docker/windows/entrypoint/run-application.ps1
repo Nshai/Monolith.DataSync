@@ -5,10 +5,10 @@ Begin {
 Process {
 
     Write-Output "`ngenerating config...`n"
-    .\SlowCheetah.Xdt.exe .\Microservice.Workflow.exe.config .\App.$env:env_name.config .\Microservice.Workflow.exe.config
+    .\SlowCheetah.Xdt.exe .\Monolith.DataSync.exe.config .\App.$env:env_name.config .\Monolith.DataSync.exe.config
 
     Write-Output "`nrunning the app...`n"
-    .\Microservice.Workflow.exe
+    .\Monolith.DataSync.exe
 
 }
 End {

@@ -53,8 +53,8 @@ Process {
     $apiTestsImageName = "$RepositoryName/$($containerName)-apitests:$Tag"
 
     $buildContext = Join-Path $PSScriptRoot .. -Resolve
-    $dockerfilePath = Join-Path $buildContext './src/Microservice.Workflow/Dockerfile' -Resolve
-    $dockerfileApiTestsPath = Join-Path $buildContext './test/Microservice.Workflow.SubSystemTests/Dockerfile' -Resolve
+    $dockerfilePath = Join-Path $buildContext './src/Monolith.DataSync/Dockerfile' -Resolve
+    $dockerfileApiTestsPath = Join-Path $buildContext './test/Monolith.DataSync.SubSystemTests/Dockerfile' -Resolve
 
 
     if ($SkipUnitTestRun -ne $true) {

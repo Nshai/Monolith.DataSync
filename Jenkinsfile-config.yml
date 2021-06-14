@@ -1,21 +1,21 @@
 ---
 logVerbose: false
-solutionName: Microservice.Workflow
-displayName: Microservice.Workflow
+solutionName: Monolith.DataSync
+displayName: Monolith.DataSync
 database: sqlserver
 validateReferences: true
 hasSubSystemTests: true
 deploymentPlaybook: api-service
 prdTestingSuccessfulTimeout: 3
 projectsToBuild:
-- projectFile: Microservice.Workflow.sln
+- projectFile: Monolith.DataSync.sln
   buildTool: MSBuild 15.0
   arguments: /m /p:Configuration=Release;TargetFrameworkVersion=v4.7.2 /clp:ErrorsOnly
-- projectFile: Microservice.Workflow.SubSystemTests.sln
+- projectFile: Monolith.DataSync.SubSystemTests.sln
   buildTool: dotnet
   arguments: -c Debug
-  publishArguments: test\Microservice.Workflow.SubSystemTests\Microservice.Workflow.SubSystemTests.csproj -c Debug --self-contained false --output bin/Debug/netcoreapp3.1
-- projectFile: .\database\Microservice.Workflow.SqlServer\Microservice.Workflow.SqlServer.sqlproj
+  publishArguments: test\Monolith.DataSync.SubSystemTests\Monolith.DataSync.SubSystemTests.csproj -c Debug --self-contained false --output bin/Debug/netcoreapp3.1
+- projectFile: .\database\Monolith.DataSync.SqlServer\Monolith.DataSync.SqlServer.sqlproj
   buildTool: MSBuild 15.0
   arguments: /p:Configuration=Release /clp:ErrorsOnly
 codeQuality:
@@ -28,7 +28,7 @@ scan:
     run: true
   dependencyCheck:
     run: false
-    binariesLocation: src\\Microservice.Workflow\\bin\\Release
+    binariesLocation: src\\Monolith.DataSync\\bin\\Release
 packaging:
   configuration: Release
   createSubsysJsonFile: true
@@ -36,7 +36,7 @@ packaging:
 supportedApiVersions:
   - v1
 subSystemStage:
-  include: "**/test/Microservice.Workflow.SubSystemTests/bin/Debug/**/Microservice.Workflow.SubSystemTests.dll"
+  include: "**/test/Monolith.DataSync.SubSystemTests/bin/Debug/**/Monolith.DataSync.SubSystemTests.dll"
   removeEc2Stack: true
   healthCheck:
     maxAttempts: 12

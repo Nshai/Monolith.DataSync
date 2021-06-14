@@ -54,13 +54,13 @@ env.list
 
 dist/
 
-src/Microservice.Workflow/App.Localsubsys.config
+src/Monolith.DataSync/App.Localsubsys.config
 infra/hashicorp-vault/.DS_Store
 
 .vscode
 
 # SQL project
-/database/Microservice.Workflow.SqlServer/Microservice.Workflow.SqlServer.jfm
+/database/Monolith.DataSync.SqlServer/Monolith.DataSync.SqlServer.jfm
 /database/dacpac
 # Terraform
 **/.terraform/*

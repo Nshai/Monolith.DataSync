@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+                   assembly="Monolith.DataSync"
+                   namespace="Monolith.DataSync.Domain"
+                   default-lazy="true"
+					default-access="property"
+                   schema="policymanagement.dbo">
+
+    <class name="PlanValuation" table="TPlanValuation">
+        <id name="Id" column="PlanValuationId">
+            <generator class="identity"/>
+        </id>
+
+        <property name="PlanValue" not-null="false" access="field.camelcase"/>
+        <property name="ValueDate" column="PlanValueDate" not-null="false" />
+        <property name="LastValuationDate" column="WhoUpdatedDateTime" not-null="false" />
+        <property name="ValueType" column="RefPlanValueTypeId" not-null="false" access="field.camelcase"/>
+        <property name="PlanId" column="PolicyBusinessId"/>
+        <property name="ClientUserId" column="WhoUpdatedValue" not-null="false"/>
+        <property name="SurrenderTransferValue"/>
+    </class>
+</hibernate-mapping>

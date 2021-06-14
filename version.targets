@@ -2,7 +2,7 @@
 
 	<!-- Globals -->
 	<PropertyGroup>
-		<MicroserviceName>Microservice.Workflow</MicroserviceName>
+		<MicroserviceName>Monolith.DataSync</MicroserviceName>
 		<Root>$(MSBuildProjectDirectory)</Root>
 		<CodeDir>$(Root)\src</CodeDir>
 		<MicroserviceDir>$(CodeDir)\$(MicroserviceName)</MicroserviceDir>

@@ -1,0 +1,30 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Monolith.DataSync.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="Instance" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">01</Value>
+    </Setting>
+    <Setting Name="Environment" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">dev</Value>
+    </Setting>
+    <Setting Name="BaseAddress" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://localhost:40008</Value>
+    </Setting>
+    <Setting Name="Service" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">DataSync</Value>
+    </Setting>
+    <Setting Name="AltBaseAddress" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://localhost:40008</Value>
+    </Setting>
+    <Setting Name="DatabaseObjectsFolder" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">../../../../database/Monolith.DataSync.SqlServer/dbo</Value>
+    </Setting>
+    <Setting Name="DataScriptFolder" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">../../../../database/Monolith.DataSync.SqlServer/dbodata/data</Value>
+    </Setting>
+    <Setting Name="ConnectionStringName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">write</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

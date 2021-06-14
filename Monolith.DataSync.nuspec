@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>Monolith.DataSync</id>
+    <version>1.2.3</version>
+    <title>Monolith.DataSync</title>
+    <authors>IntelliFlo Ltd</authors>
+    <owners>IntelliFlo Ltd</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Description</description>
+    <copyright>Copyright ©2015 IntelliFlo Ltd</copyright>
+    <releaseNotes>
+    </releaseNotes>
+  </metadata>
+  <files>
+    <file src="src\Monolith.DataSync\bin\Release\*.*" target="content/microservice" />
+    <file src="database\dacpac\**" target="content\database\dacpac" />
+    <file src="database\Monolith.DataSync.SqlServer\dbo\**" target="content\database" />
+    <file src="database\Monolith.DataSync.SqlServer\dbodata\data\**" target="content\database\data" />
+    <file src="subsys.json" target="content\scripts" />
+    <file src="pipeline\aws\appspec.yml" target="" />
+    <file src="pipeline\aws\*.*" target="content\scripts" exclude="**\*.yml;**\*.cer;**\*.pfx" />
+    <file src="pipeline\aws\*.cer" target="content\certificates" />
+  </files>
+</package>
